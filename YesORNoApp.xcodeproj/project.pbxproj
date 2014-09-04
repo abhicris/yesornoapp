@@ -19,6 +19,8 @@
 		4E04715A19B727B800345E88 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E04715919B727B800345E88 /* LoginViewController.m */; };
 		4E04716019B740FE00345E88 /* SignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E04715F19B740FE00345E88 /* SignUpViewController.m */; };
 		4E04716319B7450B00345E88 /* ForgetPassViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E04716219B7450B00345E88 /* ForgetPassViewController.m */; };
+		4E04716719B7520F00345E88 /* AppMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E04716619B7520F00345E88 /* AppMainViewController.m */; };
+		4E04716B19B758AF00345E88 /* LeftMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E04716A19B758AF00345E88 /* LeftMenuViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +56,10 @@
 		4E04715F19B740FE00345E88 /* SignUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignUpViewController.m; sourceTree = "<group>"; };
 		4E04716119B7450B00345E88 /* ForgetPassViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForgetPassViewController.h; sourceTree = "<group>"; };
 		4E04716219B7450B00345E88 /* ForgetPassViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ForgetPassViewController.m; sourceTree = "<group>"; };
+		4E04716519B7520F00345E88 /* AppMainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppMainViewController.h; sourceTree = "<group>"; };
+		4E04716619B7520F00345E88 /* AppMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppMainViewController.m; sourceTree = "<group>"; };
+		4E04716919B758AF00345E88 /* LeftMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeftMenuViewController.h; sourceTree = "<group>"; };
+		4E04716A19B758AF00345E88 /* LeftMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeftMenuViewController.m; sourceTree = "<group>"; };
 		ABB0DDEEA2B64C8F9472829E /* Pods-YesORNoApp.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YesORNoApp.xcconfig"; path = "Pods/Pods-YesORNoApp.xcconfig"; sourceTree = "<group>"; };
 		B1147EFF40084073B1108B20 /* libPods-YesORNoApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-YesORNoApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -164,6 +170,7 @@
 		4E04714719B6E9DB00345E88 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				4E04716419B750D200345E88 /* APP */,
 				4E04715719B7278B00345E88 /* Auth */,
 				4E04714819B6F33B00345E88 /* MainViewController.h */,
 				4E04714919B6F33B00345E88 /* MainViewController.m */,
@@ -201,6 +208,25 @@
 				4E04716219B7450B00345E88 /* ForgetPassViewController.m */,
 			);
 			name = Auth;
+			sourceTree = "<group>";
+		};
+		4E04716419B750D200345E88 /* APP */ = {
+			isa = PBXGroup;
+			children = (
+				4E04716819B7587700345E88 /* IndexView */,
+			);
+			name = APP;
+			sourceTree = "<group>";
+		};
+		4E04716819B7587700345E88 /* IndexView */ = {
+			isa = PBXGroup;
+			children = (
+				4E04716519B7520F00345E88 /* AppMainViewController.h */,
+				4E04716619B7520F00345E88 /* AppMainViewController.m */,
+				4E04716919B758AF00345E88 /* LeftMenuViewController.h */,
+				4E04716A19B758AF00345E88 /* LeftMenuViewController.m */,
+			);
+			name = IndexView;
 			sourceTree = "<group>";
 		};
 		C11AA38BEDFD468BB47941D8 /* Frameworks */ = {
@@ -345,6 +371,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E04716719B7520F00345E88 /* AppMainViewController.m in Sources */,
 				4E04712719B6E9A700345E88 /* AppDelegate.m in Sources */,
 				4E04715219B7259600345E88 /* PresentingAnimator.m in Sources */,
 				4E04716319B7450B00345E88 /* ForgetPassViewController.m in Sources */,
@@ -352,6 +379,7 @@
 				4E04714A19B6F33B00345E88 /* MainViewController.m in Sources */,
 				4E04715619B725B500345E88 /* DismissingAnimator.m in Sources */,
 				4E04716019B740FE00345E88 /* SignUpViewController.m in Sources */,
+				4E04716B19B758AF00345E88 /* LeftMenuViewController.m in Sources */,
 				4E04712419B6E9A700345E88 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -11,6 +11,9 @@
 #import "PresentingAnimator.h"
 #import "DismissingAnimator.h"
 #import "ForgetPassViewController.h"
+#import "AppMainViewController.h"
+#import "LeftMenuViewController.h"
+#import "RESideMenu/RESideMenu.h"
 
 @interface LoginViewController ()<UIViewControllerTransitioningDelegate>
 
@@ -97,7 +100,22 @@
 
 - (void)loginButtonPressed:(id)sender
 {
-   [self dismissViewControllerAnimated:YES completion:NULL];
+    //ToDo check login data
+    //Now no check, directly to app index
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[AppMainViewController alloc] init]];
+    LeftMenuViewController *leftMenuController = [[LeftMenuViewController alloc] init];
+    
+    RESideMenu *sideMenuController = [[RESideMenu alloc] initWithContentViewController:navigationController leftMenuViewController:leftMenuController rightMenuViewController:nil];
+    sideMenuController.backgroundImage = [UIImage imageNamed:@"MenuBackground"];
+    sideMenuController.menuPreferredStatusBarStyle = 1;
+    //sideMenuController.delegate = self;
+    sideMenuController.contentViewShadowColor = [UIColor flatNavyBlueColorDark];
+    sideMenuController.contentViewShadowOpacity = 0.9;
+    sideMenuController.contentViewShadowRadius = 8;
+    sideMenuController.contentViewShadowEnabled = YES;
+    sideMenuController.contentViewShadowOffset = CGSizeMake(0, 0);
+    [self presentViewController:sideMenuController animated:YES completion:NULL];
+    
 }
 
 #pragma mark - UIViewControllerTransitioningDelegate

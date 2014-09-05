@@ -17,8 +17,7 @@
 
 @interface LoginViewController ()<UIViewControllerTransitioningDelegate>
 
-@property (nonatomic, strong) UITextField *usernameField;
-@property (nonatomic, strong) UITextField *passwordField;
+
 @property (nonatomic, strong) UIButton *forgetPassButton;
 @property (nonatomic, strong) UIButton *loginButton;
 
@@ -35,35 +34,50 @@
     [self addPasswordTextField];
     [self addForgetPassButton];
     [self addLoginButton];
+    
+    _usernameField.delegate = self;
+    _passwordField.delegate = self;
 }
 
+#pragma mark - UITextField delegate methods
+
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    [textField becomeFirstResponder];
+}
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    [self dismissViewControllerAnimated:YES completion:NULL];
+    return YES;
+}
 
 
 - (void)addUsernameTextField
 {
-    self.usernameField = [[UITextField alloc] initWithFrame:CGRectMake(10, 10, 230, 44)];
-    self.usernameField.textColor = [UIColor flatNavyBlueColorDark];
-    self.usernameField.placeholder = @"Username";
-    self.usernameField.font = [UIFont fontWithName:@"Avenir" size:14];
-    self.usernameField.backgroundColor = [UIColor flatWhiteColor];
-    self.usernameField.textAlignment = NSTextAlignmentCenter;
-    self.usernameField.layer.borderWidth = 0;
-    self.usernameField.layer.cornerRadius = 4;
-    [self.view addSubview:self.usernameField];
+    _usernameField = [[UITextField alloc] initWithFrame:CGRectMake(10, 10, 230, 44)];
+    _usernameField.textColor = [UIColor flatNavyBlueColorDark];
+    _usernameField.placeholder = @"Username";
+    _usernameField.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
+    _usernameField.backgroundColor = [UIColor flatWhiteColor];
+    _usernameField.textAlignment = NSTextAlignmentCenter;
+    _usernameField.layer.borderWidth = 0;
+    _usernameField.layer.cornerRadius = 4;
+    [self.view addSubview:_usernameField];
 }
 
 - (void)addPasswordTextField
 {
-    self.passwordField = [[UITextField alloc] initWithFrame:CGRectMake(10, 64, 230, 44)];
-    self.passwordField.textColor = [UIColor flatNavyBlueColorDark];
-    self.passwordField.placeholder = @"Password";
-    self.passwordField.font = [UIFont fontWithName:@"Avenir" size:14];
-    self.passwordField.backgroundColor = [UIColor flatWhiteColor];
-    self.passwordField.textAlignment = NSTextAlignmentCenter;
-    self.passwordField.secureTextEntry = YES;
-    self.passwordField.layer.borderWidth = 0;
-    self.passwordField.layer.cornerRadius = 4;
-    [self.view addSubview:self.passwordField];
+    _passwordField = [[UITextField alloc] initWithFrame:CGRectMake(10, 64, 230, 44)];
+    _passwordField.textColor = [UIColor flatNavyBlueColorDark];
+    _passwordField.placeholder = @"Password";
+    _passwordField.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
+    _passwordField.backgroundColor = [UIColor flatWhiteColor];
+    _passwordField.textAlignment = NSTextAlignmentCenter;
+    _passwordField.secureTextEntry = YES;
+    _passwordField.layer.borderWidth = 0;
+    _passwordField.layer.cornerRadius = 4;
+    [self.view addSubview:_passwordField];
 }
 
 - (void)addForgetPassButton
@@ -71,7 +85,7 @@
     self.forgetPassButton = [[UIButton alloc] initWithFrame:CGRectMake(75, 128, 100, 20)];
     [self.forgetPassButton setTitle:@"Forget Password?" forState:UIControlStateNormal];
     [self.forgetPassButton setTitleColor:[UIColor flatMintColor] forState:UIControlStateNormal];
-    self.forgetPassButton.titleLabel.font = [UIFont fontWithName:@"Avenir" size:12];
+    self.forgetPassButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
     [self.forgetPassButton addTarget:self action:@selector(forgetPassButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.forgetPassButton];
 }
@@ -81,7 +95,7 @@
     self.loginButton = [[UIButton alloc] initWithFrame:CGRectMake(10, 158, 230, 44)];
     [self.loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.loginButton setTitle:@"Login" forState:UIControlStateNormal];
-    self.loginButton.titleLabel.font = [UIFont fontWithName:@"Avenir" size:14];
+    self.loginButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
     self.loginButton.layer.borderWidth = 0;
     self.loginButton.layer.cornerRadius = 5;
     self.loginButton.backgroundColor = [UIColor flatMintColor];

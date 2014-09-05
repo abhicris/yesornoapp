@@ -9,6 +9,7 @@
 #import "LeftMenuViewController.h"
 #import "chameleon.h"
 #import "AppMainViewController.h"
+#import "FriendsListViewController.h"
 
 @interface LeftMenuViewController ()
 
@@ -58,11 +59,19 @@
     avatarView.backgroundColor = [UIColor whiteColor];
     [tableHeaderView addSubview:avatarView];
     
-    UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(65, 0, 100, 44)];
+    UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(65, 6, 100, 14)];
     nameLabel.text = @"Nicholas Xue";
     nameLabel.textColor = [UIColor whiteColor];
-    nameLabel.font = [UIFont fontWithName:@"Avenir" size:12];
+    nameLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
     [tableHeaderView addSubview:nameLabel];
+    
+    UILabel *profileLabel = [[UILabel alloc] initWithFrame:CGRectMake(65, 16, 130, 40)];
+    profileLabel.text = @"A normal geek and also a very funny handsome guy!";
+    profileLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.5];
+    profileLabel.font =[UIFont fontWithName:@"Roboto-Regular" size:12];
+    profileLabel.numberOfLines = 0;
+    [tableHeaderView addSubview:profileLabel];
+    
     
     self.leftMenuTable.tableHeaderView = tableHeaderView;
 }
@@ -90,7 +99,7 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
         cell.backgroundColor = [UIColor clearColor];
-        cell.textLabel.font = [UIFont fontWithName:@"Avenir" size:21];
+        cell.textLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:21];
         cell.textLabel.textColor = [UIColor whiteColor];
         
         cell.textLabel.highlightedTextColor = [UIColor whiteColor];
@@ -106,5 +115,52 @@
     return cell;
 }
 
+#pragma mark - UITableView delegate methods
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    switch (indexPath.row) {
+        case 0:
+        {
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[AppMainViewController new]];
+            [self.sideMenuViewController setContentViewController:navigationController animated:YES];
+            [self.sideMenuViewController hideMenuViewController];
+            break;
+        }
+        case 1:
+        {
+            NSLog(@"go to user page.....");
+            
+            [self.sideMenuViewController hideMenuViewController];
+            break;
+        }
+        case 2:
+        {
+            NSLog(@"go to friends list page...");
+            
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[FriendsListViewController new]];
+            [self.sideMenuViewController setContentViewController:navigationController animated:YES];
+            
+            [self.sideMenuViewController hideMenuViewController];
+            break;
+        }
+        case 3:
+        {
+            NSLog(@"go to settings page .....");
+            
+            [self.sideMenuViewController hideMenuViewController];
+            break;
+        }
+        case 4:
+        {
+            NSLog(@"log out app ......");
+            
+            [self.sideMenuViewController hideMenuViewController];
+            break;
+        }
+    }
+}
 
 @end

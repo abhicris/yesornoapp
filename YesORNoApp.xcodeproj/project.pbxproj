@@ -21,6 +21,21 @@
 		4E04716319B7450B00345E88 /* ForgetPassViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E04716219B7450B00345E88 /* ForgetPassViewController.m */; };
 		4E04716719B7520F00345E88 /* AppMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E04716619B7520F00345E88 /* AppMainViewController.m */; };
 		4E04716B19B758AF00345E88 /* LeftMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E04716A19B758AF00345E88 /* LeftMenuViewController.m */; };
+		4E04716E19B8667700345E88 /* YNCardTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E04716D19B8667700345E88 /* YNCardTableViewCell.m */; };
+		4E04717C19B9933400345E88 /* Roboto-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717019B9933400345E88 /* Roboto-Black.ttf */; };
+		4E04717D19B9933400345E88 /* Roboto-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717119B9933400345E88 /* Roboto-BlackItalic.ttf */; };
+		4E04717E19B9933400345E88 /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717219B9933400345E88 /* Roboto-Bold.ttf */; };
+		4E04717F19B9933400345E88 /* Roboto-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717319B9933400345E88 /* Roboto-BoldItalic.ttf */; };
+		4E04718019B9933400345E88 /* Roboto-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717419B9933400345E88 /* Roboto-Italic.ttf */; };
+		4E04718119B9933400345E88 /* Roboto-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717519B9933400345E88 /* Roboto-Light.ttf */; };
+		4E04718219B9933400345E88 /* Roboto-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717619B9933400345E88 /* Roboto-LightItalic.ttf */; };
+		4E04718319B9933400345E88 /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717719B9933400345E88 /* Roboto-Medium.ttf */; };
+		4E04718419B9933400345E88 /* Roboto-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717819B9933400345E88 /* Roboto-MediumItalic.ttf */; };
+		4E04718519B9933400345E88 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717919B9933400345E88 /* Roboto-Regular.ttf */; };
+		4E04718619B9933400345E88 /* Roboto-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717A19B9933400345E88 /* Roboto-Thin.ttf */; };
+		4E04718719B9933400345E88 /* Roboto-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717B19B9933400345E88 /* Roboto-ThinItalic.ttf */; };
+		4E970ACB19B9BBAE00325020 /* FriendsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E970ACA19B9BBAE00325020 /* FriendsListViewController.m */; };
+		4E970ACF19B9C7FD00325020 /* FriendCardTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E970ACE19B9C7FD00325020 /* FriendCardTableViewCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +75,24 @@
 		4E04716619B7520F00345E88 /* AppMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppMainViewController.m; sourceTree = "<group>"; };
 		4E04716919B758AF00345E88 /* LeftMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeftMenuViewController.h; sourceTree = "<group>"; };
 		4E04716A19B758AF00345E88 /* LeftMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeftMenuViewController.m; sourceTree = "<group>"; };
+		4E04716C19B8667700345E88 /* YNCardTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YNCardTableViewCell.h; sourceTree = "<group>"; };
+		4E04716D19B8667700345E88 /* YNCardTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YNCardTableViewCell.m; sourceTree = "<group>"; };
+		4E04717019B9933400345E88 /* Roboto-Black.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Black.ttf"; sourceTree = "<group>"; };
+		4E04717119B9933400345E88 /* Roboto-BlackItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-BlackItalic.ttf"; sourceTree = "<group>"; };
+		4E04717219B9933400345E88 /* Roboto-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Bold.ttf"; sourceTree = "<group>"; };
+		4E04717319B9933400345E88 /* Roboto-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-BoldItalic.ttf"; sourceTree = "<group>"; };
+		4E04717419B9933400345E88 /* Roboto-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Italic.ttf"; sourceTree = "<group>"; };
+		4E04717519B9933400345E88 /* Roboto-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Light.ttf"; sourceTree = "<group>"; };
+		4E04717619B9933400345E88 /* Roboto-LightItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-LightItalic.ttf"; sourceTree = "<group>"; };
+		4E04717719B9933400345E88 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Medium.ttf"; sourceTree = "<group>"; };
+		4E04717819B9933400345E88 /* Roboto-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-MediumItalic.ttf"; sourceTree = "<group>"; };
+		4E04717919B9933400345E88 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Regular.ttf"; sourceTree = "<group>"; };
+		4E04717A19B9933400345E88 /* Roboto-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Thin.ttf"; sourceTree = "<group>"; };
+		4E04717B19B9933400345E88 /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-ThinItalic.ttf"; sourceTree = "<group>"; };
+		4E970AC919B9BBAE00325020 /* FriendsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendsListViewController.h; sourceTree = "<group>"; };
+		4E970ACA19B9BBAE00325020 /* FriendsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendsListViewController.m; sourceTree = "<group>"; };
+		4E970ACD19B9C7FD00325020 /* FriendCardTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendCardTableViewCell.h; sourceTree = "<group>"; };
+		4E970ACE19B9C7FD00325020 /* FriendCardTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendCardTableViewCell.m; sourceTree = "<group>"; };
 		ABB0DDEEA2B64C8F9472829E /* Pods-YesORNoApp.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YesORNoApp.xcconfig"; path = "Pods/Pods-YesORNoApp.xcconfig"; sourceTree = "<group>"; };
 		B1147EFF40084073B1108B20 /* libPods-YesORNoApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-YesORNoApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -106,6 +139,7 @@
 		4E04712019B6E9A700345E88 /* YesORNoApp */ = {
 			isa = PBXGroup;
 			children = (
+				4E04716F19B9931500345E88 /* Fonts */,
 				4E04714B19B7253400345E88 /* Uitilities */,
 				4E04714719B6E9DB00345E88 /* ViewControllers */,
 				4E04714619B6E9D500345E88 /* Views */,
@@ -163,6 +197,10 @@
 		4E04714619B6E9D500345E88 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				4E04716C19B8667700345E88 /* YNCardTableViewCell.h */,
+				4E04716D19B8667700345E88 /* YNCardTableViewCell.m */,
+				4E970ACD19B9C7FD00325020 /* FriendCardTableViewCell.h */,
+				4E970ACE19B9C7FD00325020 /* FriendCardTableViewCell.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -213,6 +251,7 @@
 		4E04716419B750D200345E88 /* APP */ = {
 			isa = PBXGroup;
 			children = (
+				4E970ACC19B9BBB600325020 /* APPFriends */,
 				4E04716819B7587700345E88 /* IndexView */,
 			);
 			name = APP;
@@ -227,6 +266,34 @@
 				4E04716A19B758AF00345E88 /* LeftMenuViewController.m */,
 			);
 			name = IndexView;
+			sourceTree = "<group>";
+		};
+		4E04716F19B9931500345E88 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				4E04717019B9933400345E88 /* Roboto-Black.ttf */,
+				4E04717119B9933400345E88 /* Roboto-BlackItalic.ttf */,
+				4E04717219B9933400345E88 /* Roboto-Bold.ttf */,
+				4E04717319B9933400345E88 /* Roboto-BoldItalic.ttf */,
+				4E04717419B9933400345E88 /* Roboto-Italic.ttf */,
+				4E04717519B9933400345E88 /* Roboto-Light.ttf */,
+				4E04717619B9933400345E88 /* Roboto-LightItalic.ttf */,
+				4E04717719B9933400345E88 /* Roboto-Medium.ttf */,
+				4E04717819B9933400345E88 /* Roboto-MediumItalic.ttf */,
+				4E04717919B9933400345E88 /* Roboto-Regular.ttf */,
+				4E04717A19B9933400345E88 /* Roboto-Thin.ttf */,
+				4E04717B19B9933400345E88 /* Roboto-ThinItalic.ttf */,
+			);
+			name = Fonts;
+			sourceTree = "<group>";
+		};
+		4E970ACC19B9BBB600325020 /* APPFriends */ = {
+			isa = PBXGroup;
+			children = (
+				4E970AC919B9BBAE00325020 /* FriendsListViewController.h */,
+				4E970ACA19B9BBAE00325020 /* FriendsListViewController.m */,
+			);
+			name = APPFriends;
 			sourceTree = "<group>";
 		};
 		C11AA38BEDFD468BB47941D8 /* Frameworks */ = {
@@ -319,8 +386,20 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E04718319B9933400345E88 /* Roboto-Medium.ttf in Resources */,
+				4E04717F19B9933400345E88 /* Roboto-BoldItalic.ttf in Resources */,
 				4E04712D19B6E9A700345E88 /* Main.storyboard in Resources */,
 				4E04712F19B6E9A700345E88 /* Images.xcassets in Resources */,
+				4E04717E19B9933400345E88 /* Roboto-Bold.ttf in Resources */,
+				4E04718019B9933400345E88 /* Roboto-Italic.ttf in Resources */,
+				4E04718519B9933400345E88 /* Roboto-Regular.ttf in Resources */,
+				4E04718219B9933400345E88 /* Roboto-LightItalic.ttf in Resources */,
+				4E04717C19B9933400345E88 /* Roboto-Black.ttf in Resources */,
+				4E04718119B9933400345E88 /* Roboto-Light.ttf in Resources */,
+				4E04718719B9933400345E88 /* Roboto-ThinItalic.ttf in Resources */,
+				4E04718419B9933400345E88 /* Roboto-MediumItalic.ttf in Resources */,
+				4E04718619B9933400345E88 /* Roboto-Thin.ttf in Resources */,
+				4E04717D19B9933400345E88 /* Roboto-BlackItalic.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -371,7 +450,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E970ACB19B9BBAE00325020 /* FriendsListViewController.m in Sources */,
 				4E04716719B7520F00345E88 /* AppMainViewController.m in Sources */,
+				4E04716E19B8667700345E88 /* YNCardTableViewCell.m in Sources */,
 				4E04712719B6E9A700345E88 /* AppDelegate.m in Sources */,
 				4E04715219B7259600345E88 /* PresentingAnimator.m in Sources */,
 				4E04716319B7450B00345E88 /* ForgetPassViewController.m in Sources */,
@@ -380,6 +461,7 @@
 				4E04715619B725B500345E88 /* DismissingAnimator.m in Sources */,
 				4E04716019B740FE00345E88 /* SignUpViewController.m in Sources */,
 				4E04716B19B758AF00345E88 /* LeftMenuViewController.m in Sources */,
+				4E970ACF19B9C7FD00325020 /* FriendCardTableViewCell.m in Sources */,
 				4E04712419B6E9A700345E88 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -497,6 +579,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				INFOPLIST_FILE = YesORNoApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -509,6 +592,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				INFOPLIST_FILE = YesORNoApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -527,6 +611,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = YesORNoAppTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
@@ -542,6 +627,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = YesORNoAppTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";

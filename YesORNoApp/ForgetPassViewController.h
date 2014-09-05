@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ForgetPassViewController : UIViewController
-
+@interface ForgetPassViewController : UIViewController<UITextFieldDelegate>
+@property (nonatomic, strong) UITextField *emailField;
 @end

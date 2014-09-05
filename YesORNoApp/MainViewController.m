@@ -50,7 +50,7 @@
 {
     self.titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 44, CGRectGetWidth(self.view.bounds), 64)];
     self.titleLabel.text = @"Yes OR No?";
-    self.titleLabel.font = [UIFont fontWithName:@"Avenir" size:20];
+    self.titleLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:20];
     self.titleLabel.backgroundColor = [UIColor clearColor];
     self.titleLabel.textColor = [UIColor whiteColor];
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -61,7 +61,7 @@
 {
     self.subTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 74, CGRectGetWidth(self.view.bounds), 44)];
     self.subTitleLabel.text = @"Yo, ya have to be honest!";
-    self.subTitleLabel.font = [UIFont fontWithName:@"Avenir" size:12];
+    self.subTitleLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
     self.subTitleLabel.backgroundColor = [UIColor clearColor];
     self.subTitleLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.5];
     self.subTitleLabel.textAlignment = NSTextAlignmentCenter;
@@ -75,7 +75,7 @@
     [self.signUpButton setTitle:@"Sign Up" forState:UIControlStateNormal];
     [self.signUpButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     self.signUpButton.layer.cornerRadius = 5;
-    self.signUpButton.titleLabel.font = [UIFont fontWithName:@"Avenir" size:14];
+    self.signUpButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
     self.signUpButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     [self.signUpButton addTarget:self action:@selector(signUpButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.signUpButton];
@@ -85,7 +85,7 @@
 {
     self.haveAccountTipLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 264, CGRectGetWidth(self.view.bounds), 44)];
     self.haveAccountTipLabel.text = @"Already have an account?";
-    self.haveAccountTipLabel.font = [UIFont fontWithName:@"Avenir" size:12];
+    self.haveAccountTipLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
     self.haveAccountTipLabel.backgroundColor = [UIColor clearColor];
     self.haveAccountTipLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.5];
     self.haveAccountTipLabel.textAlignment = NSTextAlignmentCenter;
@@ -101,7 +101,7 @@
     self.loginButton.layer.cornerRadius = 5;
     [[self.loginButton layer] setBorderWidth:1.0f];
     [[self.loginButton layer] setBorderColor:[UIColor whiteColor].CGColor];
-    self.loginButton.titleLabel.font = [UIFont fontWithName:@"Avenir" size:14];
+    self.loginButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
     self.loginButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     [self.loginButton addTarget:self action:@selector(loginButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.loginButton];
@@ -111,7 +111,7 @@
 {
     self.bottomRightLabel = [[UILabel alloc] initWithFrame:CGRectMake(25, self.view.frame.size.height - 74, CGRectGetWidth(self.view.bounds)-50, 44)];
     self.bottomRightLabel.text = @"This app was built by Nicholas, and all just for fun! Contact me on twitter - @Normal_Geek_Xue.";
-    self.bottomRightLabel.font = [UIFont fontWithName:@"Avenir" size:12];
+    self.bottomRightLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
     self.bottomRightLabel.backgroundColor = [UIColor clearColor];
     self.bottomRightLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.5];
     self.bottomRightLabel.textAlignment = NSTextAlignmentCenter;

@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "10C1909DB4D041818DBB832B"
+               BlueprintIdentifier = "EE0A94287C3E490CAC403AD6"
                BuildableName = "libPods-YesORNoApp-ChameleonFramework.a"
                BlueprintName = "Pods-YesORNoApp-ChameleonFramework"
                ReferencedContainer = "container:Pods.xcodeproj">

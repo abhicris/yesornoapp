@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "RESideMenu/RESideMenu.h"
 
 @interface FriendsListViewController : UIViewController<UITableViewDataSource, UITableViewDelegate>
 

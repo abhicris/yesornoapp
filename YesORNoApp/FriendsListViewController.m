@@ -9,9 +9,12 @@
 #import "FriendsListViewController.h"
 #import "chameleon.h"
 #import "VBFPopFlatButton.h"
+#import "FriendCardTableViewCell.h"
+#import "AppMainViewController.h"
+
 
 @interface FriendsListViewController ()
-@property (nonatomic, strong) UIButton *leftBackButton;
+@property (nonatomic, strong) VBFPopFlatButton *leftBackButton;
 @property (nonatomic, strong) UIButton *rightSearchButton;
 @property (nonatomic, strong) UITableView *contentTableView;
 @end
@@ -43,8 +46,10 @@
 
 - (void)initLeftBackButton
 {
-    self.leftBackButton = [[VBFPopFlatButton alloc] initWithFrame:CGRectMake(0, 0, 20, 20) buttonType:buttonBackType buttonStyle:buttonPlainStyle];
+    self.leftBackButton = [[VBFPopFlatButton alloc] initWithFrame:CGRectMake(0, 0, 20, 20) buttonType:buttonMenuType buttonStyle:buttonPlainStyle];
     self.leftBackButton.tintColor = [UIColor whiteColor];
+    self.leftBackButton.lineThickness = 2;
+
     [self.leftBackButton addTarget:self action:@selector(leftBackButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
 }
 
@@ -67,7 +72,8 @@
 
 -(void)leftBackButtonPressed:(id)sender
 {
-    
+    NSLog(@"fucking back");
+    [self.sideMenuViewController presentLeftMenuViewController];
 }
 
 -(void)rightSearchButtonPressed:(id)sender
@@ -89,40 +95,35 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 80;
+    return 100;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *cellIdentifier = @"friendcell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    FriendCardTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
-        cell.backgroundColor = [UIColor clearColor];
-        cell.textLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:16];
-        cell.textLabel.textColor = [UIColor flatNavyBlueColorDark];
-        cell.textLabel.highlightedTextColor = [UIColor whiteColor];
-        
-        cell.detailTextLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
-        cell.detailTextLabel.textColor = [UIColor flatNavyBlueColorDark];
-        cell.detailTextLabel.highlightedTextColor = [UIColor whiteColor];
-        
-        cell.imageView.frame = CGRectMake(0, 0, 40, 40);
-        cell.imageView.layer.cornerRadius = cell.imageView.frame.size.width / 2;
-        cell.imageView.backgroundColor = [UIColor whiteColor];
-        
+        cell = [[FriendCardTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
         UIView *selectedCellBackground = [[UIView alloc] init];
-        selectedCellBackground.backgroundColor = [UIColor flatRedColor];
+        selectedCellBackground.backgroundColor = [UIColor flatWhiteColor];
         cell.selectedBackgroundView = selectedCellBackground;
     }
     NSArray *friendsName = @[@"Nicholas", @"Sophia", @"Michelle", @"Tiffany", @"James"];
     NSArray *profiles = @[@"if you change screen orientation you can see it hidden off-screen in the bottom", @"if you change screen orientation you", @"if you change screen orientation you can see it hidden off-screen in the bottom", @"if you change screen orientation you", @"if you change screen orientation you"];
-    NSArray *avatarNames = @[@"default", @"default", @"default", @"default", @"default"];
-    cell.textLabel.text = friendsName[indexPath.row];
-    cell.detailTextLabel.text = profiles[indexPath.row];
-    cell.imageView.image = [UIImage imageNamed:avatarNames[indexPath.row]];
-    
+    NSArray *avatarNames = @[@"default", @"default", @"default2", @"default", @"default2"];
+    cell.nameLabel.text = friendsName[indexPath.row];
+    cell.profileLabel.text = profiles[indexPath.row];
+    cell.avatarImageView.image = [UIImage imageNamed:avatarNames[indexPath.row]];
+    [cell.addOrCancelButton setBackgroundImage:[UIImage imageNamed:@"check-active"] forState:UIControlStateNormal];
+    [cell.addOrCancelButton addTarget:self action:@selector(addOrCancelButtonPressd:) forControlEvents:UIControlEventTouchUpInside];
     return cell;
 }
+
+
+-(void)addOrCancelButtonPressd:(id)sender
+{
+    
+}
+
 
 @end

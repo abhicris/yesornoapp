@@ -10,6 +10,7 @@
 #import "chameleon.h"
 #import "AppMainViewController.h"
 #import "FriendsListViewController.h"
+#import "UserPageViewController.h"
 
 @interface LeftMenuViewController ()
 
@@ -132,7 +133,8 @@
         case 1:
         {
             NSLog(@"go to user page.....");
-            
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[UserPageViewController new]];
+            [self.sideMenuViewController setContentViewController:navigationController animated:YES];
             [self.sideMenuViewController hideMenuViewController];
             break;
         }

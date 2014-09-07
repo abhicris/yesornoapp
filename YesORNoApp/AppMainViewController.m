@@ -24,6 +24,8 @@
 @property (nonatomic, strong)NSArray *itemListData;
 @property (nonatomic, strong)NSDictionary *itemData;
 
+@property (nonatomic, strong)UIButton *postButton;
+
 @end
 
 @implementation AppMainViewController
@@ -41,6 +43,7 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.rightButton];
     //self.itemType = 1;
     [self initTableView];
+    [self initPostButton];
 }
 
 - (void)initLeftMenuButton
@@ -59,6 +62,16 @@
     [self.rightButton addTarget:self action:@selector(notificationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
 }
 
+- (void)initPostButton
+{
+    self.postButton = [[UIButton alloc] initWithFrame:CGRectMake(240, 478, 50, 50)];
+    [self.postButton setTitle:@"" forState:UIControlStateNormal];
+    self.postButton.contentMode = UIViewContentModeScaleAspectFill;
+    [self.postButton setBackgroundImage:[UIImage imageNamed:@"post-icon"] forState:UIControlStateNormal];
+    [self.postButton addTarget:self action:@selector(postButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.view addSubview:self.postButton];
+}
 
 #pragma mark - UITableView DataSource Delegate methods
 
@@ -67,7 +80,8 @@
     return 1;
 }
 
--(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
     //here set cell height according to itemtype
     #define TEXT_HEIGHT 170
     #define PHOTO_HEIGHT 380
@@ -202,6 +216,11 @@
     self.contentTableView.delegate = self;
     self.contentTableView.separatorColor = [UIColor flatWhiteColor];
     [self.view addSubview:self.contentTableView];
+}
+
+-(void)postButtonPressed:(id)sender
+{
+    //create new post
 }
 
 -(void)likeButtonPressed:(id)sender

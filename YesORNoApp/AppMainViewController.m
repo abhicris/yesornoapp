@@ -11,6 +11,7 @@
 #import "chameleon.h"
 #import "YNCardTableViewCell.h"
 #import <AVFoundation/AVFoundation.h>
+#import "PostViewController.h"
 
 @interface AppMainViewController ()
 @property (nonatomic, strong) VBFPopFlatButton *leftMenuButton;
@@ -221,6 +222,7 @@
 -(void)postButtonPressed:(id)sender
 {
     //create new post
+    [self.navigationController pushViewController:[PostViewController new] animated:YES];
 }
 
 -(void)likeButtonPressed:(id)sender

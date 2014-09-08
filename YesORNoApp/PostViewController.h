@@ -12,7 +12,7 @@
 
 @property (nonatomic, strong)UIImageView *avatarImageView;
 @property (nonatomic, strong)UILabel *nameLabel;
-@property (nonatomic, strong)UITextField *contentField;
+@property (nonatomic, strong)UITextView *contentTextView;
 @property (nonatomic, strong)UIButton *addPhotoButton;
 @property (nonatomic, strong)UIButton *addAtButton;
 @property (nonatomic, strong)UIButton *addAudioButton;

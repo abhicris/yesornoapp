@@ -13,7 +13,7 @@
 #import "UserPageTableViewCell.h"
 #import <AVFoundation/AVFoundation.h>
 #import "UserSettingViewController.h"
-
+#import "DateFormatter.h"
 
 @interface UserPageViewController ()
 @property (nonatomic, strong)UIView *topUserInfoView;
@@ -61,7 +61,6 @@
     self.typeCell = 1;
     [self initpostsTableView];
     [self initTopUserInfoView];
-
 }
 
 - (void)initLeftMenuButton

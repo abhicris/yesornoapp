@@ -10,4 +10,10 @@
 
 @interface DetailViewController : UIViewController
 
+
+@property (nonatomic, strong)NSArray *commentList;
+@property (nonatomic, strong)NSDictionary *itemInfo;
+@property (nonatomic, strong)NSDictionary *authorInfo;
+
+
 @end

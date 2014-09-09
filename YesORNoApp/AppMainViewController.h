@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "RESideMenu/RESideMenu.h"
+
 
 @interface AppMainViewController : UIViewController<UITableViewDataSource, UITableViewDelegate>
 

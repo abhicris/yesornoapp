@@ -19,42 +19,89 @@
         self.backgroundColor = [UIColor flatWhiteColor];
         
         switch (cellItemType) {
-            case PictureType:
-                _cardContainerView = [[UIView alloc] initWithFrame:CGRectMake(10, 10, 300, 360)];
+            case TextType:
                 [self initCardContainerView];
-                [self addSubviewsToView];
+                _cardContainerView.frame = CGRectMake(10, 10, 300, 146);
+                [self initItemTypeIconView];
+                _itemTypeIconView.frame = CGRectMake(272, 8, 18, 22);
+                [self addTopControls];
+                
+                [self initOtherControlls];
+                
+                _likeButton.frame = CGRectMake(8, 118, 14, 13);
+                _likeCountLabel.frame = CGRectMake(30, 113, 34, 21);
+                _commentButton.frame = CGRectMake(72, 118, 14, 14);
+                _commentCountLabel.frame = CGRectMake(94, 113, 34, 21);
+                _shareButton.frame = CGRectMake(136, 118, 14, 12);
+                
+                [self addAllCardSubViews];
+                [self addSubview:_cardContainerView];
+                break;
+            case PictureType:
+                [self initCardContainerView];
+                _cardContainerView.frame = CGRectMake(10, 10, 300, 280);
+                
+                [self initItemTypeIconView];
+                _itemTypeIconView.frame = CGRectMake(272, 8, 20, 20);
+                [self addTopControls];
                 
                 [self initAttachPhotoContainerView];
-                
-                _likeButton = [[UIButton alloc] initWithFrame:CGRectMake(10, 327, 20, 20)];
+                _attachPhotoContainerView.frame = CGRectMake(8, 109, 284, 134);
+ 
                 [self initOtherControlls];
+                _likeButton.frame = CGRectMake(8, 256, 14, 13);
+                _likeCountLabel.frame = CGRectMake(30, 251, 34, 21);
+                _commentButton.frame = CGRectMake(72, 256, 14, 14);
+                _commentCountLabel.frame = CGRectMake(94, 251, 34, 21);
+                _shareButton.frame = CGRectMake(136, 256, 14, 12);
+                
+                [self addAllCardSubViews];
+                [_cardContainerView addSubview:_attachPhotoContainerView];
+                [self addSubview:_cardContainerView];
+                
                 break;
             case AudioType:
-                _cardContainerView = [[UIView alloc] initWithFrame:CGRectMake(10, 10, 300, 230)];
                 [self initCardContainerView];
-                [self addSubviewsToView];
+                _cardContainerView.frame = CGRectMake(10, 10, 300, 230);
+                [self initItemTypeIconView];
+                _itemTypeIconView.frame = CGRectMake(272, 8, 20, 28);
+                
+                [self addTopControls];
                 
                 [self initAttachAudioContainerView];
-                _likeButton = [[UIButton alloc] initWithFrame:CGRectMake(10, 196, 20, 20)];
+                _attachAudioContainerView.frame = CGRectMake(8, 114, 284, 80);
+                
                 [self initOtherControlls];
+                _likeButton.frame = CGRectMake(8, 214, 14, 13);
+                _likeCountLabel.frame = CGRectMake(30, 209, 34, 21);
+                _commentButton.frame = CGRectMake(72, 214, 14, 14);
+                _commentCountLabel.frame = CGRectMake(94, 209, 34, 21);
+                _shareButton.frame = CGRectMake(136, 214, 14, 12);
+                
+                [self addAllCardSubViews];
+                [_cardContainerView addSubview:_attachAudioContainerView];
+                [self addSubview:_cardContainerView];
                 break;
             case VideoType:
-                _cardContainerView = [[UIView alloc] initWithFrame:CGRectMake(10, 10, 300, 360)];
                 [self initCardContainerView];
-                [self addSubviewsToView];
+                _cardContainerView.frame = CGRectMake(10, 10, 300, 360);
+                [self initItemTypeIconView];
+                _itemTypeIconView.frame = CGRectMake(272, 8, 20, 14);
                 
+                [self addTopControls];
                 [self initAttachVideoContainerView];
-                _likeButton = [[UIButton alloc] initWithFrame:CGRectMake(10, 327, 20, 20)];
-                [self initOtherControlls];
-                break;
-            default:
+                _attachVideoContainerView.frame = CGRectMake(8, 114, 284, 160);
                 
-                _cardContainerView = [[UIView alloc] initWithFrame:CGRectMake(10, 10, 300, 150)];
-                [self initCardContainerView];
-                [self addSubviewsToView];
-                
-                _likeButton = [[UIButton alloc] initWithFrame:CGRectMake(10, 124, 20, 20)];
                 [self initOtherControlls];
+                _likeButton.frame = CGRectMake(8, 293, 14, 13);
+                _likeCountLabel.frame = CGRectMake(30, 288, 34, 21);
+                _commentButton.frame = CGRectMake(72, 293, 14, 14);
+                _commentCountLabel.frame = CGRectMake(94, 288, 34, 21);
+                _shareButton.frame = CGRectMake(136, 293, 14, 12);
+                
+                [self addAllCardSubViews];
+                [_cardContainerView addSubview:_attachVideoContainerView];
+                [self addSubview:_cardContainerView];
                 break;
         }
     }
@@ -63,124 +110,132 @@
     return self;
 }
 
+-(void)addAllCardSubViews
+{
+    [_cardContainerView addSubview:_avatarImageView];
+    [_cardContainerView addSubview:_usernameLabel];
+    [_cardContainerView addSubview:_timeLabel];
+    [_cardContainerView addSubview:_itemTypeIconView];
+    [_cardContainerView addSubview:_itemContentLabel];
+    
+    [_cardContainerView addSubview:_likeButton];
+    [_cardContainerView addSubview:_likeCountLabel];
+    [_cardContainerView addSubview:_commentButton];
+    [_cardContainerView addSubview:_commentCountLabel];
+    [_cardContainerView addSubview:_shareButton];
+}
+
+- (void)addTopControls
+{
+    _avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(8, 8, 40, 40)];
+    _avatarImageView.layer.cornerRadius = _avatarImageView.layer.frame.size.height / 2;
+    _avatarImageView.layer.masksToBounds = YES;
+    _avatarImageView.backgroundColor = [UIColor clearColor];
+    [_cardContainerView addSubview:_avatarImageView];
+    [self initNameLabel];
+    _usernameLabel.frame = CGRectMake(61, 8, 180, 21);
+    [self initTimeLabel];
+    _timeLabel.frame = CGRectMake(61, 27, 180, 21);
+    
+    [self initItemContentLabel];
+    _itemContentLabel.frame = CGRectMake(8, 56, 284, 50);
+    
+}
+
 - (void)initCardContainerView
 {
+    _cardContainerView = [[UIView alloc] initWithFrame:CGRectZero];
     _cardContainerView.backgroundColor = [UIColor whiteColor];
     _cardContainerView.layer.borderWidth = 0;
     _cardContainerView.layer.cornerRadius = 2;
-    [self addSubview:_cardContainerView];
 }
 
--(void)addSubviewsToView
-{
-    [self initAvatarImageView];
-    [self initNameLabel];
-    [self initTimeLabel];
-    [self initItemTypeIconView];
-    [self initItemContentLabel];
-}
-
-- (void)initAvatarImageView
-{
-    _avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 40, 40)];
-    _avatarImageView.layer.cornerRadius = _avatarImageView.layer.frame.size.width / 2;
-    _avatarImageView.layer.borderWidth = 0;
-    _avatarImageView.layer.masksToBounds = YES;
-    _avatarImageView.backgroundColor = [UIColor whiteColor];
-    _avatarImageView.contentMode = UIViewContentModeScaleAspectFill;
-    [_cardContainerView addSubview:_avatarImageView];
-}
 
 -(void)initNameLabel
 {
-    _usernameLabel = [[UILabel alloc] initWithFrame:CGRectMake(60, 10, 180, 17)];
+    _usernameLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _usernameLabel.textColor = [UIColor flatNavyBlueColorDark];
     _usernameLabel.backgroundColor = [UIColor clearColor];
-    _usernameLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
-    [_cardContainerView addSubview:_usernameLabel];
+    _usernameLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
 }
 
 -(void)initTimeLabel
 {
-    _timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(60, 28, 180, 15)];
+    _timeLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _timeLabel.textColor = [UIColor flatGrayColor];
     _timeLabel.backgroundColor = [UIColor clearColor];
-    _timeLabel.font =[UIFont fontWithName:@"Roboto-Regular" size:12];
-    [_cardContainerView addSubview:_timeLabel];
+    _timeLabel.font =[UIFont fontWithName:@"Roboto-Medium" size:12];
 }
 
 - (void)initItemTypeIconView
 {
-    _itemTypeIconView = [[UIImageView alloc] initWithFrame:CGRectMake(270, 10, 20, 20)];
+    _itemTypeIconView = [[UIImageView alloc] initWithFrame:CGRectZero];
     _itemTypeIconView.backgroundColor =[UIColor clearColor];
-    _itemTypeIconView.contentMode = UIViewContentModeCenter;
-    [_cardContainerView addSubview:_itemTypeIconView];
+    _itemTypeIconView.contentMode = UIViewContentModeScaleAspectFill;
 }
 
 - (void)initItemContentLabel
 {
-    _itemContentLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 60, 280, 60)];
+    _itemContentLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _itemContentLabel.textColor = [UIColor flatNavyBlueColorDark];
     _itemContentLabel.numberOfLines = 0;
-//    _itemContentLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    _itemContentLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:13];
-    [_cardContainerView addSubview:_itemContentLabel];
+    _itemContentLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
 }
 
 -(void)initAttachPhotoContainerView
 {
-    _attachPhotoContainerView = [[UIView alloc] initWithFrame:CGRectMake(10, 122, 280, 193)];
+    _attachPhotoContainerView = [[UIImageView alloc] initWithFrame:CGRectZero];
     _attachPhotoContainerView.backgroundColor = [UIColor clearColor];
     _attachPhotoContainerView.layer.borderWidth = 0;
-    
-    [_cardContainerView addSubview:_attachPhotoContainerView];
+    _attachPhotoContainerView.layer.masksToBounds = YES;
+    _attachPhotoContainerView.clipsToBounds = YES;
+    _attachPhotoContainerView.contentMode = UIViewContentModeScaleAspectFill;
     
 }
 
 -(void)initAttachAudioContainerView
 {
-    _attachAudioContainerView = [[UIView alloc] initWithFrame:CGRectMake(10, 122, 280, 60)];
+    _attachVideoContainerView = [[UIView alloc] initWithFrame:CGRectZero];
     _attachAudioContainerView.backgroundColor = [UIColor clearColor];
-    [_cardContainerView addSubview:_attachAudioContainerView];
 }
 
 - (void)initAttachVideoContainerView
 {
-    _attachVideoContainerView = [[UIView alloc] initWithFrame:CGRectMake(10, 122, 280, 193)];
+    _attachVideoContainerView = [[UIView alloc] initWithFrame:CGRectZero];
     _attachVideoContainerView.backgroundColor = [UIColor clearColor];
-    [_cardContainerView addSubview:_attachVideoContainerView];
 }
 
 
 
 -(void)initOtherControlls
 {
-    _likeButton.contentMode = UIViewContentModeCenter;
+    _likeButton = [[UIButton alloc] initWithFrame:CGRectZero];
+    _likeButton.contentMode = UIViewContentModeScaleAspectFill;
     [_likeButton setTitle:@"" forState:UIControlStateNormal];
     _likeButton.backgroundColor= [UIColor clearColor];
-    [_cardContainerView addSubview:_likeButton];
+
     
-    _likeCountLabel = [[UILabel alloc] initWithFrame:CGRectMake(38, _likeButton.frame.origin.y + 2, 55, 15)];
+    _likeCountLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _likeCountLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
-    _likeCountLabel.textColor = [UIColor flatNavyBlueColorDark];
-    [_cardContainerView addSubview:_likeCountLabel];
+    _likeCountLabel.textColor = [UIColor flatWhiteColorDark];
+
     
-    _commentButton = [[UIButton alloc] initWithFrame:CGRectMake(100, _likeButton.frame.origin.y, 20, 20)];
+    _commentButton = [[UIButton alloc] initWithFrame:CGRectZero];
     _commentButton.backgroundColor = [UIColor clearColor];
     [_commentButton setTitle:@"" forState:UIControlStateNormal];
-    _commentButton.contentMode = UIViewContentModeCenter;
-    [_cardContainerView addSubview:_commentButton];
+    _commentButton.contentMode = UIViewContentModeScaleAspectFill;
+
     
-    _commentCountLabel = [[UILabel alloc] initWithFrame:CGRectMake(128, _likeButton.frame.origin.y+2, 55, 15)];
+    _commentCountLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _commentCountLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
-    _commentCountLabel.textColor = [UIColor flatNavyBlueColorDark];
-    [_cardContainerView addSubview:_commentCountLabel];
+    _commentCountLabel.textColor = [UIColor flatWhiteColorDark];
+
     
-    _shareButton = [[UIButton alloc] initWithFrame:CGRectMake(190, _likeButton.frame.origin.y, 20, 20)];
+    _shareButton = [[UIButton alloc] initWithFrame:CGRectZero];
     _shareButton.backgroundColor = [UIColor clearColor];
     [_shareButton setTitle:@"" forState:UIControlStateNormal];
-    _shareButton.contentMode = UIViewContentModeCenter;
-    [_cardContainerView addSubview:_shareButton];
+    _shareButton.contentMode = UIViewContentModeScaleAspectFill;
+
 }
 
 

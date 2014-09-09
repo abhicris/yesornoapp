@@ -12,20 +12,20 @@
 #import "YNCardTableViewCell.h"
 #import <AVFoundation/AVFoundation.h>
 #import "PostViewController.h"
+#import "DetailViewController.h"
+#import "DateFormatter.h"
+#import "RESideMenu/RESideMenu.h"
+
 
 @interface AppMainViewController ()
-@property (nonatomic, strong) VBFPopFlatButton *leftMenuButton;
-@property (nonatomic, strong) UIButton *rightButton;
 
 @property (nonatomic, strong) UITableView *contentTableView;
-@property (nonatomic) NSInteger itemType;
 
-
-
+@property (nonatomic, strong)NSDictionary *allData;
 @property (nonatomic, strong)NSArray *itemListData;
 @property (nonatomic, strong)NSDictionary *itemData;
+@property (nonatomic, strong)NSDictionary *userInfo;
 
-@property (nonatomic, strong)UIButton *postButton;
 
 @end
 
@@ -40,78 +40,89 @@
     [self.navigationController.navigationBar setBarTintColor:[UIColor flatRedColor]];
     [self initLeftMenuButton];
     [self initRightMenuButton];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.leftMenuButton];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.rightButton];
-    //self.itemType = 1;
+    
+    
+    NSBundle *bundle = [NSBundle mainBundle];
+    NSString *filepath = [bundle pathForResource:@"testdata" ofType:@"plist"];
+    self.allData = [NSDictionary dictionaryWithContentsOfFile:filepath];
+    
+    NSLog(@"%@", self.allData);
+    
+    self.itemListData = self.allData[@"posts"];
+    self.userInfo = self.allData[@"user"];
     [self initTableView];
     [self initPostButton];
 }
 
 - (void)initLeftMenuButton
 {
-    self.leftMenuButton = [[VBFPopFlatButton alloc] initWithFrame:CGRectMake(0, 0, 20, 20) buttonType:buttonMenuType buttonStyle:buttonPlainStyle];
-    self.leftMenuButton.lineThickness = 2;
-    self.leftMenuButton.tintColor = [UIColor whiteColor];
-    [self.leftMenuButton addTarget:self action:@selector(presentLeftMenuViewController:) forControlEvents:UIControlEventTouchUpInside];
+    VBFPopFlatButton *leftMenuButton = [[VBFPopFlatButton alloc] initWithFrame:CGRectMake(0, 0, 20, 20) buttonType:buttonMenuType buttonStyle:buttonPlainStyle];
+    leftMenuButton.lineThickness = 2;
+    leftMenuButton.tintColor = [UIColor whiteColor];
+    [leftMenuButton addTarget:self action:@selector(leftMenuButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:leftMenuButton];
 }
 
 - (void)initRightMenuButton
 {
-    self.rightButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 20, 24)];
-    [self.rightButton setTitle:@"" forState:UIControlStateNormal];
-    [self.rightButton setBackgroundImage:[UIImage imageNamed:@"ring-icon"] forState:UIControlStateNormal];
-    [self.rightButton addTarget:self action:@selector(notificationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    UIButton *rightButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 20, 24)];
+    [rightButton setTitle:@"" forState:UIControlStateNormal];
+    [rightButton setBackgroundImage:[UIImage imageNamed:@"ring-icon"] forState:UIControlStateNormal];
+    [rightButton addTarget:self action:@selector(notificationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightButton];
 }
 
 - (void)initPostButton
 {
-    self.postButton = [[UIButton alloc] initWithFrame:CGRectMake(240, 478, 50, 50)];
-    [self.postButton setTitle:@"" forState:UIControlStateNormal];
-    self.postButton.contentMode = UIViewContentModeScaleAspectFill;
-    [self.postButton setBackgroundImage:[UIImage imageNamed:@"post-icon"] forState:UIControlStateNormal];
-    [self.postButton addTarget:self action:@selector(postButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    UIButton *postButton = [[UIButton alloc] initWithFrame:CGRectMake(240, 478, 50, 50)];
+    [postButton setTitle:@"" forState:UIControlStateNormal];
+    postButton.contentMode = UIViewContentModeScaleAspectFill;
+    [postButton setBackgroundImage:[UIImage imageNamed:@"post-icon"] forState:UIControlStateNormal];
+    [postButton addTarget:self action:@selector(postButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     
-    [self.view addSubview:self.postButton];
+    [self.view addSubview:postButton];
 }
 
 #pragma mark - UITableView DataSource Delegate methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 1;
+//    NSLog(@"%d", [self.itemListData count]);
+    return [self.itemListData count];
 }
+
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //here set cell height according to itemtype
-    #define TEXT_HEIGHT 170
-    #define PHOTO_HEIGHT 380
-    #define VEDIO_HEIGHT 380
-    #define AUDIO_HEIGHT 250
-    
-    self.itemData = self.itemListData[indexPath.row];
-    switch (self.itemType) {
+    #define TEXT_HEIGHT 166.0f
+    #define PHOTO_HEIGHT 300.0f
+    #define VEDIO_HEIGHT 340.0f
+    #define AUDIO_HEIGHT 260.0f
+    CGFloat height = 0.0;
+    NSDictionary *itemDict = self.itemListData[indexPath.row];
+    NSInteger type = [[itemDict objectForKey:@"type"] integerValue];
+    switch (type) {
         case 1:
         {
-            return PHOTO_HEIGHT;
+            height =  PHOTO_HEIGHT;
             break;
         }
         case 2:
         {
-            return AUDIO_HEIGHT;
+            height =  AUDIO_HEIGHT;
             break;
         }
         case 3:
         {
-            return VEDIO_HEIGHT;
+            height =  VEDIO_HEIGHT;
             break;
         }
-        default:
-            return TEXT_HEIGHT;
+        case 0:
+            height =  TEXT_HEIGHT;
             break;
     }
-
-    return TEXT_HEIGHT;
+    return height;
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -120,8 +131,36 @@
     static NSString *cellIdentifier = @"itemcell";
     YNCardTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
+    NSDictionary *itemDict = self.itemListData[indexPath.row];
+    NSInteger type = [[itemDict objectForKey:@"type"] integerValue];
+//    NSString *timeStr = [itemDict objectForKey:@"time"];
+    NSDate *time = [NSDate date];
     //TODO figure out what's the cellitemtype according to data
-    switch (self.itemType) {
+    switch (type) {
+        case 0:
+        {
+            if (cell == nil) {
+                cell = [[YNCardTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:TextType];
+            }
+            cell.avatarImageView.image = [UIImage imageNamed:[self.userInfo objectForKey:@"avatar"]];
+            cell.usernameLabel.text = [self.userInfo objectForKey:@"name"];
+            NSLog(@"%@", [DateFormatter friendlyDate:time]);
+            cell.timeLabel.text = [DateFormatter friendlyDate:time];
+            cell.itemTypeIconView.image = [UIImage imageNamed:@"text-icon"];
+            cell.itemContentLabel.text = [itemDict objectForKey:@"content"];
+            [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
+            [cell.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+            cell.likeCountLabel.text = [NSString stringWithFormat:@"%@", [itemDict objectForKey:@"likecount"]];
+            
+            [cell.commentButton setBackgroundImage:[UIImage imageNamed:@"comment2-icon"] forState:UIControlStateNormal];
+            [cell.commentButton addTarget:self action:@selector(commentButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+            cell.commentCountLabel.text = [NSString stringWithFormat:@"%@", [itemDict objectForKey:@"commentcount"]];
+
+            [cell.shareButton setBackgroundImage:[UIImage imageNamed:@"share2-icon"] forState:UIControlStateNormal];
+            [cell.shareButton addTarget:self action:@selector(shareButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+            return cell;
+            break;
+        }
         case 1:
         {
             if (cell == nil) {
@@ -129,30 +168,23 @@
             }
             //here use static test data to bind
             //TODO use the real data
-            cell.avatarImageView.image = [UIImage imageNamed:@"default"];
+            cell.avatarImageView.image = [UIImage imageNamed:[self.userInfo objectForKey:@"avatar"]];
             
-            cell.usernameLabel.text = @"Nicholas Xue";
-            cell.timeLabel.text = @"21小时前";
+            cell.usernameLabel.text = [self.userInfo objectForKey:@"name"];
+            cell.timeLabel.text = [DateFormatter friendlyDate:time];
             cell.itemTypeIconView.image = [UIImage imageNamed:@"photo-icon"];
-            cell.itemContentLabel.text = @"It is important to define pewPewSound as an iVar or property, and not as a local variable so that you can dispose of it later in dealloc. It is declared as a SystemSoundID.";
-            UIImageView *photoView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 280, CGRectGetHeight(cell.attachPhotoContainerView.frame))];
+            cell.itemContentLabel.text = [itemDict objectForKey:@"content"];
             
-            NSLog(@"%f", CGRectGetWidth(cell.attachPhotoContainerView.frame));
-            NSLog(@"%f", CGRectGetHeight(cell.attachPhotoContainerView.frame));
-            
-            photoView.contentMode = UIViewContentModeScaleAspectFit;
-            photoView.image = [UIImage imageNamed:@"test"];
-            [cell.attachPhotoContainerView addSubview:photoView];
-            
-            [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like-icon"] forState:UIControlStateNormal];
+            cell.attachPhotoContainerView.image = [UIImage imageNamed:[itemDict objectForKey:@"attachurl"]];
+            [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
             [cell.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-            cell.likeCountLabel.text = @"12";
+            cell.likeCountLabel.text = [NSString stringWithFormat:@"%@", [itemDict objectForKey:@"likecount"]];
             
-            [cell.commentButton setBackgroundImage:[UIImage imageNamed:@"comment-icon"] forState:UIControlStateNormal];
+            [cell.commentButton setBackgroundImage:[UIImage imageNamed:@"comment2-icon"] forState:UIControlStateNormal];
             [cell.commentButton addTarget:self action:@selector(commentButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-            cell.commentCountLabel.text = @"231";
+            cell.commentCountLabel.text = [NSString stringWithFormat:@"%@", [itemDict objectForKey:@"commentcount"]];
             
-            [cell.shareButton setBackgroundImage:[UIImage imageNamed:@"share-icon"] forState:UIControlStateNormal];
+            [cell.shareButton setBackgroundImage:[UIImage imageNamed:@"share2-icon"] forState:UIControlStateNormal];
             [cell.shareButton addTarget:self action:@selector(shareButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             return cell;
             break;
@@ -164,59 +196,59 @@
             }
             cell.avatarImageView.image = [UIImage imageNamed:@"default"];
             cell.usernameLabel.text = @"Nicholas Xue";
-            cell.timeLabel.text = @"21小时前";
+            cell.timeLabel.text = [DateFormatter friendlyDate:time];
             cell.itemTypeIconView.image = [UIImage imageNamed:@"photo-icon"];
-            cell.itemContentLabel.text = @"It is important to define pewPewSound as an iVar or property, and not as a local variable so that you can dispose of it later in dealloc. It is declared as a SystemSoundID.";
-            [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like-icon"] forState:UIControlStateNormal];
+            cell.itemContentLabel.text = [itemDict objectForKey:@"content"];
+            [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
             [cell.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-            cell.likeCountLabel.text = @"12";
+            cell.likeCountLabel.text = [itemDict objectForKey:@"likecount"];
             
-            [cell.commentButton setBackgroundImage:[UIImage imageNamed:@"comment-icon"] forState:UIControlStateNormal];
+            [cell.commentButton setBackgroundImage:[UIImage imageNamed:@"comment2-icon"] forState:UIControlStateNormal];
             [cell.commentButton addTarget:self action:@selector(commentButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-            cell.commentCountLabel.text = @"231";
+            cell.commentCountLabel.text = [itemDict objectForKey:@"commentcount"];
             
-            [cell.shareButton setBackgroundImage:[UIImage imageNamed:@"share-icon"] forState:UIControlStateNormal];
+            [cell.shareButton setBackgroundImage:[UIImage imageNamed:@"share2-icon"] forState:UIControlStateNormal];
             [cell.shareButton addTarget:self action:@selector(shareButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             
             
             
-            return cell;
-        }
-        default:
-        {
-            if (cell == nil) {
-                cell = [[YNCardTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:TextType];
-            }
-            cell.avatarImageView.image = [UIImage imageNamed:@"default"];
-            cell.usernameLabel.text = @"Nicholas Xue";
-            cell.timeLabel.text = @"21小时前";
-            cell.itemTypeIconView.image = [UIImage imageNamed:@"photo-icon"];
-            cell.itemContentLabel.text = @"It is important to define pewPewSound as an iVar or property, and not as a local variable so that you can dispose of it later in dealloc. It is declared as a SystemSoundID.";
-            [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like-icon"] forState:UIControlStateNormal];
-            [cell.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-            cell.likeCountLabel.text = @"12";
-            
-            [cell.commentButton setBackgroundImage:[UIImage imageNamed:@"comment-icon"] forState:UIControlStateNormal];
-            [cell.commentButton addTarget:self action:@selector(commentButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-            cell.commentCountLabel.text = @"231";
-            
-            [cell.shareButton setBackgroundImage:[UIImage imageNamed:@"share-icon"] forState:UIControlStateNormal];
-            [cell.shareButton addTarget:self action:@selector(shareButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             return cell;
             break;
         }
     }
+    return cell;
 }
 
 
+
+#pragma mark - UITableView delegate methods
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    //Now go to the static page
+    //TODO the real data page
+    
+    NSDictionary *itemdict = self.itemListData[indexPath.row];
+    DetailViewController *detailViewController = [DetailViewController new];
+    
+    detailViewController.itemInfo = itemdict;
+    detailViewController.authorInfo = self.userInfo;
+    
+    [self.navigationController pushViewController:detailViewController animated:YES];
+}
+
 -(void)initTableView
 {
-    self.contentTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame) - 44) style:UITableViewStylePlain];
+    self.contentTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame)) style:UITableViewStylePlain];
     self.contentTableView.backgroundColor= [UIColor clearColor];
     self.contentTableView.dataSource = self;
     self.contentTableView.delegate = self;
     self.contentTableView.separatorColor = [UIColor flatWhiteColor];
     [self.view addSubview:self.contentTableView];
+}
+
+- (void)leftMenuButtonPressed:(id)sender
+{
+    [self.sideMenuViewController presentLeftMenuViewController];
 }
 
 -(void)postButtonPressed:(id)sender

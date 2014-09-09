@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>posts</key>
+	<array>
+		<dict>
+			<key>likecount</key>
+			<integer>13</integer>
+			<key>commentcount</key>
+			<integer>2</integer>
+			<key>time</key>
+			<date>2014-07-04T03:57:55Z</date>
+			<key>content</key>
+			<string>A simple side menu written in Swift that you can use in your project, or check the Xcode project to understand how it was made.</string>
+			<key>type</key>
+			<integer>0</integer>
+			<key>attachurl</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>likecount</key>
+			<real>2000</real>
+			<key>commentcount</key>
+			<integer>20</integer>
+			<key>time</key>
+			<date>2014-09-09T03:54:58Z</date>
+			<key>content</key>
+			<string>LayerVault is a great version control tool for designers.A simple side menu written in Swift that you can use in your project, or check the Xcode project to understand how it was made.</string>
+			<key>type</key>
+			<integer>1</integer>
+			<key>attachurl</key>
+			<string>test</string>
+		</dict>
+		<dict>
+			<key>likecount</key>
+			<integer>234</integer>
+			<key>commentcount</key>
+			<integer>12</integer>
+			<key>time</key>
+			<date>2014-06-09T03:55:12Z</date>
+			<key>content</key>
+			<string>A curated list of some of the best portfolios on the Web.</string>
+			<key>type</key>
+			<integer>0</integer>
+			<key>attachurl</key>
+			<string></string>
+		</dict>
+	</array>
+	<key>user</key>
+	<dict>
+		<key>name</key>
+		<string>Nicholas Xue</string>
+		<key>profile</key>
+		<string>A normal geek and also a very funny handsome guy!</string>
+		<key>gender</key>
+		<string>male</string>
+		<key>location</key>
+		<string>Shanghai</string>
+		<key>avatar</key>
+		<string>default2</string>
+	</dict>
+</dict>
+</plist>

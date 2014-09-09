@@ -26,7 +26,7 @@ typedef NS_ENUM(NSInteger, SharedItemType)
 @property (nonatomic, strong) UIImageView *itemTypeIconView;
 @property (nonatomic, strong) UILabel *itemContentLabel;
 
-@property (nonatomic, strong) UIView *attachPhotoContainerView;
+@property (nonatomic, strong) UIImageView *attachPhotoContainerView;
 @property (nonatomic, strong) UIView *attachAudioContainerView;
 @property (nonatomic, strong) UIView *attachVideoContainerView;
 

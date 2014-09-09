@@ -34,6 +34,8 @@
 		4E04718519B9933400345E88 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717919B9933400345E88 /* Roboto-Regular.ttf */; };
 		4E04718619B9933400345E88 /* Roboto-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717A19B9933400345E88 /* Roboto-Thin.ttf */; };
 		4E04718719B9933400345E88 /* Roboto-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717B19B9933400345E88 /* Roboto-ThinItalic.ttf */; };
+		4E863B3919BEAF5D009B6652 /* testdata.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4E863B3819BEAF5D009B6652 /* testdata.plist */; };
+		4E863B3D19BEBA05009B6652 /* DateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E863B3C19BEBA05009B6652 /* DateFormatter.m */; };
 		4E970ACB19B9BBAE00325020 /* FriendsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E970ACA19B9BBAE00325020 /* FriendsListViewController.m */; };
 		4E970ACF19B9C7FD00325020 /* FriendCardTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E970ACE19B9C7FD00325020 /* FriendCardTableViewCell.m */; };
 		4EA4ABB319BC0782004E53B3 /* SettingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EA4ABB219BC0782004E53B3 /* SettingTableViewCell.m */; };
@@ -95,6 +97,9 @@
 		4E04717919B9933400345E88 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		4E04717A19B9933400345E88 /* Roboto-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Thin.ttf"; sourceTree = "<group>"; };
 		4E04717B19B9933400345E88 /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-ThinItalic.ttf"; sourceTree = "<group>"; };
+		4E863B3819BEAF5D009B6652 /* testdata.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = testdata.plist; sourceTree = "<group>"; };
+		4E863B3B19BEBA05009B6652 /* DateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateFormatter.h; sourceTree = "<group>"; };
+		4E863B3C19BEBA05009B6652 /* DateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateFormatter.m; sourceTree = "<group>"; };
 		4E970AC919B9BBAE00325020 /* FriendsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendsListViewController.h; sourceTree = "<group>"; };
 		4E970ACA19B9BBAE00325020 /* FriendsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendsListViewController.m; sourceTree = "<group>"; };
 		4E970ACD19B9C7FD00325020 /* FriendCardTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendCardTableViewCell.h; sourceTree = "<group>"; };
@@ -175,6 +180,7 @@
 			children = (
 				4E04712219B6E9A700345E88 /* Info.plist */,
 				4E04712319B6E9A700345E88 /* main.m */,
+				4E863B3819BEAF5D009B6652 /* testdata.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -241,6 +247,7 @@
 		4E04714B19B7253400345E88 /* Uitilities */ = {
 			isa = PBXGroup;
 			children = (
+				4E863B3A19BEB9E3009B6652 /* DateFormat */,
 				4E04715319B7259C00345E88 /* Animator */,
 			);
 			name = Uitilities;
@@ -309,6 +316,15 @@
 				4E04717B19B9933400345E88 /* Roboto-ThinItalic.ttf */,
 			);
 			name = Fonts;
+			sourceTree = "<group>";
+		};
+		4E863B3A19BEB9E3009B6652 /* DateFormat */ = {
+			isa = PBXGroup;
+			children = (
+				4E863B3B19BEBA05009B6652 /* DateFormatter.h */,
+				4E863B3C19BEBA05009B6652 /* DateFormatter.m */,
+			);
+			name = DateFormat;
 			sourceTree = "<group>";
 		};
 		4E970ACC19B9BBB600325020 /* APPFriends */ = {
@@ -438,6 +454,7 @@
 				4E04712F19B6E9A700345E88 /* Images.xcassets in Resources */,
 				4E04717E19B9933400345E88 /* Roboto-Bold.ttf in Resources */,
 				4E04718019B9933400345E88 /* Roboto-Italic.ttf in Resources */,
+				4E863B3919BEAF5D009B6652 /* testdata.plist in Resources */,
 				4E04718519B9933400345E88 /* Roboto-Regular.ttf in Resources */,
 				4E04718219B9933400345E88 /* Roboto-LightItalic.ttf in Resources */,
 				4E04717C19B9933400345E88 /* Roboto-Black.ttf in Resources */,
@@ -508,6 +525,7 @@
 				4EA4ABB319BC0782004E53B3 /* SettingTableViewCell.m in Sources */,
 				4E04715A19B727B800345E88 /* LoginViewController.m in Sources */,
 				4E04714A19B6F33B00345E88 /* MainViewController.m in Sources */,
+				4E863B3D19BEBA05009B6652 /* DateFormatter.m in Sources */,
 				4E04715619B725B500345E88 /* DismissingAnimator.m in Sources */,
 				4E04716019B740FE00345E88 /* SignUpViewController.m in Sources */,
 				4E04716B19B758AF00345E88 /* LeftMenuViewController.m in Sources */,

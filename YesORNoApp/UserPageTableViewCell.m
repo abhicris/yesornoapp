@@ -18,38 +18,59 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         
-        [self initYearLabel];
-        [self initMdLabel];
-        [self initHourLabel];
-        [self initDetailLabel];
-        [self initLineImageView];
-        [self initTypeImageView];
+
         
         switch (cellItemType) {
             case PictureType:
             {
-                _attachMentView = [[UIView alloc] initWithFrame:CGRectMake(91, 58, 221, 128)];
-                _attachMentView.backgroundColor = [UIColor clearColor];
-                [self addSubview:_attachMentView];
+                [self initControls];
+                _typeIconView.backgroundColor = [UIColor flatRedColor];
+                _typeIconView.image = [UIImage imageNamed:@"photo-s-icon"];
+                
+                _photoView = [[UIImageView alloc] initWithFrame:CGRectMake(83, 78, 229, 80)];
+                _photoView.contentMode = UIViewContentModeScaleAspectFill;
+                _photoView.layer.masksToBounds = YES;
+                [self addSubview:_photoView];
+                
+                _timeIconView = [[UIImageView alloc] initWithFrame:CGRectMake(83, 166, 14, 14)];
+                _timeIconView.contentMode = UIViewContentModeScaleAspectFill;
+                _timeIconView.image = [UIImage imageNamed:@"time-icon"];
+                
+                _timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(105, 162, 207, 21)];
+                _timeLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+                _timeLabel.textColor = [UIColor flatWhiteColorDark];
+                
+                
+                [self addSubviews];
                 break;
             }
             case VideoType:
             {
-                _attachMentView = [[UIView alloc] initWithFrame:CGRectMake(91, 58, 221, 128)];
-                _attachMentView.backgroundColor = [UIColor clearColor];
-                [self addSubview:_attachMentView];
+
                 break;
             }
             case AudioType:
             {
-                _attachMentView = [[UIView alloc] initWithFrame:CGRectMake(91, 58, 221, 64)];
-                _attachMentView.backgroundColor = [UIColor clearColor];
-                [self addSubview:_attachMentView];
+
                 break;
             }
-            default:
+            case TextType:
             {
+
+                [self initControls];
+                _typeIconView.backgroundColor = [UIColor flatSkyBlueColor];
+                _typeIconView.image = [UIImage imageNamed:@"text-s-icon"];
                 
+                _timeIconView = [[UIImageView alloc] initWithFrame:CGRectMake(83, 83, 14, 14)];
+                _timeIconView.contentMode = UIViewContentModeScaleAspectFill;
+                _timeIconView.image = [UIImage imageNamed:@"time-icon"];
+                
+                _timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(105, 79, 207, 21)];
+                _timeLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+                _timeLabel.textColor = [UIColor flatWhiteColorDark];
+                
+                [self addSubviews];
+
                 break;
             }
                 
@@ -58,62 +79,36 @@
     return self;
 }
 
-- (void)initYearLabel
+- (void)initControls
 {
-    _yearLabel = [[UILabel alloc] initWithFrame:CGRectMake(8, 10, 40, 15)];
-    _yearLabel.textColor = [UIColor flatNavyBlueColorDark];
-    _yearLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    _yearLabel.backgroundColor = [UIColor clearColor];
-    
-    [self addSubview:_yearLabel];
-}
--(void)initMdLabel
-{
-    _mdLabel = [[UILabel alloc] initWithFrame:CGRectMake(8, 25, 42, 15)];
-    _mdLabel.textColor = [UIColor flatNavyBlueColorDark];
-    _mdLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    _mdLabel.backgroundColor = [UIColor clearColor];
-    
-    [self addSubview:_mdLabel];
-}
-
--(void)initHourLabel
-{
-    _hourLabel = [[UILabel alloc] initWithFrame:CGRectMake(280, 10, 32, 15)];
-    _hourLabel.textColor = [UIColor flatNavyBlueColorDark];
-    _hourLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    _hourLabel.backgroundColor = [UIColor clearColor];
-    
-    [self addSubview:_hourLabel];
-}
-
--(void)initDetailLabel
-{
-    _detailLabel = [[UILabel alloc] initWithFrame:CGRectMake(91, 0, 175, 50)];
-    _detailLabel.textColor = [UIColor flatNavyBlueColorDark];
-    _detailLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
-    _detailLabel.numberOfLines = 0;
-    _detailLabel.backgroundColor = [UIColor clearColor];
-    
-    [self addSubview:_detailLabel];
-}
-
-- (void)initTypeImageView
-{
-    _typeImageView = [[UIImageView alloc] initWithFrame:CGRectMake(56, 10, 20, 20)];
-    _typeImageView.contentMode = UIViewContentModeScaleAspectFill;
+    _typeIconView = [[UIImageView alloc] initWithFrame:CGRectMake(8, 8, 20, 20)];
+    _typeIconView.contentMode = UIViewContentModeCenter;
+    _typeIconView.layer.cornerRadius = _typeIconView.layer.frame.size.height / 2;
+    _typeIconView.layer.masksToBounds = YES;
 
     
-    [self addSubview:_typeImageView];
+    _avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(45, 8, 30, 30)];
+    _avatarImageView.layer.cornerRadius = _avatarImageView.layer.frame.size.height / 2;
+    _avatarImageView.layer.masksToBounds = YES;
+    
+    _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(83, 8, 229, 21)];
+    _nameLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
+    _nameLabel.textColor = [UIColor flatNavyBlueColorDark];
+    
+    _contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(83, 29, 229, 46)];
+    _contentLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
+    _contentLabel.numberOfLines = 0;
+    _contentLabel.textColor = [UIColor flatNavyBlueColorDark];
 }
 
-- (void)initLineImageView
+- (void)addSubviews
 {
-    _lineImageView = [[UIImageView alloc] initWithFrame:CGRectMake(65, 0, 2, 200)];
-    _lineImageView.contentMode = UIViewContentModeScaleAspectFill;
-    _lineImageView.backgroundColor = [UIColor clearColor];
-    
-    [self addSubview:_lineImageView];
+    [self addSubview:_typeIconView];
+    [self addSubview:_avatarImageView];
+    [self addSubview:_nameLabel];
+    [self addSubview:_contentLabel];
+    [self addSubview:_timeLabel];
+    [self addSubview:_timeIconView];
 }
 
 - (void)awakeFromNib {

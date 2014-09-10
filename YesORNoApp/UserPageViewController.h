@@ -9,5 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface UserPageViewController : UIViewController<UITableViewDelegate, UITableViewDataSource>
-
+@property (nonatomic, strong)NSArray *userPosts;
+@property (nonatomic, strong)NSDictionary *userInfo;
 @end

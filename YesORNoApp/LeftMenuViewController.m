@@ -15,12 +15,32 @@
 @interface LeftMenuViewController ()
 
 @property (nonatomic, strong) UITableView *leftMenuTable;
+
+
+//
+@property (nonatomic, strong)NSDictionary *allData;
+@property (nonatomic, strong)NSDictionary *userInfo;
+@property (nonatomic, strong)NSArray *postList;
+//
+
+
 @end
 
 @implementation LeftMenuViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    ///////
+    NSBundle *bundle = [NSBundle mainBundle];
+    NSString *file = [bundle pathForResource:@"testdata" ofType:@"plist"];
+    self.allData = [NSDictionary dictionaryWithContentsOfFile:file];
+    
+    self.postList = [self.allData objectForKey:@"posts"];
+    self.userInfo = [self.allData objectForKey:@"user"];
+    //////
+    
+    
     [self initTableView];
 }
 
@@ -133,7 +153,10 @@
         case 1:
         {
             NSLog(@"go to user page.....");
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[UserPageViewController new]];
+            UserPageViewController *userPageController = [[UserPageViewController alloc] init];
+            userPageController.userInfo = self.userInfo;
+            userPageController.userPosts = self.postList;
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPageController];
             [self.sideMenuViewController setContentViewController:navigationController animated:YES];
             [self.sideMenuViewController hideMenuViewController];
             break;

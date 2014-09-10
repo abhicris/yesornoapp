@@ -21,6 +21,7 @@ PODS:
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
   - AMPopTip (0.3.1)
+  - AVOSCloud (2.6.3)
   - BFPaperCheckbox (1.2.2):
     - UIColor+BFPaperColors
   - ChameleonFramework (1.1.1)
@@ -38,6 +39,7 @@ PODS:
 DEPENDENCIES:
   - AFNetworking (~> 2.0)
   - AMPopTip
+  - AVOSCloud
   - BFPaperCheckbox (~> 1.2.2)
   - ChameleonFramework
   - JSQMessagesViewController
@@ -50,6 +52,7 @@ DEPENDENCIES:
 SPEC CHECKSUMS:
   AFNetworking: 6d7b76aa5d04c8c37daad3eef4b7e3f2a7620da3
   AMPopTip: 89fe11e79abcdb5f4032c06e223a43d72f538c32
+  AVOSCloud: 022ac23be27fbdced1d4e8d4745ac04d23c48eb1
   BFPaperCheckbox: 0a87e7ccbab5e24aa1eef7404ceb61d68ef4213f
   ChameleonFramework: c60096686e3771f5d78f26cfbfd08955a8a88cbd
   JSQMessagesViewController: d1f9dcf8f768aab54dc59ac9f042a69623057658

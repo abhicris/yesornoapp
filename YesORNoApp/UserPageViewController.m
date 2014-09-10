@@ -16,32 +16,11 @@
 #import "DateFormatter.h"
 
 @interface UserPageViewController ()
-@property (nonatomic, strong)UIView *topUserInfoView;
-@property (nonatomic, strong)UIImageView *topBackgroundImageView;
-@property (nonatomic, strong)UIImageView *avatarView;
-@property (nonatomic, strong)UILabel *nameLabel;
-@property (nonatomic, strong)UILabel *profileLabel;
-@property (nonatomic, strong)UIImageView *genderImageView;
-@property (nonatomic, strong)UIImageView *locationImageView;
-@property (nonatomic, strong)UILabel *genderLabel;
-@property (nonatomic, strong)UILabel *locationLabel;
-@property (nonatomic, strong)UILabel *postTitle;
-@property (nonatomic, strong)UILabel *friendsTitle;
-@property (nonatomic, strong)UILabel *postCount;
-@property (nonatomic, strong)UILabel *friendsCount;
-@property (nonatomic, strong)UIButton *addFriendButton;
-@property (nonatomic, strong)UIButton *cancelFriendButton;
+
 @property (nonatomic, strong)UITableView *postsTableView;
-
-
-@property (nonatomic, strong)VBFPopFlatButton *leftMenuButton;
-@property (nonatomic, strong)UIButton *rightMenuButton;
 
 @property (nonatomic)BOOL hasFriended;
 
-@property (nonatomic)NSInteger typeCell;
-
-@property (nonatomic, strong)NSArray *postData;
 @end
 
 @implementation UserPageViewController
@@ -50,222 +29,165 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
-    self.title = @"Me";
     [self.navigationController.navigationBar setBarTintColor:[UIColor flatRedColor]];
     [self initLeftMenuButton];
     [self initRightMenuButton];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.leftMenuButton];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.rightMenuButton];
     
     self.hasFriended = YES;
-    self.typeCell = 0;
     [self initpostsTableView];
     [self initTopUserInfoView];
 }
 
 - (void)initLeftMenuButton
 {
-    self.leftMenuButton = [[VBFPopFlatButton alloc] initWithFrame:CGRectMake(0, 0, 20, 20) buttonType:buttonMenuType buttonStyle:buttonPlainStyle];
-    self.leftMenuButton.lineThickness = 2;
-    self.leftMenuButton.tintColor = [UIColor whiteColor];
-    [self.leftMenuButton addTarget:self action:@selector(presentLeftMenuViewController:) forControlEvents:UIControlEventTouchUpInside];
+    VBFPopFlatButton *leftMenuButton = [[VBFPopFlatButton alloc] initWithFrame:CGRectMake(0, 0, 20, 20) buttonType:buttonMenuType buttonStyle:buttonPlainStyle];
+    leftMenuButton.lineThickness = 2;
+    leftMenuButton.tintColor = [UIColor whiteColor];
+    [leftMenuButton addTarget:self action:@selector(presentLeftMenuViewController:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:leftMenuButton];
 }
 
 - (void)initRightMenuButton
 {
-    self.rightMenuButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 20, 24)];
-    [self.rightMenuButton setTitle:@"" forState:UIControlStateNormal];
-    [self.rightMenuButton setBackgroundImage:[UIImage imageNamed:@"edit-icon"] forState:UIControlStateNormal];
-    [self.rightMenuButton addTarget:self action:@selector(editProfileButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    UIButton *rightMenuButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 20, 24)];
+    [rightMenuButton setTitle:@"" forState:UIControlStateNormal];
+    [rightMenuButton setBackgroundImage:[UIImage imageNamed:@"edit-icon"] forState:UIControlStateNormal];
+    [rightMenuButton addTarget:self action:@selector(editProfileButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:rightMenuButton];
 }
 
 
 
 - (void)initTopUserInfoView
 {
-    self.topUserInfoView = [[UIView alloc] initWithFrame:CGRectMake(0, 60, 320, 265)];
-    self.topUserInfoView.backgroundColor = [UIColor flatWhiteColor];
+    UIView *topUserInfoView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 265)];
+    topUserInfoView.backgroundColor = [UIColor flatWhiteColor];
     
-    [self initTopBackgroundImageView];
-    [self initavatarImageView];
-    [self initNameLabel];
-    [self initProfileLabel];
-    [self initGenderImageView];
-    [self initGenderLabel];
-    [self initLocationImageView];
-    [self initLocationLabel];
-    [self initPostTitle];
-    [self initPostCount];
-    [self initFriendCount];
-    [self initFriendTitle];
-    [self initAddOrCancelButton];
+    UIImageView *topBackgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 210)];
+    topBackgroundImageView.backgroundColor = [UIColor clearColor];
+    topBackgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
+    topBackgroundImageView.clipsToBounds = YES;
+    topBackgroundImageView.image = [UIImage imageNamed:@"test-blur"];
     
     
-//    [self.view addSubview:self.topUserInfoView];
-    self.postsTableView.tableHeaderView = self.topUserInfoView;
-}
+    UIImageView *avatarView = [[UIImageView alloc] initWithFrame:CGRectMake(130, 22, 60, 60)];
+    avatarView.contentMode = UIViewContentModeScaleAspectFill;
+    avatarView.layer.cornerRadius = avatarView.layer.frame.size.height / 2;
+    avatarView.layer.borderColor = [UIColor whiteColor].CGColor;
+    avatarView.layer.borderWidth = 2;
+    avatarView.layer.masksToBounds = YES;
+    avatarView.image = [UIImage imageNamed:[_userInfo objectForKey:@"avatar"]];
+    
+    [topBackgroundImageView addSubview:avatarView];
+    
+    UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70, 90, 181, 21)];
+    nameLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:16];
+    nameLabel.textAlignment = NSTextAlignmentCenter;
+    nameLabel.text = [_userInfo objectForKey:@"name"];
+    nameLabel.textColor = [UIColor whiteColor];
+    nameLabel.backgroundColor = [UIColor clearColor];
+    
+    [topBackgroundImageView addSubview:nameLabel];
+    
+    UILabel *profileLabel = [[UILabel alloc] initWithFrame:CGRectMake(70, 111, 181, 40)];
+    profileLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
+    profileLabel.textAlignment = NSTextAlignmentCenter;
+    profileLabel.text = [_userInfo objectForKey:@"profile"];
+    profileLabel.numberOfLines = 0;
+    profileLabel.textColor = [UIColor whiteColor];
+    profileLabel.backgroundColor = [UIColor clearColor];
+    
+    [topBackgroundImageView addSubview:profileLabel];
+    
+    UIImageView *genderImageView = [[UIImageView alloc] initWithFrame:CGRectMake(98, 159, 16, 16)];
+    genderImageView.contentMode = UIViewContentModeScaleAspectFill;
+    genderImageView.backgroundColor = [UIColor clearColor];
+    genderImageView.image = [UIImage imageNamed:@"gender-icon"];
+    
+    [topBackgroundImageView addSubview:genderImageView];
+    
+    UIImageView *locationImageView = [[UIImageView alloc] initWithFrame:CGRectMake(176, 159, 14, 20)];
+    locationImageView.contentMode = UIViewContentModeScaleAspectFill;
+    locationImageView.backgroundColor = [UIColor clearColor];
+    locationImageView.image = [UIImage imageNamed:@"location-icon"];
+    
+    [topBackgroundImageView addSubview:locationImageView];
+    UILabel *genderLabel = [[UILabel alloc] initWithFrame:CGRectMake(122, 160, 46, 15)];
+    genderLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+    genderLabel.text = @"Female";
+    genderLabel.textColor = [UIColor whiteColor];
+    genderLabel.backgroundColor = [UIColor clearColor];
+    
+    [topBackgroundImageView addSubview:genderLabel];
+    
+    UILabel *locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(198, 160, 90, 15)];
+    locationLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+    locationLabel.text = @"Shanghai";
+    locationLabel.textColor = [UIColor whiteColor];
+    locationLabel.backgroundColor = [UIColor clearColor];
+    
+    [topBackgroundImageView addSubview:locationLabel];
+    
+    [topUserInfoView addSubview:topBackgroundImageView];
 
-- (void)initTopBackgroundImageView
-{
-    self.topBackgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 210)];
-    self.topBackgroundImageView.backgroundColor = [UIColor clearColor];
-    self.topBackgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
-    self.topBackgroundImageView.image = [UIImage imageNamed:@"test-blur"];
+    UILabel *postTitle = [[UILabel alloc] initWithFrame:CGRectMake(32, 213, 44, 21)];
+    postTitle.text = @"Posts";
+    postTitle.textColor = [UIColor flatNavyBlueColorDark];
+    postTitle.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+    postTitle.backgroundColor = [UIColor clearColor];
     
-    [self.topUserInfoView addSubview:self.topBackgroundImageView];
-}
-
-- (void)initavatarImageView
-{
-    self.avatarView = [[UIImageView alloc] initWithFrame:CGRectMake(130, 22, 60, 60)];
-    self.avatarView.contentMode = UIViewContentModeScaleAspectFill;
-    self.avatarView.layer.cornerRadius = self.avatarView.layer.frame.size.height / 2;
-    self.avatarView.layer.borderColor = [UIColor whiteColor].CGColor;
-    self.avatarView.layer.borderWidth = 2;
-    self.avatarView.layer.masksToBounds = YES;
-    self.avatarView.image = [UIImage imageNamed:@"default2"];
+    [topUserInfoView addSubview:postTitle];
     
-    [self.topBackgroundImageView addSubview:self.avatarView];
-}
-
-- (void)initNameLabel
-{
-    self.nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70, 90, 181, 21)];
-    self.nameLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:16];
-    self.nameLabel.textAlignment = NSTextAlignmentCenter;
-    self.nameLabel.text = @"Nicholas Xue";
-    self.nameLabel.textColor = [UIColor whiteColor];
-    self.nameLabel.backgroundColor = [UIColor clearColor];
+    UILabel *postCount = [[UILabel alloc] initWithFrame:CGRectMake(17, 236, 75, 21)];
+    postCount.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
+    postCount.textColor = [UIColor flatNavyBlueColorDark];
+    postCount.text = @"200k";
+    postCount.textAlignment = NSTextAlignmentCenter;
+    postCount.backgroundColor = [UIColor clearColor];
     
-    [self.topBackgroundImageView addSubview:self.nameLabel];
-}
-
-- (void)initProfileLabel
-{
-    self.profileLabel = [[UILabel alloc] initWithFrame:CGRectMake(70, 111, 181, 40)];
-    self.profileLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
-    self.profileLabel.textAlignment = NSTextAlignmentCenter;
-    self.profileLabel.text = @"A normal geek and also a very funny handsome guy!";
-    self.profileLabel.numberOfLines = 0;
-    self.profileLabel.textColor = [UIColor whiteColor];
-    self.profileLabel.backgroundColor = [UIColor clearColor];
+    [topUserInfoView addSubview:postCount];
     
-    [self.topBackgroundImageView addSubview:self.profileLabel];
-}
-
-- (void)initGenderImageView
-{
-    self.genderImageView = [[UIImageView alloc] initWithFrame:CGRectMake(98, 159, 16, 16)];
-    self.genderImageView.contentMode = UIViewContentModeScaleAspectFill;
-    self.genderImageView.backgroundColor = [UIColor clearColor];
-    self.genderImageView.image = [UIImage imageNamed:@"gender-icon"];
+    UILabel *friendsTitle = [[UILabel alloc] initWithFrame:CGRectMake(138, 213, 44, 21)];
+    friendsTitle.text = @"Friends";
+    friendsTitle.textColor = [UIColor flatNavyBlueColorDark];
+    friendsTitle.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+    friendsTitle.backgroundColor = [UIColor clearColor];
     
-    [self.topBackgroundImageView addSubview:self.genderImageView];
-}
-
-- (void)initLocationImageView
-{
-    self.locationImageView = [[UIImageView alloc] initWithFrame:CGRectMake(176, 159, 14, 20)];
-    self.locationImageView.contentMode = UIViewContentModeScaleAspectFill;
-    self.locationImageView.backgroundColor = [UIColor clearColor];
-    self.locationImageView.image = [UIImage imageNamed:@"location-icon"];
+    [topUserInfoView addSubview:friendsTitle];
+    UILabel *friendsCount = [[UILabel alloc] initWithFrame:CGRectMake(123, 236, 75, 21)];
+    friendsCount.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
+    friendsCount.textColor = [UIColor flatNavyBlueColorDark];
+    friendsCount.text = @"200";
+    friendsCount.textAlignment = NSTextAlignmentCenter;
+    friendsCount.backgroundColor = [UIColor clearColor];
     
-    [self.topBackgroundImageView addSubview:self.locationImageView];
-}
-
-- (void)initGenderLabel
-{
-    self.genderLabel = [[UILabel alloc] initWithFrame:CGRectMake(122, 160, 46, 15)];
-    self.genderLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    self.genderLabel.text = @"Female";
-    self.genderLabel.textColor = [UIColor whiteColor];
-    self.genderLabel.backgroundColor = [UIColor clearColor];
+    [topUserInfoView addSubview:friendsCount];
     
-    [self.topBackgroundImageView addSubview:self.genderLabel];
-}
-
-- (void)initLocationLabel
-{
-    self.locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(198, 160, 90, 15)];
-    self.locationLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    self.locationLabel.text = @"Shanghai, China";
-    self.locationLabel.textColor = [UIColor whiteColor];
-    self.locationLabel.backgroundColor = [UIColor clearColor];
     
-    [self.topBackgroundImageView addSubview:self.locationLabel];
-}
-
-- (void)initPostTitle
-{
-    self.postTitle = [[UILabel alloc] initWithFrame:CGRectMake(32, 213, 44, 21)];
-    self.postTitle.text = @"Posts";
-    self.postTitle.textColor = [UIColor flatNavyBlueColorDark];
-    self.postTitle.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    self.postTitle.backgroundColor = [UIColor clearColor];
+    UIButton *addFriendButton = [[UIButton alloc] initWithFrame:CGRectMake(212, 218, 94, 32)];
+    UIButton *cancelFriendButton = [[UIButton alloc] initWithFrame:CGRectMake(212, 218, 94, 32)];
     
-    [self.topUserInfoView addSubview:self.postTitle];
-}
-
-- (void)initPostCount
-{
-    self.postCount = [[UILabel alloc] initWithFrame:CGRectMake(17, 236, 75, 21)];
-    self.postCount.font = [UIFont fontWithName:@"Roboto-Light" size:14];
-    self.postCount.textColor = [UIColor flatNavyBlueColorDark];
-    self.postCount.text = @"200000";
-    self.postCount.textAlignment = NSTextAlignmentCenter;
-    self.postCount.backgroundColor = [UIColor clearColor];
+    addFriendButton.backgroundColor = [UIColor flatMintColor];
+    cancelFriendButton.backgroundColor = [UIColor flatRedColor];
     
-    [self.topUserInfoView addSubview:self.postCount];
-}
-
-- (void)initFriendTitle
-{
-    self.friendsTitle = [[UILabel alloc] initWithFrame:CGRectMake(138, 213, 44, 21)];
-    self.friendsTitle.text = @"Friends";
-    self.friendsTitle.textColor = [UIColor flatNavyBlueColorDark];
-    self.friendsTitle.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    self.friendsTitle.backgroundColor = [UIColor clearColor];
+    [addFriendButton setTitle:@"Add" forState:UIControlStateNormal];
+    [cancelFriendButton setTitle:@"Cancel" forState:UIControlStateNormal];
+    [addFriendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [cancelFriendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    addFriendButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
+    cancelFriendButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
+    addFriendButton.layer.cornerRadius = 5;
+    cancelFriendButton.layer.cornerRadius = 5;
     
-    [self.topUserInfoView addSubview:self.friendsTitle];
-}
-
-- (void)initFriendCount
-{
-    self.friendsCount = [[UILabel alloc] initWithFrame:CGRectMake(123, 236, 75, 21)];
-    self.friendsCount.font = [UIFont fontWithName:@"Roboto-Light" size:14];
-    self.friendsCount.textColor = [UIColor flatNavyBlueColorDark];
-    self.friendsCount.text = @"200";
-    self.friendsCount.textAlignment = NSTextAlignmentCenter;
-    self.friendsCount.backgroundColor = [UIColor clearColor];
-    
-    [self.topUserInfoView addSubview:self.friendsCount];
-}
-
-
-- (void)initAddOrCancelButton
-{
-    self.addFriendButton = [[UIButton alloc] initWithFrame:CGRectMake(212, 218, 94, 32)];
-    self.cancelFriendButton = [[UIButton alloc] initWithFrame:CGRectMake(212, 218, 94, 32)];
-    
-    self.addFriendButton.backgroundColor = [UIColor flatMintColor];
-    self.cancelFriendButton.backgroundColor = [UIColor flatRedColor];
-    
-    [self.addFriendButton setTitle:@"Add" forState:UIControlStateNormal];
-    [self.cancelFriendButton setTitle:@"Cancel" forState:UIControlStateNormal];
-    [self.addFriendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [self.cancelFriendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    self.addFriendButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
-    self.cancelFriendButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
-    self.addFriendButton.layer.cornerRadius = 5;
-    self.cancelFriendButton.layer.cornerRadius = 5;
-    
-    [self.addFriendButton addTarget:self action:@selector(addFriendButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [self.cancelFriendButton addTarget:self action:@selector(cancelFriendButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [addFriendButton addTarget:self action:@selector(addFriendButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [cancelFriendButton addTarget:self action:@selector(cancelFriendButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     if (self.hasFriended) {
-        [self.topUserInfoView addSubview:self.cancelFriendButton];
+        [topUserInfoView addSubview:cancelFriendButton];
     } else {
-        [self.topUserInfoView addSubview:self.addFriendButton];
+        [topUserInfoView addSubview:addFriendButton];
     }
+    
+    self.postsTableView.tableHeaderView = topUserInfoView;
 }
 
 
@@ -275,7 +197,7 @@
     self.postsTableView.backgroundColor = [UIColor whiteColor];
     self.postsTableView.delegate = self;
     self.postsTableView.dataSource = self;
-    self.postsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.postsTableView.separatorColor = [UIColor flatWhiteColor];
     [self.view addSubview:self.postsTableView];
 }
 
@@ -295,17 +217,19 @@
 #pragma mark - UITableView datasource delegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 5;
+    return [_userPosts count];
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-#define PICTURE_HEIGHT 200
+    NSDictionary *itemDict = self.userPosts[indexPath.row];
+    NSInteger type = [[itemDict objectForKey:@"type"] integerValue];
+#define PICTURE_HEIGHT 193
 #define VIDEO_HEIGHT 200
 #define AUDIO_HEIGHT 140
-#define TEXT_HEIGHT 60
+#define TEXT_HEIGHT 110
 //    NSInteger typeCell = self.postData[indexPath.row];
     CGFloat height = 0.0f;
-    switch (self.typeCell) {
+    switch (type) {
         case PictureType:
         {
             height = PICTURE_HEIGHT;
@@ -332,24 +256,24 @@
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSDictionary *itemDict = self.userPosts[indexPath.row];
+    NSInteger type = [[itemDict objectForKey:@"type"] integerValue];
     static NSString *cellIdentifier = @"postcell";
     UserPageTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    switch (self.typeCell) {
+    switch (type) {
         case PictureType:
         {
             if (cell == nil) {
                 cell = [[UserPageTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:PictureType];
             }
-            cell.yearLabel.text = @"2014年";
-            cell.mdLabel.text = @"6月2日";
-            cell.hourLabel.text = @"12:30";
-            cell.detailLabel.text = @"You will also find VBFDoubleSegment which is just a helping class.";
-            cell.typeImageView.image = [UIImage imageNamed:@"photo-icon"];
-            cell.lineImageView.image = [UIImage imageNamed:@"line-icon"];
-            UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(cell.attachMentView.frame), CGRectGetHeight(cell.attachMentView.frame))];
-            imageView.image = [UIImage imageNamed:@"test"];
-            [cell.attachMentView addSubview:imageView];
+            cell.avatarImageView.image = [UIImage imageNamed:[_userInfo objectForKey:@"avatar"]];
+            cell.nameLabel.text = [NSString stringWithFormat:@"%@", [_userInfo objectForKey:@"name"]];
+            cell.contentLabel.text = [NSString stringWithFormat:@"%@", [itemDict objectForKey:@"content"]];
             
+            cell.photoView.image = [UIImage imageNamed:[itemDict objectForKey:@"attachurl"]];
+            
+            cell.timeLabel.text = @"2014-06-03 11:30";
+            [self addLineView:cell];
             return cell;
             break;
 
@@ -359,12 +283,7 @@
             if (cell == nil) {
                 cell = [[UserPageTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:VideoType];
             }
-            cell.yearLabel.text = @"2014年";
-            cell.mdLabel.text = @"6月2日";
-            cell.hourLabel.text = @"12:30";
-            cell.detailLabel.text = @"You will also find VBFDoubleSegment which is just a helping class.";
-            cell.typeImageView.image = [UIImage imageNamed:@"video-icon"];
-            cell.lineImageView.image = [UIImage imageNamed:@"line-icon"];
+
             //TODO add Video player
             
             return cell;
@@ -375,29 +294,23 @@
             if (cell == nil) {
                 cell = [[UserPageTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:AudioType];
             }
-            cell.yearLabel.text = @"2014年";
-            cell.mdLabel.text = @"6月2日";
-            cell.hourLabel.text = @"12:30";
-            cell.detailLabel.text = @"You will also find VBFDoubleSegment which is just a helping class.";
-            cell.typeImageView.image = [UIImage imageNamed:@"micro-icon"];
-            cell.lineImageView.image = [UIImage imageNamed:@"line-icon"];
+
             //TODO add audio player
             
             return cell;
             break;
         }
-        default:
+        case TextType:
         {
             if (cell == nil) {
                 cell = [[UserPageTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:TextType];
             }
-            cell.yearLabel.text = @"2014年";
-            cell.mdLabel.text = @"6月2日";
-            cell.hourLabel.text = @"12:30";
-            cell.detailLabel.text = @"You will also find VBFDoubleSegment which is just a helping class.";
-            cell.typeImageView.image = [UIImage imageNamed:@"text-icon"];
-            cell.lineImageView.image = [UIImage imageNamed:@"line-icon"];
+            cell.avatarImageView.image = [UIImage imageNamed:[_userInfo objectForKey:@"avatar"]];
+            cell.nameLabel.text = [NSString stringWithFormat:@"%@", [_userInfo objectForKey:@"name"]];
+            cell.contentLabel.text = [NSString stringWithFormat:@"%@", [itemDict objectForKey:@"content"]];
+            cell.timeLabel.text = @"2014-06-03 11:30";
             
+            [self addLineView:cell];
             return cell;
 
             break;
@@ -405,5 +318,12 @@
     }
  
     return cell;
+}
+-(void)addLineView:(UserPageTableViewCell *)cell
+{
+    UIImageView *line = [[UIImageView alloc] initWithFrame:CGRectMake(18, 29, 1, cell.timeIconView.frame.origin.y + cell.timeIconView.frame.size.height + 13 - 29 + 7)];
+    NSLog(@"%f", cell.frame.size.height);
+    line.backgroundColor = [UIColor flatWhiteColor];
+    [cell addSubview:line];
 }
 @end

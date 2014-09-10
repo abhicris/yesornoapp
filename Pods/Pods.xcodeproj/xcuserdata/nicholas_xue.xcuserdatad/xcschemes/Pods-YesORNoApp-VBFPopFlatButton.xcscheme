@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A9375FE4E5644FD68F576BB8"
+               BlueprintIdentifier = "B19C582360E34E25A0034290"
                BuildableName = "libPods-YesORNoApp-VBFPopFlatButton.a"
                BlueprintName = "Pods-YesORNoApp-VBFPopFlatButton"
                ReferencedContainer = "container:Pods.xcodeproj">

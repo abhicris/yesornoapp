@@ -41,15 +41,16 @@
     [self initLeftMenuButton];
     [self initRightMenuButton];
     
-    
+    ////
     NSBundle *bundle = [NSBundle mainBundle];
     NSString *filepath = [bundle pathForResource:@"testdata" ofType:@"plist"];
     self.allData = [NSDictionary dictionaryWithContentsOfFile:filepath];
     
-    NSLog(@"%@", self.allData);
-    
     self.itemListData = self.allData[@"posts"];
     self.userInfo = self.allData[@"user"];
+    
+    
+    ///
     [self initTableView];
     [self initPostButton];
 }

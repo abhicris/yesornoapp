@@ -12,6 +12,7 @@ pod 'SWTableViewCell'
 pod 'AMPopTip'
 pod 'ChameleonFramework'
 pod "AFNetworking", '~> 2.0'
+pod "AVOSCloud"
 end
 
 target "YesORNoAppTests" do

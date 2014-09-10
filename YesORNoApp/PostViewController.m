@@ -63,9 +63,9 @@
 
 - (void)initTextView
 {
-    _contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(0, 124, 320, 128)];
+    _contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(0, 124, 320, 135)];
     _contentTextView.backgroundColor = [UIColor clearColor];
-    _contentTextView.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
+    _contentTextView.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
     _contentTextView.dataDetectorTypes = UIDataDetectorTypeAll;
     [_contentTextView setLinkTextAttributes:@{NSForegroundColorAttributeName:[UIColor flatBlueColor]}];
     _contentTextView.scrollEnabled = NO;
@@ -73,14 +73,16 @@
     _contentTextView.textContainerInset = UIEdgeInsetsMake(8, 8, 8, 8);
     _contentTextView.textContainer.maximumNumberOfLines = 6;
     _contentTextView.textContainer.lineBreakMode = NSLineBreakByTruncatingTail;
-    
+    _contentTextView.textColor = [UIColor flatWhiteColorDark];
+    _contentTextView.text = @"share what's new...";
+    _contentTextView.delegate = self;
     [self.view addSubview:_contentTextView];
 }
 
 - (void)initBottomView
 {
     UIView *bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, 260, 320, 50)];
-    bottomView.backgroundColor = [UIColor flatWhiteColor];
+    bottomView.backgroundColor = [UIColor flatWhiteColorDark];
     
     _addPhotoButton = [[UIButton alloc] initWithFrame:CGRectMake(24, 18, 20, 18)];
     [_addPhotoButton setTitle:@"" forState:UIControlStateNormal];
@@ -115,6 +117,28 @@
     
     [self.view addSubview:bottomView];
 }
+
+
+
+#pragma  mark - UITextView delegate
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+    textView.textColor = [UIColor flatNavyBlueColorDark];
+    if ([textView.text isEqualToString:@"share what's new..."]) {
+        textView.text = @"";
+    }
+    [textView becomeFirstResponder];
+}
+
+- (void)textViewDidEndEditing:(UITextView *)textView
+{
+    if ([textView.text isEqualToString:@""]) {
+        textView.textColor = [UIColor flatWhiteColorDark];
+        textView.text = @"share what's new...";
+    }
+}
+
+
 
 - (void)sendButtonPressed:(id)sender
 {

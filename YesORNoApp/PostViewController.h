@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface PostViewController : UIViewController
+@interface PostViewController : UIViewController <UITextViewDelegate>
 
 @property (nonatomic, strong)UIImageView *avatarImageView;
 @property (nonatomic, strong)UILabel *nameLabel;

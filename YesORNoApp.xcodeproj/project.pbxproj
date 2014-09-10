@@ -40,6 +40,7 @@
 		4E970ACF19B9C7FD00325020 /* FriendCardTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E970ACE19B9C7FD00325020 /* FriendCardTableViewCell.m */; };
 		4EA4ABB319BC0782004E53B3 /* SettingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EA4ABB219BC0782004E53B3 /* SettingTableViewCell.m */; };
 		4EA4ABB619BC4091004E53B3 /* PostViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EA4ABB519BC4091004E53B3 /* PostViewController.m */; };
+		4EAA8B2A19C00F7D003BBB1D /* CommentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EAA8B2919C00F7D003BBB1D /* CommentTableViewCell.m */; };
 		4EB484FE19BAFBCF00D5AFA6 /* UserSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EB484FD19BAFBCF00D5AFA6 /* UserSettingViewController.m */; };
 		4EB4853119BB138F00D5AFA6 /* UserPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EB4853019BB138F00D5AFA6 /* UserPageViewController.m */; };
 		4EB4853419BB380100D5AFA6 /* UserPageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EB4853319BB380100D5AFA6 /* UserPageTableViewCell.m */; };
@@ -108,6 +109,8 @@
 		4EA4ABB219BC0782004E53B3 /* SettingTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingTableViewCell.m; sourceTree = "<group>"; };
 		4EA4ABB419BC4091004E53B3 /* PostViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostViewController.h; sourceTree = "<group>"; };
 		4EA4ABB519BC4091004E53B3 /* PostViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostViewController.m; sourceTree = "<group>"; };
+		4EAA8B2819C00F7D003BBB1D /* CommentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentTableViewCell.h; sourceTree = "<group>"; };
+		4EAA8B2919C00F7D003BBB1D /* CommentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentTableViewCell.m; sourceTree = "<group>"; };
 		4EB484FC19BAFBCF00D5AFA6 /* UserSettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserSettingViewController.h; sourceTree = "<group>"; };
 		4EB484FD19BAFBCF00D5AFA6 /* UserSettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserSettingViewController.m; sourceTree = "<group>"; };
 		4EB4852F19BB138F00D5AFA6 /* UserPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserPageViewController.h; sourceTree = "<group>"; };
@@ -229,6 +232,8 @@
 				4EB4853319BB380100D5AFA6 /* UserPageTableViewCell.m */,
 				4EA4ABB119BC0782004E53B3 /* SettingTableViewCell.h */,
 				4EA4ABB219BC0782004E53B3 /* SettingTableViewCell.m */,
+				4EAA8B2819C00F7D003BBB1D /* CommentTableViewCell.h */,
+				4EAA8B2919C00F7D003BBB1D /* CommentTableViewCell.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -523,6 +528,7 @@
 				4E04715219B7259600345E88 /* PresentingAnimator.m in Sources */,
 				4E04716319B7450B00345E88 /* ForgetPassViewController.m in Sources */,
 				4EA4ABB319BC0782004E53B3 /* SettingTableViewCell.m in Sources */,
+				4EAA8B2A19C00F7D003BBB1D /* CommentTableViewCell.m in Sources */,
 				4E04715A19B727B800345E88 /* LoginViewController.m in Sources */,
 				4E04714A19B6F33B00345E88 /* MainViewController.m in Sources */,
 				4E863B3D19BEBA05009B6652 /* DateFormatter.m in Sources */,

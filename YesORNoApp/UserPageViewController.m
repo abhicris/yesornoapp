@@ -58,7 +58,7 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.rightMenuButton];
     
     self.hasFriended = YES;
-    self.typeCell = 1;
+    self.typeCell = 0;
     [self initpostsTableView];
     [self initTopUserInfoView];
 }
@@ -304,29 +304,31 @@
 #define AUDIO_HEIGHT 140
 #define TEXT_HEIGHT 60
 //    NSInteger typeCell = self.postData[indexPath.row];
+    CGFloat height = 0.0f;
     switch (self.typeCell) {
         case PictureType:
         {
-            return PICTURE_HEIGHT;
+            height = PICTURE_HEIGHT;
             break;
         }
         case AudioType:
         {
-            return AUDIO_HEIGHT;
+            height =  AUDIO_HEIGHT;
             break;
         }
         case VideoType:
         {
-            return VIDEO_HEIGHT;
+            height =  VIDEO_HEIGHT;
             break;
         }
-        default:
+        case TextType:
         {
-            return TEXT_HEIGHT;
+            height =  TEXT_HEIGHT;
             break;
         }
 
     }
+    return height;
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {

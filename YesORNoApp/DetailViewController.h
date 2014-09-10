@@ -8,10 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DetailViewController : UIViewController
+@interface DetailViewController : UIViewController<UITableViewDataSource, UITableViewDelegate>
 
 
-@property (nonatomic, strong)NSArray *commentList;
 @property (nonatomic, strong)NSDictionary *itemInfo;
 @property (nonatomic, strong)NSDictionary *authorInfo;
 

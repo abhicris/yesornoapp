@@ -79,7 +79,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "57"
             endingLineNumber = "57"
-            landmarkName = "-viewDidLoad"
+            landmarkName = "-initLeftMenuButton"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -320,6 +320,22 @@
             startingLineNumber = "195"
             endingLineNumber = "195"
             landmarkName = "-tableView:cellForRowAtIndexPath:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "YesORNoApp/SignUpViewController.m"
+            timestampString = "432140644.418495"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "257"
+            endingLineNumber = "257"
+            landmarkName = "-showErrorLabel"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

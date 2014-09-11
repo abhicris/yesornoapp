@@ -30,7 +30,7 @@
     toView.frame = CGRectMake(0,
                               0,
                               250,
-                              230);
+                              240);
     toView.center = CGPointMake(transitionContext.containerView.center.x, -transitionContext.containerView.center.y);
     [transitionContext.containerView addSubview:dimmingView];
     [transitionContext.containerView addSubview:toView];

@@ -34,6 +34,7 @@
 		4E04718519B9933400345E88 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717919B9933400345E88 /* Roboto-Regular.ttf */; };
 		4E04718619B9933400345E88 /* Roboto-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717A19B9933400345E88 /* Roboto-Thin.ttf */; };
 		4E04718719B9933400345E88 /* Roboto-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717B19B9933400345E88 /* Roboto-ThinItalic.ttf */; };
+		4E2AC06119C1726700F8FA98 /* Validator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E2AC06019C1726700F8FA98 /* Validator.m */; };
 		4E863B3919BEAF5D009B6652 /* testdata.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4E863B3819BEAF5D009B6652 /* testdata.plist */; };
 		4E863B3D19BEBA05009B6652 /* DateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E863B3C19BEBA05009B6652 /* DateFormatter.m */; };
 		4E970ACB19B9BBAE00325020 /* FriendsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E970ACA19B9BBAE00325020 /* FriendsListViewController.m */; };
@@ -98,6 +99,8 @@
 		4E04717919B9933400345E88 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		4E04717A19B9933400345E88 /* Roboto-Thin.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Thin.ttf"; sourceTree = "<group>"; };
 		4E04717B19B9933400345E88 /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-ThinItalic.ttf"; sourceTree = "<group>"; };
+		4E2AC05F19C1726700F8FA98 /* Validator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Validator.h; sourceTree = "<group>"; };
+		4E2AC06019C1726700F8FA98 /* Validator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Validator.m; sourceTree = "<group>"; };
 		4E863B3819BEAF5D009B6652 /* testdata.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = testdata.plist; sourceTree = "<group>"; };
 		4E863B3B19BEBA05009B6652 /* DateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateFormatter.h; sourceTree = "<group>"; };
 		4E863B3C19BEBA05009B6652 /* DateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateFormatter.m; sourceTree = "<group>"; };
@@ -252,6 +255,7 @@
 		4E04714B19B7253400345E88 /* Uitilities */ = {
 			isa = PBXGroup;
 			children = (
+				4E2AC05E19C1724500F8FA98 /* Validator */,
 				4E863B3A19BEB9E3009B6652 /* DateFormat */,
 				4E04715319B7259C00345E88 /* Animator */,
 			);
@@ -321,6 +325,15 @@
 				4E04717B19B9933400345E88 /* Roboto-ThinItalic.ttf */,
 			);
 			name = Fonts;
+			sourceTree = "<group>";
+		};
+		4E2AC05E19C1724500F8FA98 /* Validator */ = {
+			isa = PBXGroup;
+			children = (
+				4E2AC05F19C1726700F8FA98 /* Validator.h */,
+				4E2AC06019C1726700F8FA98 /* Validator.m */,
+			);
+			name = Validator;
 			sourceTree = "<group>";
 		};
 		4E863B3A19BEB9E3009B6652 /* DateFormat */ = {
@@ -538,6 +551,7 @@
 				4E970ACF19B9C7FD00325020 /* FriendCardTableViewCell.m in Sources */,
 				4EB4853119BB138F00D5AFA6 /* UserPageViewController.m in Sources */,
 				4EB484FE19BAFBCF00D5AFA6 /* UserSettingViewController.m in Sources */,
+				4E2AC06119C1726700F8FA98 /* Validator.m in Sources */,
 				4E04712419B6E9A700345E88 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

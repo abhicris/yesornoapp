@@ -11,6 +11,10 @@
 #import "AppMainViewController.h"
 #import "FriendsListViewController.h"
 #import "UserPageViewController.h"
+#import <AVOSCloud/AVOSCloud.h>
+#import "MainViewController.h"
+
+
 
 @interface LeftMenuViewController ()
 
@@ -181,7 +185,9 @@
         case 4:
         {
             NSLog(@"log out app ......");
-            
+            [AVUser logOut];
+            MainViewController *mainViewController = [[MainViewController alloc] init];
+            [self.sideMenuViewController setContentViewController:mainViewController animated:YES];
             [self.sideMenuViewController hideMenuViewController];
             break;
         }

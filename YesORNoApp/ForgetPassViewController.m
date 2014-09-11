@@ -30,14 +30,41 @@
     [self addForgetButton];
     
     _emailField.delegate = self;
+    [self registerForKeyboardNotifications];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [_emailField becomeFirstResponder];
+}
+
+
+- (void)registerForKeyboardNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)keyboardWillShow:(NSNotification *)noti
+{
+    NSDictionary *userInfo = noti.userInfo;
+    NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    UIViewAnimationCurve curve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    CGRect keyboardFrameEnd = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    keyboardFrameEnd = [self.view convertRect:keyboardFrameEnd fromView:nil];
+    [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | curve animations:^{
+        self.view.frame = CGRectMake(self.view.frame.origin.x, 60, self.view.frame.size.width, self.view.frame.size.height);
+    } completion:nil];
+}
+
+- (void)keyboardWillHide:(NSNotification *)noti
+{
+    
 }
 
 #pragma mark - UITextField delegate methods
 
-- (void)textFieldDidBeginEditing:(UITextField *)textField
-{
-    [textField becomeFirstResponder];
-}
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
@@ -95,15 +122,14 @@
 }
 
 
-- (void)cancelButtonPressed:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:NULL];
-    
-}
-
 - (void)forgetButtonPressed:(id)sender
 {
     
+}
+
+- (void)cancelButtonPressed:(id)sender
+{
+    [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 @end

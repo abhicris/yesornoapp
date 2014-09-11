@@ -13,6 +13,7 @@ pod 'AMPopTip'
 pod 'ChameleonFramework'
 pod "AFNetworking", '~> 2.0'
 pod "AVOSCloud"
+pod "MONActivityIndicatorView"
 end
 
 target "YesORNoAppTests" do

@@ -9,6 +9,10 @@
 #import "AppDelegate.h"
 #import "MainViewController.h"
 
+#import <AVOSCloud/AVOSCloud.h>
+
+
+
 @interface AppDelegate ()
 @property (nonatomic, strong) MainViewController *mainViewController;
 @end
@@ -18,6 +22,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    [AVOSCloud setApplicationId:@"p3x2ab0xzxd956ua7v9plw001ldlwrrewzekljhyvb1jgad0" clientKey:@"7ccxe4q92vzk64m36gw83skwm1twdjtwsy4ty86m12q67m50"];
+    
+    
+    
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor blackColor];

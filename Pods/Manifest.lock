@@ -29,6 +29,7 @@ PODS:
     - JSQSystemSoundPlayer
   - JSQSystemSoundPlayer (1.5.2)
   - KLCPopup (1.0)
+  - MONActivityIndicatorView (0.0.1)
   - pop (1.0.6)
   - RESideMenu (4.0.6)
   - SWTableViewCell (0.3.3)
@@ -44,6 +45,7 @@ DEPENDENCIES:
   - ChameleonFramework
   - JSQMessagesViewController
   - KLCPopup
+  - MONActivityIndicatorView
   - pop (~> 1.0)
   - RESideMenu (~> 4.0.6)
   - SWTableViewCell
@@ -58,6 +60,7 @@ SPEC CHECKSUMS:
   JSQMessagesViewController: d1f9dcf8f768aab54dc59ac9f042a69623057658
   JSQSystemSoundPlayer: c24914bc96ff5365b5d28b59d7ecffd60d1c5587
   KLCPopup: 23548d0454ca156b0eb684f791f234b9c2134369
+  MONActivityIndicatorView: 728965121e59cef32c1bc4676f6868e35f3c8c61
   pop: e518794da38942c05255eb64b36d894e70cb4f00
   RESideMenu: 1d9293d36a2b23cac86c86033b80ee06c7dc9e71
   SWTableViewCell: 32bc77dd4e8b2675c7c0bed8e6976c56e22ac3e3

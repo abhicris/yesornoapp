@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5298A80401744F09BBA23177"
-               BuildableName = "libPods-YesORNoApp-SWTableViewCell.a"
-               BlueprintName = "Pods-YesORNoApp-SWTableViewCell"
+               BlueprintIdentifier = "DAF0D482AA4447CBBC534496"
+               BuildableName = "libPods-YesORNoApp-MONActivityIndicatorView.a"
+               BlueprintName = "Pods-YesORNoApp-MONActivityIndicatorView"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

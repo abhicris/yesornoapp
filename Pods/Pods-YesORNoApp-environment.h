@@ -90,6 +90,12 @@
 #define COCOAPODS_VERSION_MINOR_KLCPopup 0
 #define COCOAPODS_VERSION_PATCH_KLCPopup 0
 
+// MONActivityIndicatorView
+#define COCOAPODS_POD_AVAILABLE_MONActivityIndicatorView
+#define COCOAPODS_VERSION_MAJOR_MONActivityIndicatorView 0
+#define COCOAPODS_VERSION_MINOR_MONActivityIndicatorView 0
+#define COCOAPODS_VERSION_PATCH_MONActivityIndicatorView 1
+
 // RESideMenu
 #define COCOAPODS_POD_AVAILABLE_RESideMenu
 #define COCOAPODS_VERSION_MAJOR_RESideMenu 4

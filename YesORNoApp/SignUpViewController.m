@@ -18,7 +18,9 @@
 #import "AppMainViewController.h"
 
 @interface SignUpViewController ()
-
+@property (nonatomic, strong) UITextField *usernameField;
+@property (nonatomic, strong) UITextField *emailField;
+@property (nonatomic, strong) UITextField *passwordField;
 @property (nonatomic, strong) UIButton *signUpButton;
 @property (nonatomic, strong)UILabel *errorLabel;
 @property (nonatomic, strong)MONActivityIndicatorView *indicatorView;
@@ -38,9 +40,9 @@
     [self addErrorLabel];
     [self addIndicatorView];
     
-    _usernameField.delegate = self;
-    _emailField.delegate = self;
-    _passwordField.delegate = self;
+    self.usernameField.delegate = self;
+    self.emailField.delegate = self;
+    self.passwordField.delegate = self;
     [self registerForKeyboardNotifications];
 
 }
@@ -48,10 +50,28 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [_usernameField becomeFirstResponder];
+    [self.usernameField becomeFirstResponder];
 }
 
 #pragma mark - UITextField delegate methods
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    [textField becomeFirstResponder];
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    if (textField == self.usernameField) {
+        self.usernameField.text = textField.text;
+    }
+    if (textField == self.emailField) {
+        self.emailField.text = textField.text;
+    }
+    if (self.passwordField == textField) {
+        self.passwordField.text = textField.text;
+    }
+    [textField resignFirstResponder];
+}
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
@@ -72,42 +92,42 @@
 
 - (void)addUsernameTextField
 {
-    _usernameField = [[UITextField alloc] initWithFrame:CGRectMake(10, 10, 230, 44)];
-    _usernameField.textColor = [UIColor flatNavyBlueColorDark];
-    _usernameField.placeholder = @"Username";
-    _usernameField.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
-    _usernameField.backgroundColor = [UIColor flatWhiteColor];
-    _usernameField.textAlignment = NSTextAlignmentCenter;
-    _usernameField.layer.borderWidth = 0;
-    _usernameField.layer.cornerRadius = 4;
-    [self.view addSubview:_usernameField];
+    self.usernameField = [[UITextField alloc] initWithFrame:CGRectMake(10, 10, 230, 44)];
+    self.usernameField.textColor = [UIColor flatNavyBlueColorDark];
+    self.usernameField.placeholder = @"Username";
+    self.usernameField.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
+    self.usernameField.backgroundColor = [UIColor flatWhiteColor];
+    self.usernameField.textAlignment = NSTextAlignmentCenter;
+    self.usernameField.layer.borderWidth = 0;
+    self.usernameField.layer.cornerRadius = 4;
+    [self.view addSubview:self.usernameField];
 }
 
 - (void)addEmailField
 {
-    _emailField = [[UITextField alloc] initWithFrame:CGRectMake(10, 64, 230, 44)];
-    _emailField.textColor = [UIColor flatNavyBlueColorDark];
-    _emailField.placeholder = @"Email Address";
-    _emailField.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
-    _emailField.backgroundColor = [UIColor flatWhiteColor];
-    _emailField.textAlignment = NSTextAlignmentCenter;
-    _emailField.layer.borderWidth = 0;
-    _emailField.layer.cornerRadius = 4;
-    [self.view addSubview:_emailField];
+    self.emailField = [[UITextField alloc] initWithFrame:CGRectMake(10, 64, 230, 44)];
+    self.emailField.textColor = [UIColor flatNavyBlueColorDark];
+    self.emailField.placeholder = @"Email Address";
+    self.emailField.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
+    self.emailField.backgroundColor = [UIColor flatWhiteColor];
+    self.emailField.textAlignment = NSTextAlignmentCenter;
+    self.emailField.layer.borderWidth = 0;
+    self.emailField.layer.cornerRadius = 4;
+    [self.view addSubview:self.emailField];
 }
 
 - (void)addPasswordTextField
 {
-    _passwordField = [[UITextField alloc] initWithFrame:CGRectMake(10, 118, 230, 44)];
-    _passwordField.textColor = [UIColor flatNavyBlueColorDark];
-    _passwordField.placeholder = @"Password";
-    _passwordField.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
-    _passwordField.backgroundColor = [UIColor flatWhiteColor];
-    _passwordField.textAlignment = NSTextAlignmentCenter;
-    _passwordField.secureTextEntry = YES;
-    _passwordField.layer.borderWidth = 0;
-    _passwordField.layer.cornerRadius = 4;
-    [self.view addSubview:_passwordField];
+    self.passwordField = [[UITextField alloc] initWithFrame:CGRectMake(10, 118, 230, 44)];
+    self.passwordField.textColor = [UIColor flatNavyBlueColorDark];
+    self.passwordField.placeholder = @"Password";
+    self.passwordField.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
+    self.passwordField.backgroundColor = [UIColor flatWhiteColor];
+    self.passwordField.textAlignment = NSTextAlignmentCenter;
+    self.passwordField.secureTextEntry = YES;
+    self.passwordField.layer.borderWidth = 0;
+    self.passwordField.layer.cornerRadius = 4;
+    [self.view addSubview:self.passwordField];
 }
 
 - (void)addSignUpButton
@@ -158,6 +178,9 @@
 
 - (void)signUpButtonPressed:(UIButton *)sender
 {
+    [self textFieldDidEndEditing:self.usernameField];
+    [self textFieldDidEndEditing:self.emailField];
+    [self textFieldDidEndEditing:self.passwordField];
     NSCharacterSet *whitespace = [NSCharacterSet whitespaceAndNewlineCharacterSet];
     [self hideLabel];
     [self.indicatorView startAnimating];
@@ -165,24 +188,22 @@
     //add some validation to textfiled texts
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self.indicatorView stopAnimating];
-        __block NSString *errorString = @"";
-        if(![Validator lengthShouldFit:[_usernameField.text stringByTrimmingCharactersInSet:whitespace] length:6]) {
-            errorString = @"Username's length at least 6!";
-        } else if (![Validator emailValidate:[_emailField.text stringByTrimmingCharactersInSet:whitespace]]) {
-            errorString = @"Sorry, not correct email address!";
-        } else if (![Validator lengthShouldFit:[_passwordField.text stringByTrimmingCharactersInSet:whitespace] length:6]) {
-            errorString = @"Password's length at least 6";
+        if(![Validator lengthShouldFit:[self.usernameField.text stringByTrimmingCharactersInSet:whitespace] length:6]) {
+            self.errorLabel.text = @"Username's length at least 6!";
+        } else if (![Validator emailValidate:[self.emailField.text stringByTrimmingCharactersInSet:whitespace]]) {
+            self.errorLabel.text = @"Sorry, not correct email address!";
+        } else if (![Validator lengthShouldFit:[self.passwordField.text stringByTrimmingCharactersInSet:whitespace] length:6]) {
+            self.errorLabel.text = @"Password's length at least 6";
         }
-        if (![errorString isEqualToString:@""]) {
-            self.errorLabel.text = errorString;
+        if (![self.errorLabel.text isEqualToString:@"No Errors!.........................................."]) {
             [self shakeButton];
             [self showErrorLabel];
         } else {
             //sign up new user based on avos cloud
             AVUser *user = [AVUser user];
-            user.username = [_usernameField.text stringByTrimmingCharactersInSet:whitespace];
-            user.password = [_passwordField.text stringByTrimmingCharactersInSet:whitespace];
-            user.email = [_emailField.text stringByTrimmingCharactersInSet:whitespace];
+            user.username = [self.usernameField.text stringByTrimmingCharactersInSet:whitespace];
+            user.password = [self.passwordField.text stringByTrimmingCharactersInSet:whitespace];
+            user.email = [self.emailField.text stringByTrimmingCharactersInSet:whitespace];
             [user signUpInBackgroundWithBlock:^(BOOL succeeed, NSError *error) {
 
                 if (succeeed) {
@@ -199,10 +220,13 @@
                     sideMenuController.contentViewShadowOffset = CGSizeMake(0, 0);
                     [self presentViewController:sideMenuController animated:YES completion:NULL];
                 } else {
-                    NSLog(@"error=================: %@", error);
-                    errorString = [NSString stringWithFormat:@"%@", error];
+                    NSLog(@"%@", [self.usernameField.text stringByTrimmingCharactersInSet:whitespace]);
+                    NSLog(@"%@", [self.passwordField.text stringByTrimmingCharactersInSet:whitespace]);
+                    NSLog(@"%@", [self.emailField.text stringByTrimmingCharactersInSet:whitespace]);
+                    self.errorLabel.text = [error.userInfo objectForKey:@"error"];
                     [self shakeButton];
                     [self showErrorLabel];
+                    return;
                 }
             }];
         }

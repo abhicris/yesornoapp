@@ -18,11 +18,12 @@
 #import <POP/POP.h>
 #import "MONActivityIndicatorView.h"
 #import "Validator.h"
-
+#import <AVOSCloud/AVOSCloud.h>
 
 @interface LoginViewController ()<UIViewControllerTransitioningDelegate>
 
-
+@property (nonatomic, strong) UITextField *usernameField;
+@property (nonatomic, strong) UITextField *passwordField;
 @property (nonatomic, strong) UIButton *forgetPassButton;
 @property (nonatomic, strong) UIButton *loginButton;
 @property (nonatomic, strong) UILabel *errorLabel;
@@ -41,9 +42,9 @@
     [self addPasswordTextField];
     [self addForgetPassButton];
     [self addLoginButton];
-    
-    _usernameField.delegate = self;
-    _passwordField.delegate = self;
+    [self addErrorLabel];
+    self.usernameField.delegate = self;
+    self.passwordField.delegate = self;
     [self registerForKeyboardNotifications];
     
 }
@@ -52,7 +53,7 @@
 {
     [super viewDidAppear:animated];
     
-    [_usernameField becomeFirstResponder];
+    [self.usernameField becomeFirstResponder];
 }
 
 
@@ -131,29 +132,29 @@
 
 - (void)addUsernameTextField
 {
-    _usernameField = [[UITextField alloc] initWithFrame:CGRectMake(10, 10, 230, 44)];
-    _usernameField.textColor = [UIColor flatNavyBlueColorDark];
-    _usernameField.placeholder = @"Username";
-    _usernameField.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
-    _usernameField.backgroundColor = [UIColor flatWhiteColor];
-    _usernameField.textAlignment = NSTextAlignmentCenter;
-    _usernameField.layer.borderWidth = 0;
-    _usernameField.layer.cornerRadius = 4;
-    [self.view addSubview:_usernameField];
+    self.usernameField = [[UITextField alloc] initWithFrame:CGRectMake(10, 10, 230, 44)];
+    self.usernameField.textColor = [UIColor flatNavyBlueColorDark];
+    self.usernameField.placeholder = @"Username";
+    self.usernameField.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
+    self.usernameField.backgroundColor = [UIColor flatWhiteColor];
+    self.usernameField.textAlignment = NSTextAlignmentCenter;
+    self.usernameField.layer.borderWidth = 0;
+    self.usernameField.layer.cornerRadius = 4;
+    [self.view addSubview:self.usernameField];
 }
 
 - (void)addPasswordTextField
 {
-    _passwordField = [[UITextField alloc] initWithFrame:CGRectMake(10, 64, 230, 44)];
-    _passwordField.textColor = [UIColor flatNavyBlueColorDark];
-    _passwordField.placeholder = @"Password";
-    _passwordField.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
-    _passwordField.backgroundColor = [UIColor flatWhiteColor];
-    _passwordField.textAlignment = NSTextAlignmentCenter;
-    _passwordField.secureTextEntry = YES;
-    _passwordField.layer.borderWidth = 0;
-    _passwordField.layer.cornerRadius = 4;
-    [self.view addSubview:_passwordField];
+    self.passwordField = [[UITextField alloc] initWithFrame:CGRectMake(10, 64, 230, 44)];
+    self.passwordField.textColor = [UIColor flatNavyBlueColorDark];
+    self.passwordField.placeholder = @"Password";
+    self.passwordField.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
+    self.passwordField.backgroundColor = [UIColor flatWhiteColor];
+    self.passwordField.textAlignment = NSTextAlignmentCenter;
+    self.passwordField.secureTextEntry = YES;
+    self.passwordField.layer.borderWidth = 0;
+    self.passwordField.layer.cornerRadius = 4;
+    [self.view addSubview:self.passwordField];
 }
 
 - (void)addForgetPassButton
@@ -188,27 +189,42 @@
     [self presentViewController:forgetpassViewController animated:YES completion:NULL];
 }
 
-- (void)loginButtonPressed:(id)sender
+- (void)loginButtonPressed:(UIButton *)sender
 {
     //ToDo check login data
     //Now no check, directly to app index
     [self hideLabel];
     [self.indicatorView startAnimating];
+    sender.userInteractionEnabled = NO;
+    NSCharacterSet *whiteSpace = [NSCharacterSet whitespaceAndNewlineCharacterSet];
     
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [AVUser logInWithUsernameInBackground:[self.usernameField.text stringByTrimmingCharactersInSet:whiteSpace] password:[self.passwordField.text stringByTrimmingCharactersInSet:whiteSpace] block:^(AVUser *user, NSError *error) {
+            if (user != nil) {
+                UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[AppMainViewController alloc] init]];
+                LeftMenuViewController *leftMenuController = [[LeftMenuViewController alloc] init];
+                
+                RESideMenu *sideMenuController = [[RESideMenu alloc] initWithContentViewController:navigationController leftMenuViewController:leftMenuController rightMenuViewController:nil];
+                sideMenuController.backgroundImage = [UIImage imageNamed:@"MenuBackground"];
+                sideMenuController.menuPreferredStatusBarStyle = 1;
+                sideMenuController.contentViewShadowColor = [UIColor flatNavyBlueColorDark];
+                sideMenuController.contentViewShadowOpacity = 0.9;
+                sideMenuController.contentViewShadowRadius = 8;
+                sideMenuController.contentViewShadowEnabled = YES;
+                sideMenuController.contentViewShadowOffset = CGSizeMake(0, 0);
+                [self presentViewController:sideMenuController animated:YES completion:NULL];
+            } else {
+                if (error != nil) {
+                    self.errorLabel.text = [error.userInfo objectForKey:@"error"];
+                    [self shakeButton];
+                    [self showErrorLabel];
+                    return;
+                }
+            }
+        }];
+    });
     
-    
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[AppMainViewController alloc] init]];
-    LeftMenuViewController *leftMenuController = [[LeftMenuViewController alloc] init];
-    
-    RESideMenu *sideMenuController = [[RESideMenu alloc] initWithContentViewController:navigationController leftMenuViewController:leftMenuController rightMenuViewController:nil];
-    sideMenuController.backgroundImage = [UIImage imageNamed:@"MenuBackground"];
-    sideMenuController.menuPreferredStatusBarStyle = 1;
-    sideMenuController.contentViewShadowColor = [UIColor flatNavyBlueColorDark];
-    sideMenuController.contentViewShadowOpacity = 0.9;
-    sideMenuController.contentViewShadowRadius = 8;
-    sideMenuController.contentViewShadowEnabled = YES;
-    sideMenuController.contentViewShadowOffset = CGSizeMake(0, 0);
-    [self presentViewController:sideMenuController animated:YES completion:NULL];
+
     
 }
 

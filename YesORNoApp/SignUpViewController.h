@@ -10,7 +10,5 @@
 #import "MONActivityIndicatorView.h"
 
 @interface SignUpViewController : UIViewController<UITextFieldDelegate, MONActivityIndicatorViewDelegate>
-@property (nonatomic, strong) UITextField *usernameField;
-@property (nonatomic, strong) UITextField *emailField;
-@property (nonatomic, strong) UITextField *passwordField;
+
 @end

@@ -43,6 +43,7 @@
     [self addForgetPassButton];
     [self addLoginButton];
     [self addErrorLabel];
+    [self addIndicatorView];
     self.usernameField.delegate = self;
     self.passwordField.delegate = self;
     [self registerForKeyboardNotifications];
@@ -60,6 +61,7 @@
 - (void)addIndicatorView
 {
     self.indicatorView = [[MONActivityIndicatorView alloc] init];
+    self.indicatorView.center = CGPointMake(self.view.center.x -30, 80);
     self.indicatorView.delegate = self;
     [self.view addSubview:self.indicatorView];
 }
@@ -103,6 +105,7 @@
     self.errorLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
     self.errorLabel.textColor = [UIColor flatRedColor];
     self.errorLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    self.errorLabel.numberOfLines = 0;
     self.errorLabel.textAlignment = NSTextAlignmentCenter;
     self.errorLabel.text = @"No Errors!..........................................";
     [self.view insertSubview:self.errorLabel belowSubview:self.loginButton];
@@ -199,6 +202,8 @@
     NSCharacterSet *whiteSpace = [NSCharacterSet whitespaceAndNewlineCharacterSet];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.indicatorView stopAnimating];
+        
         [AVUser logInWithUsernameInBackground:[self.usernameField.text stringByTrimmingCharactersInSet:whiteSpace] password:[self.passwordField.text stringByTrimmingCharactersInSet:whiteSpace] block:^(AVUser *user, NSError *error) {
             if (user != nil) {
                 UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[AppMainViewController alloc] init]];

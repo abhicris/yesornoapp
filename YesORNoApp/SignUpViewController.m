@@ -190,20 +190,26 @@
         [self.indicatorView stopAnimating];
         if(![Validator lengthShouldFit:[self.usernameField.text stringByTrimmingCharactersInSet:whitespace] length:6]) {
             self.errorLabel.text = @"Username's length at least 6!";
-        } else if (![Validator emailValidate:[self.emailField.text stringByTrimmingCharactersInSet:whitespace]]) {
-            self.errorLabel.text = @"Sorry, not correct email address!";
-        } else if (![Validator lengthShouldFit:[self.passwordField.text stringByTrimmingCharactersInSet:whitespace] length:6]) {
-            self.errorLabel.text = @"Password's length at least 6";
-        }
-        if (![self.errorLabel.text isEqualToString:@"No Errors!.........................................."]) {
             [self shakeButton];
             [self showErrorLabel];
+            return;
+        } else if (![Validator emailValidate:[self.emailField.text stringByTrimmingCharactersInSet:whitespace]]) {
+            self.errorLabel.text = @"Sorry, not correct email address!";
+            [self shakeButton];
+            [self showErrorLabel];
+            return;
+        } else if (![Validator lengthShouldFit:[self.passwordField.text stringByTrimmingCharactersInSet:whitespace] length:6]) {
+            self.errorLabel.text = @"Password's length at least 6";
+            [self shakeButton];
+            [self showErrorLabel];
+            return;
         } else {
             //sign up new user based on avos cloud
             AVUser *user = [AVUser user];
             user.username = [self.usernameField.text stringByTrimmingCharactersInSet:whitespace];
             user.password = [self.passwordField.text stringByTrimmingCharactersInSet:whitespace];
             user.email = [self.emailField.text stringByTrimmingCharactersInSet:whitespace];
+            
             [user signUpInBackgroundWithBlock:^(BOOL succeeed, NSError *error) {
 
                 if (succeeed) {
@@ -220,9 +226,6 @@
                     sideMenuController.contentViewShadowOffset = CGSizeMake(0, 0);
                     [self presentViewController:sideMenuController animated:YES completion:NULL];
                 } else {
-                    NSLog(@"%@", [self.usernameField.text stringByTrimmingCharactersInSet:whitespace]);
-                    NSLog(@"%@", [self.passwordField.text stringByTrimmingCharactersInSet:whitespace]);
-                    NSLog(@"%@", [self.emailField.text stringByTrimmingCharactersInSet:whitespace]);
                     self.errorLabel.text = [error.userInfo objectForKey:@"error"];
                     [self shakeButton];
                     [self showErrorLabel];
@@ -255,6 +258,7 @@
 {
     
 }
+
 
 - (void)shakeButton
 {

@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MONActivityIndicatorView.h"
 
-@interface ForgetPassViewController : UIViewController<UITextFieldDelegate>
-@property (nonatomic, strong) UITextField *emailField;
+@interface ForgetPassViewController : UIViewController<UITextFieldDelegate, MONActivityIndicatorViewDelegate>
+
 @end

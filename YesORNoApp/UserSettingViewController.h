@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BFPaperCheckbox.h"
 
-@interface UserSettingViewController : UIViewController<UITableViewDataSource, UITableViewDelegate>
+@interface UserSettingViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, BFPaperCheckboxDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
 @end

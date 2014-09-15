@@ -19,11 +19,11 @@
 @interface LeftMenuViewController ()
 
 @property (nonatomic, strong) UITableView *leftMenuTable;
-
+@property (nonatomic, strong) AVUser *currentUser;
 
 //
 @property (nonatomic, strong)NSDictionary *allData;
-@property (nonatomic, strong)NSDictionary *userInfo;
+
 @property (nonatomic, strong)NSArray *postList;
 //
 
@@ -41,11 +41,18 @@
     self.allData = [NSDictionary dictionaryWithContentsOfFile:file];
     
     self.postList = [self.allData objectForKey:@"posts"];
-    self.userInfo = [self.allData objectForKey:@"user"];
+
     //////
-    
+    self.currentUser = [AVUser currentUser];
     
     [self initTableView];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [self.leftMenuTable reloadData];
 }
 
 - (void)initTableView
@@ -74,7 +81,7 @@
     tableHeaderView.backgroundColor = [UIColor clearColor];
     
     UIImageView *avatarView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 6, 40, 40)];
-    UIImage *image = [UIImage imageNamed:@"default"];
+    UIImage *image = [UIImage imageNamed:[self.currentUser.dictionaryForObject objectForKey:@"avatar"]];
     avatarView.image = image;
     avatarView.layer.cornerRadius = avatarView.layer.frame.size.width / 2;
     avatarView.layer.masksToBounds = YES;
@@ -85,13 +92,13 @@
     [tableHeaderView addSubview:avatarView];
     
     UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(65, 6, 100, 14)];
-    nameLabel.text = @"Nicholas Xue";
+    nameLabel.text = self.currentUser.username;
     nameLabel.textColor = [UIColor whiteColor];
     nameLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
     [tableHeaderView addSubview:nameLabel];
     
     UILabel *profileLabel = [[UILabel alloc] initWithFrame:CGRectMake(65, 16, 130, 40)];
-    profileLabel.text = @"A normal geek and also a very funny handsome guy!";
+    profileLabel.text = [self.currentUser.dictionaryForObject objectForKey:@"profile"];
     profileLabel.textColor = [UIColor colorWithWhite:1.0 alpha:0.5];
     profileLabel.font =[UIFont fontWithName:@"Roboto-Regular" size:12];
     profileLabel.numberOfLines = 0;
@@ -158,7 +165,7 @@
         {
             NSLog(@"go to user page.....");
             UserPageViewController *userPageController = [[UserPageViewController alloc] init];
-            userPageController.userInfo = self.userInfo;
+            userPageController.userInfo = self.currentUser.dictionaryForObject;
             userPageController.userPosts = self.postList;
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPageController];
             [self.sideMenuViewController setContentViewController:navigationController animated:YES];

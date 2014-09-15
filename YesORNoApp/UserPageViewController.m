@@ -14,10 +14,12 @@
 #import <AVFoundation/AVFoundation.h>
 #import "UserSettingViewController.h"
 #import "DateFormatter.h"
+#import <AVOSCloud/AVOSCloud.h>
 
 @interface UserPageViewController ()
 
 @property (nonatomic, strong)UITableView *postsTableView;
+
 
 @property (nonatomic)BOOL hasFriended;
 
@@ -83,7 +85,7 @@
     UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70, 90, 181, 21)];
     nameLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:16];
     nameLabel.textAlignment = NSTextAlignmentCenter;
-    nameLabel.text = [_userInfo objectForKey:@"name"];
+    nameLabel.text = [_userInfo objectForKey:@"username"];
     nameLabel.textColor = [UIColor whiteColor];
     nameLabel.backgroundColor = [UIColor clearColor];
     
@@ -114,7 +116,7 @@
     [topBackgroundImageView addSubview:locationImageView];
     UILabel *genderLabel = [[UILabel alloc] initWithFrame:CGRectMake(122, 160, 46, 15)];
     genderLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    genderLabel.text = @"Female";
+    genderLabel.text = [_userInfo objectForKey:@"gender"];
     genderLabel.textColor = [UIColor whiteColor];
     genderLabel.backgroundColor = [UIColor clearColor];
     
@@ -122,7 +124,7 @@
     
     UILabel *locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(198, 160, 90, 15)];
     locationLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    locationLabel.text = @"Shanghai";
+    locationLabel.text = [_userInfo objectForKey:@"location"];
     locationLabel.textColor = [UIColor whiteColor];
     locationLabel.backgroundColor = [UIColor clearColor];
     
@@ -267,7 +269,7 @@
                 cell = [[UserPageTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:PictureType];
             }
             cell.avatarImageView.image = [UIImage imageNamed:[_userInfo objectForKey:@"avatar"]];
-            cell.nameLabel.text = [NSString stringWithFormat:@"%@", [_userInfo objectForKey:@"name"]];
+            cell.nameLabel.text = [NSString stringWithFormat:@"%@", [_userInfo objectForKey:@"username"]];
             cell.contentLabel.text = [NSString stringWithFormat:@"%@", [itemDict objectForKey:@"content"]];
             
             cell.photoView.image = [UIImage imageNamed:[itemDict objectForKey:@"attachurl"]];
@@ -306,7 +308,7 @@
                 cell = [[UserPageTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:TextType];
             }
             cell.avatarImageView.image = [UIImage imageNamed:[_userInfo objectForKey:@"avatar"]];
-            cell.nameLabel.text = [NSString stringWithFormat:@"%@", [_userInfo objectForKey:@"name"]];
+            cell.nameLabel.text = [NSString stringWithFormat:@"%@", [_userInfo objectForKey:@"username"]];
             cell.contentLabel.text = [NSString stringWithFormat:@"%@", [itemDict objectForKey:@"content"]];
             cell.timeLabel.text = @"2014-06-03 11:30";
             

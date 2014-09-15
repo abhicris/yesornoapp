@@ -90,7 +90,20 @@
 }
 
 #pragma mark - UITextField delegate methods
-
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    [textField becomeFirstResponder];
+}
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    if (textField == self.usernameField) {
+        self.usernameField.text = textField.text;
+    }
+    if (self.passwordField == textField) {
+        self.passwordField.text = textField.text;
+    }
+    [textField resignFirstResponder];
+}
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
@@ -107,7 +120,7 @@
     self.errorLabel.translatesAutoresizingMaskIntoConstraints = NO;
     self.errorLabel.numberOfLines = 0;
     self.errorLabel.textAlignment = NSTextAlignmentCenter;
-    self.errorLabel.text = @"No Errors!..........................................";
+    self.errorLabel.text = @"No Errors!....................................................";
     [self.view insertSubview:self.errorLabel belowSubview:self.loginButton];
     
     [self.view addConstraint:[NSLayoutConstraint
@@ -194,6 +207,8 @@
 
 - (void)loginButtonPressed:(UIButton *)sender
 {
+    [self textFieldDidEndEditing:self.usernameField];
+    [self textFieldDidEndEditing:self.passwordField];
     //ToDo check login data
     //Now no check, directly to app index
     [self hideLabel];

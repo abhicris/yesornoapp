@@ -10,5 +10,5 @@
 
 @interface UserPageViewController : UIViewController<UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong)NSArray *userPosts;
-@property (nonatomic, strong)NSDictionary *userInfo;
+@property (nonatomic, strong)NSMutableDictionary *userInfo;
 @end

@@ -210,6 +210,11 @@
             user.password = [self.passwordField.text stringByTrimmingCharactersInSet:whitespace];
             user.email = [self.emailField.text stringByTrimmingCharactersInSet:whitespace];
             
+            [user setObject:@"default-avatar" forKey:@"avatar"];
+            [user setObject:@"secret" forKey:@"gender"];
+            [user setObject:@"other" forKey:@"location"];
+            [user setObject:@"Not set profile yet!" forKey:@"profile"];
+            
             [user signUpInBackgroundWithBlock:^(BOOL succeeed, NSError *error) {
 
                 if (succeeed) {

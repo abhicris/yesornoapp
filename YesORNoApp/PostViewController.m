@@ -8,9 +8,11 @@
 
 #import "PostViewController.h"
 #import "chameleon.h"
+#import "AtListViewController.h"
+#import <AVOSCloud/AVOSCloud.h>
 
 @interface PostViewController ()
-
+@property (nonatomic, strong) AVUser *currentUser;
 @end
 
 @implementation PostViewController
@@ -19,6 +21,9 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor whiteColor];
+    
+    self.currentUser = [AVUser currentUser];
+    
     
     UIButton *sendButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 20, 20)];
     [sendButton setTitle:@"" forState:UIControlStateNormal];
@@ -32,6 +37,12 @@
     [self initNameLabel];
     [self initTextView];
     [self initBottomView];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [_contentTextView becomeFirstResponder];
 }
 
 -(void)initAvatarImageView
@@ -142,7 +153,35 @@
 
 - (void)sendButtonPressed:(id)sender
 {
-    
+    NSMutableArray *atUsers = [[NSMutableArray alloc] init];
+    [atUsers addObject:self.currentUser];
+    AVObject *postObject = [AVObject objectWithClassName:@"Question"];
+    [postObject setObject:_contentTextView.text forKey:@"content"];
+    [postObject setObject:[NSNumber numberWithInt:0] forKey:@"secure"];//0 : public 1:private 2: group   default -- 0
+    [postObject setObject:self.currentUser forKey:@"master"];
+    [postObject setObject:self.currentUser forKey:@"touser"];
+    [postObject setObject:[NSArray arrayWithArray:atUsers] forKey:@"atusers"];
+    [postObject setObject:[NSNumber numberWithInt:1] forKey:@"type"];// text  picture  audio  video
+    [postObject setObject:[NSNumber numberWithInt:0] forKey:@"likecount"];
+    [postObject setObject:[NSNumber numberWithInt:0] forKey:@"commentcount"];
+    NSString *imageUrl = @"https://avatars2.githubusercontent.com/u/3580943?v=2&s=460";
+    NSData *imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
+    AVFile *imageFile = [AVFile fileWithName:@"image.png" data:imageData];
+    [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            [postObject setObject:imageFile forKey:@"attachphoto"];
+            
+            [postObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (succeeded) {
+                    [self.navigationController popViewControllerAnimated:YES];
+                } else {
+                    
+                }
+            }];
+        }
+    } progressBlock:^(NSInteger percentDone) {
+        NSLog(@"%ld", (long)percentDone);
+    }];
 }
 
 - (void)addPhotoButtonPressed:(id)sender
@@ -152,7 +191,7 @@
 
 -(void)addAtButtonPressed:(id)sender
 {
-    
+    [self.navigationController pushViewController:[AtListViewController new] animated:YES];
 }
 
 - (void)addAudioButtonPressed:(id)sender

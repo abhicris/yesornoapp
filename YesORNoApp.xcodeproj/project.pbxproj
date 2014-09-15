@@ -35,10 +35,14 @@
 		4E04718619B9933400345E88 /* Roboto-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717A19B9933400345E88 /* Roboto-Thin.ttf */; };
 		4E04718719B9933400345E88 /* Roboto-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4E04717B19B9933400345E88 /* Roboto-ThinItalic.ttf */; };
 		4E2AC06119C1726700F8FA98 /* Validator.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E2AC06019C1726700F8FA98 /* Validator.m */; };
+		4E3BB41219C6CDCE000C8672 /* UserSetLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E3BB41119C6CDCE000C8672 /* UserSetLocationViewController.m */; };
+		4E3BB41519C6D3F3000C8672 /* UserSetProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E3BB41419C6D3F3000C8672 /* UserSetProfileViewController.m */; };
+		4E3BB41919C7009E000C8672 /* AtListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E3BB41819C7009E000C8672 /* AtListViewController.m */; };
 		4E863B3919BEAF5D009B6652 /* testdata.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4E863B3819BEAF5D009B6652 /* testdata.plist */; };
 		4E863B3D19BEBA05009B6652 /* DateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E863B3C19BEBA05009B6652 /* DateFormatter.m */; };
 		4E970ACB19B9BBAE00325020 /* FriendsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E970ACA19B9BBAE00325020 /* FriendsListViewController.m */; };
 		4E970ACF19B9C7FD00325020 /* FriendCardTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E970ACE19B9C7FD00325020 /* FriendCardTableViewCell.m */; };
+		4E97149F19C6BE7D006B70AA /* UserSetGenderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E97149E19C6BE7D006B70AA /* UserSetGenderViewController.m */; };
 		4EA4ABB319BC0782004E53B3 /* SettingTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EA4ABB219BC0782004E53B3 /* SettingTableViewCell.m */; };
 		4EA4ABB619BC4091004E53B3 /* PostViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EA4ABB519BC4091004E53B3 /* PostViewController.m */; };
 		4EAA8B2A19C00F7D003BBB1D /* CommentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4EAA8B2919C00F7D003BBB1D /* CommentTableViewCell.m */; };
@@ -101,6 +105,12 @@
 		4E04717B19B9933400345E88 /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-ThinItalic.ttf"; sourceTree = "<group>"; };
 		4E2AC05F19C1726700F8FA98 /* Validator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Validator.h; sourceTree = "<group>"; };
 		4E2AC06019C1726700F8FA98 /* Validator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Validator.m; sourceTree = "<group>"; };
+		4E3BB41019C6CDCE000C8672 /* UserSetLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserSetLocationViewController.h; sourceTree = "<group>"; };
+		4E3BB41119C6CDCE000C8672 /* UserSetLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserSetLocationViewController.m; sourceTree = "<group>"; };
+		4E3BB41319C6D3F3000C8672 /* UserSetProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserSetProfileViewController.h; sourceTree = "<group>"; };
+		4E3BB41419C6D3F3000C8672 /* UserSetProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserSetProfileViewController.m; sourceTree = "<group>"; };
+		4E3BB41719C7009E000C8672 /* AtListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AtListViewController.h; sourceTree = "<group>"; };
+		4E3BB41819C7009E000C8672 /* AtListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AtListViewController.m; sourceTree = "<group>"; };
 		4E863B3819BEAF5D009B6652 /* testdata.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = testdata.plist; sourceTree = "<group>"; };
 		4E863B3B19BEBA05009B6652 /* DateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateFormatter.h; sourceTree = "<group>"; };
 		4E863B3C19BEBA05009B6652 /* DateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateFormatter.m; sourceTree = "<group>"; };
@@ -108,6 +118,8 @@
 		4E970ACA19B9BBAE00325020 /* FriendsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendsListViewController.m; sourceTree = "<group>"; };
 		4E970ACD19B9C7FD00325020 /* FriendCardTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FriendCardTableViewCell.h; sourceTree = "<group>"; };
 		4E970ACE19B9C7FD00325020 /* FriendCardTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FriendCardTableViewCell.m; sourceTree = "<group>"; };
+		4E97149D19C6BE7D006B70AA /* UserSetGenderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserSetGenderViewController.h; sourceTree = "<group>"; };
+		4E97149E19C6BE7D006B70AA /* UserSetGenderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserSetGenderViewController.m; sourceTree = "<group>"; };
 		4EA4ABB119BC0782004E53B3 /* SettingTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingTableViewCell.h; sourceTree = "<group>"; };
 		4EA4ABB219BC0782004E53B3 /* SettingTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingTableViewCell.m; sourceTree = "<group>"; };
 		4EA4ABB419BC4091004E53B3 /* PostViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostViewController.h; sourceTree = "<group>"; };
@@ -289,6 +301,7 @@
 		4E04716419B750D200345E88 /* APP */ = {
 			isa = PBXGroup;
 			children = (
+				4E3BB41619C70088000C8672 /* Post */,
 				4EB4853519BB912200D5AFA6 /* Detail */,
 				4EB484FF19BAFBDD00D5AFA6 /* User */,
 				4E970ACC19B9BBB600325020 /* APPFriends */,
@@ -336,6 +349,15 @@
 			name = Validator;
 			sourceTree = "<group>";
 		};
+		4E3BB41619C70088000C8672 /* Post */ = {
+			isa = PBXGroup;
+			children = (
+				4E3BB41719C7009E000C8672 /* AtListViewController.h */,
+				4E3BB41819C7009E000C8672 /* AtListViewController.m */,
+			);
+			name = Post;
+			sourceTree = "<group>";
+		};
 		4E863B3A19BEB9E3009B6652 /* DateFormat */ = {
 			isa = PBXGroup;
 			children = (
@@ -363,6 +385,12 @@
 				4EB4853019BB138F00D5AFA6 /* UserPageViewController.m */,
 				4EA4ABB419BC4091004E53B3 /* PostViewController.h */,
 				4EA4ABB519BC4091004E53B3 /* PostViewController.m */,
+				4E97149D19C6BE7D006B70AA /* UserSetGenderViewController.h */,
+				4E97149E19C6BE7D006B70AA /* UserSetGenderViewController.m */,
+				4E3BB41019C6CDCE000C8672 /* UserSetLocationViewController.h */,
+				4E3BB41119C6CDCE000C8672 /* UserSetLocationViewController.m */,
+				4E3BB41319C6D3F3000C8672 /* UserSetProfileViewController.h */,
+				4E3BB41419C6D3F3000C8672 /* UserSetProfileViewController.m */,
 			);
 			name = User;
 			sourceTree = "<group>";
@@ -537,12 +565,16 @@
 				4EB4853819BB914500D5AFA6 /* DetailViewController.m in Sources */,
 				4E04716719B7520F00345E88 /* AppMainViewController.m in Sources */,
 				4E04716E19B8667700345E88 /* YNCardTableViewCell.m in Sources */,
+				4E97149F19C6BE7D006B70AA /* UserSetGenderViewController.m in Sources */,
 				4E04712719B6E9A700345E88 /* AppDelegate.m in Sources */,
 				4E04715219B7259600345E88 /* PresentingAnimator.m in Sources */,
+				4E3BB41919C7009E000C8672 /* AtListViewController.m in Sources */,
 				4E04716319B7450B00345E88 /* ForgetPassViewController.m in Sources */,
 				4EA4ABB319BC0782004E53B3 /* SettingTableViewCell.m in Sources */,
 				4EAA8B2A19C00F7D003BBB1D /* CommentTableViewCell.m in Sources */,
 				4E04715A19B727B800345E88 /* LoginViewController.m in Sources */,
+				4E3BB41519C6D3F3000C8672 /* UserSetProfileViewController.m in Sources */,
+				4E3BB41219C6CDCE000C8672 /* UserSetLocationViewController.m in Sources */,
 				4E04714A19B6F33B00345E88 /* MainViewController.m in Sources */,
 				4E863B3D19BEBA05009B6652 /* DateFormatter.m in Sources */,
 				4E04715619B725B500345E88 /* DismissingAnimator.m in Sources */,

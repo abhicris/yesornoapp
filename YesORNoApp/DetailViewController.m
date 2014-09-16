@@ -9,6 +9,7 @@
 #import "DetailViewController.h"
 #import "chameleon.h"
 #import "CommentTableViewCell.h"
+#import "DateFormatter.h"
 
 @interface DetailViewController ()
 
@@ -34,9 +35,9 @@
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
     
-    self.type = [[_itemInfo objectForKey:@"type"] integerValue];
+    self.type = [[_post.dictionaryForObject objectForKey:@"type"] integerValue];
     
-    self.commentList = [_itemInfo objectForKey:@"comments"];
+//    self.commentList = [_itemInfo objectForKey:@"comments"];
     
     [self initDetailTableView];
     [self initAvatarImageView];
@@ -69,7 +70,7 @@
     avatarImageView.layer.masksToBounds = YES;
     avatarImageView.layer.borderWidth = 2;
     avatarImageView.layer.borderColor = [UIColor whiteColor].CGColor;
-    avatarImageView.image = [UIImage imageNamed:[_authorInfo objectForKey:@"avatar"]];
+    avatarImageView.image = [UIImage imageNamed:[_author objectForKey:@"avatar"]];
     [self.topView addSubview:avatarImageView];
     
 }
@@ -80,7 +81,7 @@
     nameLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
     nameLabel.textColor = [UIColor flatNavyBlueColorDark];
     nameLabel.backgroundColor = [UIColor clearColor];
-    nameLabel.text = [_authorInfo objectForKey:@"name"];
+    nameLabel.text = [_author objectForKey:@"username"];
     
     [self.topView addSubview:nameLabel];
     
@@ -92,7 +93,7 @@
     timeLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
     timeLabel.textColor = [UIColor flatNavyBlueColorDark];
     timeLabel.backgroundColor = [UIColor clearColor];
-    timeLabel.text = @"6小时前";
+    timeLabel.text = [DateFormatter friendlyDate:_post.createdAt];
     [self.topView addSubview:timeLabel];
 }
 
@@ -103,7 +104,7 @@
     contentLabel.numberOfLines = 0;
     contentLabel.textColor = [UIColor flatNavyBlueColorDark];
     contentLabel.backgroundColor = [UIColor clearColor];
-    contentLabel.text = [_itemInfo objectForKey:@"content"];
+    contentLabel.text = [_post.dictionaryForObject objectForKey:@"content"];
     [contentLabel sizeToFit];
     [self.topView addSubview:contentLabel];
     
@@ -130,7 +131,12 @@
             photoView.contentMode = UIViewContentModeScaleAspectFill;
             photoView.clipsToBounds = YES;
             photoView.backgroundColor = [UIColor clearColor];
-            photoView.image = [UIImage imageNamed:[_itemInfo objectForKey:@"attachurl"]];
+            
+            NSDictionary *imageFileInfo = [_post.dictionaryForObject objectForKey:@"attachphoto"];
+            NSURL *imageUrl = [NSURL URLWithString:[imageFileInfo objectForKey:@"url"]];
+            NSData *imageData = [NSData dataWithContentsOfURL:imageUrl];
+            photoView.image = [UIImage imageWithData:imageData];
+            
             [self.topView addSubview:photoView];
             
             self.likeButton = [[UIButton alloc] initWithFrame:CGRectMake(8, photoView.frame.origin.y + photoView.frame.size.height + 15, 14, 13)];
@@ -161,7 +167,7 @@
     self.likeCount.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
     self.likeCount.textColor = [UIColor flatNavyBlueColorDark];
     self.likeCount.backgroundColor = [UIColor clearColor];
-    self.likeCount.text = [NSString stringWithFormat:@"%@", [_itemInfo objectForKey:@"likecount"]];
+    self.likeCount.text = [NSString stringWithFormat:@"%@", [_post.dictionaryForObject objectForKey:@"likecount"]];
     [self.topView addSubview:self.likeCount];
     
     [self.shareButton setTitle:@"" forState:UIControlStateNormal];

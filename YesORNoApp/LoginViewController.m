@@ -217,11 +217,10 @@
     NSCharacterSet *whiteSpace = [NSCharacterSet whitespaceAndNewlineCharacterSet];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self.indicatorView stopAnimating];
-        
         [AVUser logInWithUsernameInBackground:[self.usernameField.text stringByTrimmingCharactersInSet:whiteSpace] password:[self.passwordField.text stringByTrimmingCharactersInSet:whiteSpace] block:^(AVUser *user, NSError *error) {
             if (user != nil) {
-                UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[AppMainViewController alloc] init]];
+                [self.indicatorView stopAnimating];
+                UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[AppMainViewController new]];
                 LeftMenuViewController *leftMenuController = [[LeftMenuViewController alloc] init];
                 
                 RESideMenu *sideMenuController = [[RESideMenu alloc] initWithContentViewController:navigationController leftMenuViewController:leftMenuController rightMenuViewController:nil];
@@ -243,9 +242,6 @@
             }
         }];
     });
-    
-
-    
 }
 
 - (void)shakeButton

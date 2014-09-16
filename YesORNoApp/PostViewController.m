@@ -154,12 +154,12 @@
 - (void)sendButtonPressed:(id)sender
 {
     NSMutableArray *atUsers = [[NSMutableArray alloc] init];
-    [atUsers addObject:self.currentUser];
+    [atUsers addObject:self.currentUser.dictionaryForObject];
     AVObject *postObject = [AVObject objectWithClassName:@"Question"];
     [postObject setObject:_contentTextView.text forKey:@"content"];
     [postObject setObject:[NSNumber numberWithInt:0] forKey:@"secure"];//0 : public 1:private 2: group   default -- 0
-    [postObject setObject:self.currentUser forKey:@"master"];
-    [postObject setObject:self.currentUser forKey:@"touser"];
+    [postObject setObject:[self.currentUser dictionaryForObject] forKey:@"master"];
+    [postObject setObject:[self.currentUser dictionaryForObject] forKey:@"touser"];
     [postObject setObject:[NSArray arrayWithArray:atUsers] forKey:@"atusers"];
     [postObject setObject:[NSNumber numberWithInt:1] forKey:@"type"];// text  picture  audio  video
     [postObject setObject:[NSNumber numberWithInt:0] forKey:@"likecount"];

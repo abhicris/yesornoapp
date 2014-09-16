@@ -18,10 +18,11 @@
 #import <AVOSCloud/AVOSCloud.h>
 
 @interface AppMainViewController ()
-
+@property (nonatomic, retain) NSMutableArray *posts;
+@property (nonatomic, retain) NSMutableArray *authors;
 @property (nonatomic, strong) UITableView *contentTableView;
-@property (nonatomic, strong) AVUser *currentUser;
-@property (nonatomic, strong) NSArray *posts;
+@property (nonatomic, retain) AVUser *currentUser;
+
 @end
 
 @implementation AppMainViewController
@@ -31,26 +32,52 @@
     
     self.title = @"Home";
     self.view.backgroundColor = [UIColor flatWhiteColor];
-    
-    
     self.currentUser = [AVUser currentUser];
-    AVQuery *query = [AVQuery queryWithClassName:@"Question"];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *posts, NSError *error) {
-        if (!error) {
-            self.posts = posts;
-            [self.navigationController.navigationBar setBarTintColor:[UIColor flatRedColor]];
-            [self initLeftMenuButton];
-            [self initRightMenuButton];
-            [self initTableView];
-            [self initPostButton];
-            NSLog(@"%ld", [self.posts count]);
-            NSLog(@"%@", [[self.posts firstObject] dictionaryForObject]);
-        } else {
-            NSLog(@"Error: %@  %@", error, [error userInfo]);
-        }
-    }];
+    self.posts = [NSMutableArray array];
+    self.authors = [NSMutableArray array];
+    
+    [self.navigationController.navigationBar setBarTintColor:[UIColor flatRedColor]];
+    [self initLeftMenuButton];
+    [self initRightMenuButton];
+    [self initTableView];
+    [self initPostButton];
+
+//    [self loadNewPosts];
     
 }
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    [self loadNewPosts];
+}
+
+- (void)loadNewPosts
+{
+    AVQuery *query = [AVQuery queryWithClassName:@"Question"];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *posts, NSError *error) {
+        NSMutableArray *newPosts = [NSMutableArray array];
+        NSArray *postIds = [self.posts valueForKeyPath:@"objectId"];
+        if (error == nil) {
+            for (AVObject *post in posts) {
+                if (![postIds containsObject:post.objectId]) {
+                    [newPosts addObject:post];
+                }
+            }
+            posts = [newPosts sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO]]];
+            long offset = 0;
+            if (self.posts.count) {
+                offset = self.posts.count;
+            }
+            NSIndexSet *set = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(offset, posts.count)];
+            [self.posts insertObjects:posts atIndexes:set];
+            
+            [self.contentTableView reloadData];
+        }
+    }];
+}
+
 
 - (void)initLeftMenuButton
 {
@@ -85,14 +112,12 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-//    NSLog(@"%d", [self.itemListData count]);
     return [self.posts count];
 }
 
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //here set cell height according to itemtype
     #define TEXT_HEIGHT 166.0f
     #define PHOTO_HEIGHT 300.0f
     #define VEDIO_HEIGHT 340.0f
@@ -130,28 +155,11 @@
     YNCardTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
 
     AVObject *postObject = self.posts[indexPath.row];
-    
     NSInteger type = [[postObject.dictionaryForObject objectForKey:@"type"] integerValue];
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    NSDictionary *createdAtInfo = [postObject.dictionaryForObject objectForKey:@"createdAt"];
-    
-    NSDictionary *masterInfo = [postObject.dictionaryForObject objectForKey:@"master"];
-    __block AVUser *master;
-    AVQuery *query = [AVUser query];
-    [query whereKey:@"objectId" equalTo:[masterInfo objectForKey:@"objectId"]];
-    
-    [query findObjectsInBackgroundWithBlock:^(NSArray *users, NSError *error) {
-        if (error == nil) {
-            if ([users count] > 0) {
-                master = [users firstObject];
-            }
-        } else {
-            NSLog(@"Error: %@   %@", error, [error userInfo]);
-        }
-    }];
-    
 
+    NSDictionary *master = [postObject.dictionaryForObject objectForKey:@"master"];
+    
+    
     //TODO figure out what's the cellitemtype according to data
     switch (type) {
         case 0:
@@ -159,21 +167,24 @@
             if (cell == nil) {
                 cell = [[YNCardTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:TextType];
             }
-            cell.avatarImageView.image = [UIImage imageNamed:[master.dictionaryForObject objectForKey:@"avatar"]];
-            cell.usernameLabel.text = [master.dictionaryForObject objectForKey:@"username"];
+            cell.avatarImageView.image = [UIImage imageNamed:[master objectForKey:@"avatar"]];
+            cell.usernameLabel.text = [master objectForKey:@"username"];
             
-            cell.timeLabel.text = [DateFormatter friendlyDate:[formatter dateFromString:[createdAtInfo objectForKey:@"iso"]]];
+            cell.timeLabel.text = [DateFormatter friendlyDate:postObject.createdAt];
             cell.itemTypeIconView.image = [UIImage imageNamed:@"text-icon"];
             cell.itemContentLabel.text = [postObject.dictionaryForObject objectForKey:@"content"];
             [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
+            cell.likeButton.tag = indexPath.row;
             [cell.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             cell.likeCountLabel.text = [NSString stringWithFormat:@"%@", [postObject.dictionaryForObject objectForKey:@"likecount"]];
             
             [cell.commentButton setBackgroundImage:[UIImage imageNamed:@"comment2-icon"] forState:UIControlStateNormal];
+            cell.commentButton.tag = indexPath.row;
             [cell.commentButton addTarget:self action:@selector(commentButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             cell.commentCountLabel.text = [NSString stringWithFormat:@"%@", [postObject.dictionaryForObject objectForKey:@"commentcount"]];
-
+            
             [cell.shareButton setBackgroundImage:[UIImage imageNamed:@"share2-icon"] forState:UIControlStateNormal];
+            cell.shareButton.tag = indexPath.row;
             [cell.shareButton addTarget:self action:@selector(shareButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             return cell;
             break;
@@ -183,12 +194,14 @@
             if (cell == nil) {
                 cell = [[YNCardTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:PictureType];
             }
-            //here use static test data to bind
-            //TODO use the real data
-            cell.avatarImageView.image = [UIImage imageNamed:[master.dictionaryForObject objectForKey:@"avatar"]];
+
+            cell.avatarImageView.image = [UIImage imageNamed:[master objectForKey:@"avatar"]];
             
-            cell.usernameLabel.text = [master.dictionaryForObject objectForKey:@"name"];
-            cell.timeLabel.text = [DateFormatter friendlyDate:[formatter dateFromString:[createdAtInfo objectForKey:@"iso"]]];
+            cell.usernameLabel.text = [master objectForKey:@"username"];
+            cell.timeLabel.text = [DateFormatter friendlyDate:postObject.createdAt];
+            
+
+            
             cell.itemTypeIconView.image = [UIImage imageNamed:@"photo-icon"];
             cell.itemContentLabel.text = [postObject.dictionaryForObject objectForKey:@"content"];
             
@@ -199,14 +212,17 @@
             
             
             [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
+            cell.likeButton.tag = indexPath.row;
             [cell.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             cell.likeCountLabel.text = [NSString stringWithFormat:@"%@", [postObject.dictionaryForObject objectForKey:@"likecount"]];
             
             [cell.commentButton setBackgroundImage:[UIImage imageNamed:@"comment2-icon"] forState:UIControlStateNormal];
+            cell.commentButton.tag = indexPath.row;
             [cell.commentButton addTarget:self action:@selector(commentButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             cell.commentCountLabel.text = [NSString stringWithFormat:@"%@", [postObject.dictionaryForObject objectForKey:@"commentcount"]];
             
             [cell.shareButton setBackgroundImage:[UIImage imageNamed:@"share2-icon"] forState:UIControlStateNormal];
+            cell.shareButton.tag = indexPath.row;
             [cell.shareButton addTarget:self action:@selector(shareButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             return cell;
             break;
@@ -218,21 +234,22 @@
             }
             cell.avatarImageView.image = [UIImage imageNamed:@"default"];
             cell.usernameLabel.text = @"Nicholas Xue";
-            cell.timeLabel.text = [DateFormatter friendlyDate:[formatter dateFromString:[createdAtInfo objectForKey:@"iso"]]];
+            cell.timeLabel.text = [DateFormatter friendlyDate:postObject.createdAt];
             cell.itemTypeIconView.image = [UIImage imageNamed:@"photo-icon"];
             cell.itemContentLabel.text = [postObject.dictionaryForObject objectForKey:@"content"];
             [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
+            cell.likeButton.tag = indexPath.row;
             [cell.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             cell.likeCountLabel.text = [postObject.dictionaryForObject objectForKey:@"likecount"];
             
             [cell.commentButton setBackgroundImage:[UIImage imageNamed:@"comment2-icon"] forState:UIControlStateNormal];
+            cell.commentButton.tag = indexPath.row;
             [cell.commentButton addTarget:self action:@selector(commentButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             cell.commentCountLabel.text = [postObject.dictionaryForObject objectForKey:@"commentcount"];
             
             [cell.shareButton setBackgroundImage:[UIImage imageNamed:@"share2-icon"] forState:UIControlStateNormal];
+            cell.shareButton.tag = indexPath.row;
             [cell.shareButton addTarget:self action:@selector(shareButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-            
-            
             
             return cell;
             break;
@@ -241,19 +258,17 @@
     return cell;
 }
 
-
-
 #pragma mark - UITableView delegate methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     //Now go to the static page
     //TODO the real data page
     
-    NSDictionary *itemdict = self.posts[indexPath.row];
     DetailViewController *detailViewController = [DetailViewController new];
     
-    detailViewController.itemInfo = itemdict;
-    detailViewController.authorInfo = [itemdict objectForKey:@"master"];
+    detailViewController.post = self.posts[indexPath.row];
+    NSDictionary *author = [[self.posts[indexPath.row] dictionaryForObject] objectForKey:@"master"];
+    detailViewController.author = author;
     
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
@@ -279,7 +294,7 @@
     [self.navigationController pushViewController:[PostViewController new] animated:YES];
 }
 
--(void)likeButtonPressed:(id)sender
+-(void)likeButtonPressed:(UIButton *)sender
 {
     
 }
@@ -289,7 +304,7 @@
 }
 -(void)shareButtonPressed:(id)sender
 {
-    
+    //使用第三方分享插件
 }
 - (void)notificationButtonPressed:(id)sender
 {

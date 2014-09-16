@@ -30,13 +30,13 @@
     }
     if (stamp < DAY_STAMP) {
         if (stamp < MINUTE_STAMP && stamp > 0) {
-            friendlyDate = [NSString stringWithFormat:@"%f 秒前", floor(stamp/SECOND_STAMP)];
+            friendlyDate = [NSString stringWithFormat:@"%d 秒前", (int)floorf(stamp/(SECOND_STAMP))];
         }
         if (stamp > MINUTE_STAMP && stamp < HOUR_STAMP) {
-            friendlyDate = [NSString stringWithFormat:@"%f 分钟前", floorf(stamp / MINUTE_STAMP)];
+            friendlyDate = [NSString stringWithFormat:@"%d 分钟前", (int)floorf(stamp / (MINUTE_STAMP))];
         }
         if (stamp > HOUR_STAMP) {
-            friendlyDate = [NSString stringWithFormat:@"%f 小时前", floorf(stamp / HOUR_STAMP)];
+            friendlyDate = [NSString stringWithFormat:@"%d 小时前", (int)floorf(stamp / (HOUR_STAMP))];
         }
     } else {
         NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];

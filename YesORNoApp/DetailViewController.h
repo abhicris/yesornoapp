@@ -7,12 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AVOSCloud/AVOSCloud.h>
 
 @interface DetailViewController : UIViewController<UITableViewDataSource, UITableViewDelegate>
 
-
-@property (nonatomic, strong)NSDictionary *itemInfo;
-@property (nonatomic, strong)NSDictionary *authorInfo;
+@property (nonatomic, retain) AVObject *post;
+@property (nonatomic, retain) NSDictionary *author;
 
 
 @end

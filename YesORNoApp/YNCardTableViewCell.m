@@ -35,7 +35,7 @@
                 _shareButton.frame = CGRectMake(136, 118, 14, 12);
                 
                 [self addAllCardSubViews];
-                [self addSubview:_cardContainerView];
+                [self.contentView addSubview:_cardContainerView];
                 break;
             case PictureType:
                 [self initCardContainerView];
@@ -57,7 +57,7 @@
                 
                 [self addAllCardSubViews];
                 [_cardContainerView addSubview:_attachPhotoContainerView];
-                [self addSubview:_cardContainerView];
+                [self.contentView addSubview:_cardContainerView];
                 
                 break;
             case AudioType:
@@ -80,7 +80,7 @@
                 
                 [self addAllCardSubViews];
                 [_cardContainerView addSubview:_attachAudioContainerView];
-                [self addSubview:_cardContainerView];
+                [self.contentView addSubview:_cardContainerView];
                 break;
             case VideoType:
                 [self initCardContainerView];
@@ -101,7 +101,7 @@
                 
                 [self addAllCardSubViews];
                 [_cardContainerView addSubview:_attachVideoContainerView];
-                [self addSubview:_cardContainerView];
+                [self.contentView addSubview:_cardContainerView];
                 break;
         }
     }

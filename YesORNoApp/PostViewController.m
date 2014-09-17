@@ -10,9 +10,12 @@
 #import "chameleon.h"
 #import "AtListViewController.h"
 #import <AVOSCloud/AVOSCloud.h>
+#import <POP/POP.h>
 
 @interface PostViewController ()
 @property (nonatomic, strong) AVUser *currentUser;
+@property (nonatomic, strong)UITextView *contentTextView;
+@property (nonatomic) UILabel *placeHolderLabel;
 @end
 
 @implementation PostViewController
@@ -37,57 +40,83 @@
     [self initNameLabel];
     [self initTextView];
     [self initBottomView];
+    [self addSecureButton];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [_contentTextView becomeFirstResponder];
+    [self.contentTextView becomeFirstResponder];
 }
 
 -(void)initAvatarImageView
 {
-    _avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15, 75, 40, 40)];
-    _avatarImageView.contentMode = UIViewContentModeScaleAspectFill;
-    _avatarImageView.layer.cornerRadius = _avatarImageView.layer.frame.size.height /2;
-    _avatarImageView.backgroundColor = [UIColor clearColor];
-    _avatarImageView.layer.masksToBounds = YES;
+    UIImageView *avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(15, 75, 40, 40)];
+    avatarImageView.contentMode = UIViewContentModeScaleAspectFill;
+    avatarImageView.layer.cornerRadius = avatarImageView.layer.frame.size.height /2;
+    avatarImageView.backgroundColor = [UIColor clearColor];
+    avatarImageView.layer.masksToBounds = YES;
     
     //fake data
-    _avatarImageView.image = [UIImage imageNamed:@"default"];
+    avatarImageView.image = [UIImage imageNamed:[self.currentUser.dictionaryForObject objectForKey:@"avatar"]];
     
     
     
-    [self.view addSubview:_avatarImageView];
+    [self.view addSubview:avatarImageView];
 }
 
 - (void)initNameLabel
 {
-    _nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(71, 84, 233, 21)];
-    _nameLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
-    _nameLabel.text = @"Nicholas Xue";
-    _nameLabel.textColor = [UIColor flatNavyBlueColorDark];
-    _nameLabel.backgroundColor = [UIColor clearColor];
+    UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(71, 75, 233, 21)];
+    nameLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
+    nameLabel.text = self.currentUser.username;
+    nameLabel.textColor = [UIColor flatNavyBlueColorDark];
+    nameLabel.backgroundColor = [UIColor clearColor];
     
-    [self.view addSubview:_nameLabel];
+    [self.view addSubview:nameLabel];
+}
+
+- (void)addSecureButton
+{
+    UILabel *toLabel = [[UILabel alloc] initWithFrame:CGRectMake(71, 100, 20, 15)];
+    toLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+    toLabel.textColor = [UIColor flatNavyBlueColorDark];
+    toLabel.text = @"To: ";
+    [self.view addSubview:toLabel];
+    UIButton *selectSecureButton = [[UIButton alloc] initWithFrame:CGRectMake(99, 94, 65, 27)];
+    [selectSecureButton setTitle:@"Your circles" forState:UIControlStateNormal];
+    [selectSecureButton setTitleColor:[UIColor flatBlueColor] forState:UIControlStateNormal];
+    selectSecureButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+    [selectSecureButton addTarget:self action:@selector(selectSecureButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.view addSubview:selectSecureButton];
 }
 
 - (void)initTextView
 {
-    _contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(0, 124, 320, 135)];
-    _contentTextView.backgroundColor = [UIColor clearColor];
-    _contentTextView.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    _contentTextView.dataDetectorTypes = UIDataDetectorTypeAll;
-    [_contentTextView setLinkTextAttributes:@{NSForegroundColorAttributeName:[UIColor flatBlueColor]}];
-    _contentTextView.scrollEnabled = NO;
-    _contentTextView.backgroundColor = [UIColor flatWhiteColor];
-    _contentTextView.textContainerInset = UIEdgeInsetsMake(8, 8, 8, 8);
-    _contentTextView.textContainer.maximumNumberOfLines = 6;
-    _contentTextView.textContainer.lineBreakMode = NSLineBreakByTruncatingTail;
-    _contentTextView.textColor = [UIColor flatWhiteColorDark];
-    _contentTextView.text = @"share what's new...";
-    _contentTextView.delegate = self;
-    [self.view addSubview:_contentTextView];
+
+    self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(0, 124, 320, 135)];
+    self.contentTextView.backgroundColor = [UIColor clearColor];
+    self.contentTextView.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+    self.contentTextView.dataDetectorTypes = UIDataDetectorTypeAll;
+    [self.contentTextView setLinkTextAttributes:@{NSForegroundColorAttributeName:[UIColor flatBlueColor]}];
+    self.contentTextView.scrollEnabled = NO;
+    self.contentTextView.backgroundColor = [UIColor flatWhiteColor];
+    self.contentTextView.textContainerInset = UIEdgeInsetsMake(8, 8, 8, 8);
+    self.contentTextView.textContainer.maximumNumberOfLines = 6;
+    self.contentTextView.textContainer.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.contentTextView.textColor = [UIColor flatNavyBlueColorDark];
+//    self.contentTextView.text = @"share what's new...";
+    self.contentTextView.delegate = self;
+    
+    
+    self.placeHolderLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 8, 150, 15)];
+    self.placeHolderLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+    self.placeHolderLabel.textColor = [UIColor flatWhiteColorDark];
+    self.placeHolderLabel.text = @"share what's new...";
+    
+    [self.contentTextView addSubview:self.placeHolderLabel];
+    [self.view addSubview:self.contentTextView];
 }
 
 - (void)initBottomView
@@ -95,36 +124,36 @@
     UIView *bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, 260, 320, 50)];
     bottomView.backgroundColor = [UIColor flatWhiteColorDark];
     
-    _addPhotoButton = [[UIButton alloc] initWithFrame:CGRectMake(24, 18, 20, 18)];
-    [_addPhotoButton setTitle:@"" forState:UIControlStateNormal];
-    [_addPhotoButton setBackgroundImage:[UIImage imageNamed:@"post-photo"] forState:UIControlStateNormal];
-    [_addPhotoButton addTarget:self action:@selector(addPhotoButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [bottomView addSubview:_addPhotoButton];
+    UIButton *addPhotoButton = [[UIButton alloc] initWithFrame:CGRectMake(24, 18, 20, 18)];
+    [addPhotoButton setTitle:@"" forState:UIControlStateNormal];
+    [addPhotoButton setBackgroundImage:[UIImage imageNamed:@"post-photo"] forState:UIControlStateNormal];
+    [addPhotoButton addTarget:self action:@selector(addPhotoButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [bottomView addSubview:addPhotoButton];
     
-    _addAtButton = [[UIButton alloc] initWithFrame:CGRectMake(84, 14, 23, 23)];
-    [_addAtButton setTitle:@"@" forState:UIControlStateNormal];
-    [_addAtButton setTitleColor:[UIColor flatNavyBlueColorDark] forState:UIControlStateNormal];
-    [_addAtButton.titleLabel setFont:[UIFont fontWithName:@"Roboto-Regular" size:23]];
-    [_addPhotoButton addTarget:self action:@selector(addAtButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [bottomView addSubview:_addAtButton];
+    UIButton *addAtButton = [[UIButton alloc] initWithFrame:CGRectMake(84, 14, 23, 23)];
+    [addAtButton setTitle:@"@" forState:UIControlStateNormal];
+    [addAtButton setTitleColor:[UIColor flatNavyBlueColorDark] forState:UIControlStateNormal];
+    [addAtButton.titleLabel setFont:[UIFont fontWithName:@"Roboto-Regular" size:23]];
+    [addAtButton addTarget:self action:@selector(addAtButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [bottomView addSubview:addAtButton];
     
-    _addAudioButton = [[UIButton alloc] initWithFrame:CGRectMake(153, 18, 14, 20)];
-    [_addAudioButton setTitle:@"" forState:UIControlStateNormal];
-    [_addAudioButton setBackgroundImage:[UIImage imageNamed:@"post-audio"] forState:UIControlStateNormal];
-    [_addAudioButton addTarget:self action:@selector(addAudioButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [bottomView addSubview:_addAudioButton];
+    UIButton *addAudioButton = [[UIButton alloc] initWithFrame:CGRectMake(153, 18, 14, 20)];
+    [addAudioButton setTitle:@"" forState:UIControlStateNormal];
+    [addAudioButton setBackgroundImage:[UIImage imageNamed:@"post-audio"] forState:UIControlStateNormal];
+    [addAudioButton addTarget:self action:@selector(addAudioButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [bottomView addSubview:addAudioButton];
     
-    _addVideoButton = [[UIButton alloc] initWithFrame:CGRectMake(213, 18, 20, 18)];
-    [_addVideoButton setTitle:@"" forState:UIControlStateNormal];
-    [_addVideoButton setBackgroundImage:[UIImage imageNamed:@"post-video"] forState:UIControlStateNormal];
-    [_addVideoButton addTarget:self action:@selector(addVideoButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [bottomView addSubview:_addVideoButton];
+    UIButton *addVideoButton = [[UIButton alloc] initWithFrame:CGRectMake(213, 18, 20, 18)];
+    [addVideoButton setTitle:@"" forState:UIControlStateNormal];
+    [addVideoButton setBackgroundImage:[UIImage imageNamed:@"post-video"] forState:UIControlStateNormal];
+    [addVideoButton addTarget:self action:@selector(addVideoButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [bottomView addSubview:addVideoButton];
     
-    _addLocationButton = [[UIButton alloc] initWithFrame:CGRectMake(281, 18, 15, 20)];
-    [_addLocationButton setTitle:@"" forState:UIControlStateNormal];
-    [_addLocationButton setBackgroundImage:[UIImage imageNamed:@"post-location"] forState:UIControlStateNormal];
-    [_addLocationButton addTarget:self action:@selector(addLocationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [bottomView addSubview:_addLocationButton];
+    UIButton *addLocationButton = [[UIButton alloc] initWithFrame:CGRectMake(281, 18, 15, 20)];
+    [addLocationButton setTitle:@"" forState:UIControlStateNormal];
+    [addLocationButton setBackgroundImage:[UIImage imageNamed:@"post-location"] forState:UIControlStateNormal];
+    [addLocationButton addTarget:self action:@selector(addLocationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [bottomView addSubview:addLocationButton];
     
     [self.view addSubview:bottomView];
 }
@@ -132,39 +161,45 @@
 
 
 #pragma  mark - UITextView delegate
-- (void)textViewDidBeginEditing:(UITextView *)textView
+- (void)textViewDidChange:(UITextView *)textView
 {
-    textView.textColor = [UIColor flatNavyBlueColorDark];
-    if ([textView.text isEqualToString:@"share what's new..."]) {
-        textView.text = @"";
-    }
-    [textView becomeFirstResponder];
-}
-
-- (void)textViewDidEndEditing:(UITextView *)textView
-{
-    if ([textView.text isEqualToString:@""]) {
-        textView.textColor = [UIColor flatWhiteColorDark];
-        textView.text = @"share what's new...";
+    if ([textView hasText]) {
+        self.placeHolderLabel.hidden = YES;
+    } else {
+        self.placeHolderLabel.hidden = NO;
     }
 }
 
-
-
-- (void)sendButtonPressed:(id)sender
+- (void)sendButtonPressed:(UIButton *)sender
 {
+    POPSpringAnimation *scaleAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerScaleXY];
+    scaleAnimation.springBounciness = 20;
+    scaleAnimation.fromValue = [NSValue valueWithCGSize:CGSizeMake(0.5f, 0.5f)];
+    scaleAnimation.toValue = [NSValue valueWithCGSize:CGSizeMake(1.0f, 1.0f)];
+    [sender.layer pop_addAnimation:scaleAnimation forKey:@"scaleAnimate"];
+    
+    NSMutableDictionary *master = [NSMutableDictionary dictionary];
+    [master setObject:self.currentUser.objectId forKey:@"objectId"];
+    [master setObject:self.currentUser.username forKey:@"username"];
+    [master setObject:[self.currentUser.dictionaryForObject objectForKey:@"avatar"] forKey:@"avatar"];
+    
     NSMutableArray *atUsers = [[NSMutableArray alloc] init];
-    [atUsers addObject:self.currentUser.dictionaryForObject];
+    [atUsers addObject:[NSDictionary dictionaryWithDictionary:master]];
     AVObject *postObject = [AVObject objectWithClassName:@"Question"];
     [postObject setObject:_contentTextView.text forKey:@"content"];
     [postObject setObject:[NSNumber numberWithInt:0] forKey:@"secure"];//0 : public 1:private 2: group   default -- 0
-    [postObject setObject:[self.currentUser dictionaryForObject] forKey:@"master"];
-    [postObject setObject:[self.currentUser dictionaryForObject] forKey:@"touser"];
+    [postObject setObject:[NSArray array] forKey:@"likeusersid"];
+    
+
+    
+    
+    [postObject setObject:[NSDictionary dictionaryWithDictionary:master] forKey:@"master"];
+    [postObject setObject:[NSDictionary dictionaryWithDictionary:master] forKey:@"touser"];
     [postObject setObject:[NSArray arrayWithArray:atUsers] forKey:@"atusers"];
     [postObject setObject:[NSNumber numberWithInt:1] forKey:@"type"];// text  picture  audio  video
     [postObject setObject:[NSNumber numberWithInt:0] forKey:@"likecount"];
     [postObject setObject:[NSNumber numberWithInt:0] forKey:@"commentcount"];
-    NSString *imageUrl = @"https://avatars2.githubusercontent.com/u/3580943?v=2&s=460";
+    NSString *imageUrl = @"http://sdk.img.ly/img/img-1.jpg";
     NSData *imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
     AVFile *imageFile = [AVFile fileWithName:@"image.png" data:imageData];
     [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -183,6 +218,12 @@
         NSLog(@"%ld", (long)percentDone);
     }];
 }
+
+- (void)selectSecureButtonPressed:(UIButton *)sender
+{
+    
+}
+
 
 - (void)addPhotoButtonPressed:(id)sender
 {

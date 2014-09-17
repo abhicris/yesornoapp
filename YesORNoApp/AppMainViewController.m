@@ -16,6 +16,7 @@
 #import "DateFormatter.h"
 #import "RESideMenu/RESideMenu.h"
 #import <AVOSCloud/AVOSCloud.h>
+#import <POP/POP.h>
 
 @interface AppMainViewController ()
 @property (nonatomic, retain) NSMutableArray *posts;
@@ -159,7 +160,7 @@
 
     NSDictionary *master = [postObject.dictionaryForObject objectForKey:@"master"];
     
-    
+    NSArray *likeusersId = [postObject.dictionaryForObject objectForKey:@"likeusersid"];
     //TODO figure out what's the cellitemtype according to data
     switch (type) {
         case 0:
@@ -173,18 +174,24 @@
             cell.timeLabel.text = [DateFormatter friendlyDate:postObject.createdAt];
             cell.itemTypeIconView.image = [UIImage imageNamed:@"text-icon"];
             cell.itemContentLabel.text = [postObject.dictionaryForObject objectForKey:@"content"];
-            [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
-            cell.likeButton.tag = indexPath.row;
+            if ([likeusersId containsObject:[master objectForKey:@"objectId"]]) {
+                [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
+            } else
+            {
+                [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
+            }
+            
+           
             [cell.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             cell.likeCountLabel.text = [NSString stringWithFormat:@"%@", [postObject.dictionaryForObject objectForKey:@"likecount"]];
             
             [cell.commentButton setBackgroundImage:[UIImage imageNamed:@"comment2-icon"] forState:UIControlStateNormal];
-            cell.commentButton.tag = indexPath.row;
+            
             [cell.commentButton addTarget:self action:@selector(commentButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             cell.commentCountLabel.text = [NSString stringWithFormat:@"%@", [postObject.dictionaryForObject objectForKey:@"commentcount"]];
             
             [cell.shareButton setBackgroundImage:[UIImage imageNamed:@"share2-icon"] forState:UIControlStateNormal];
-            cell.shareButton.tag = indexPath.row;
+            
             [cell.shareButton addTarget:self action:@selector(shareButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             return cell;
             break;
@@ -211,18 +218,23 @@
             cell.attachPhotoContainerView.image = [UIImage imageWithData:imageData];
             
             
-            [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
-            cell.likeButton.tag = indexPath.row;
+            if ([likeusersId containsObject:[master objectForKey:@"objectId"]]) {
+                [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
+            } else
+            {
+                [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
+            }
+            
             [cell.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             cell.likeCountLabel.text = [NSString stringWithFormat:@"%@", [postObject.dictionaryForObject objectForKey:@"likecount"]];
             
             [cell.commentButton setBackgroundImage:[UIImage imageNamed:@"comment2-icon"] forState:UIControlStateNormal];
-            cell.commentButton.tag = indexPath.row;
+            
             [cell.commentButton addTarget:self action:@selector(commentButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             cell.commentCountLabel.text = [NSString stringWithFormat:@"%@", [postObject.dictionaryForObject objectForKey:@"commentcount"]];
             
             [cell.shareButton setBackgroundImage:[UIImage imageNamed:@"share2-icon"] forState:UIControlStateNormal];
-            cell.shareButton.tag = indexPath.row;
+            
             [cell.shareButton addTarget:self action:@selector(shareButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             return cell;
             break;
@@ -238,17 +250,17 @@
             cell.itemTypeIconView.image = [UIImage imageNamed:@"photo-icon"];
             cell.itemContentLabel.text = [postObject.dictionaryForObject objectForKey:@"content"];
             [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
-            cell.likeButton.tag = indexPath.row;
+            
             [cell.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             cell.likeCountLabel.text = [postObject.dictionaryForObject objectForKey:@"likecount"];
             
             [cell.commentButton setBackgroundImage:[UIImage imageNamed:@"comment2-icon"] forState:UIControlStateNormal];
-            cell.commentButton.tag = indexPath.row;
+            
             [cell.commentButton addTarget:self action:@selector(commentButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             cell.commentCountLabel.text = [postObject.dictionaryForObject objectForKey:@"commentcount"];
             
             [cell.shareButton setBackgroundImage:[UIImage imageNamed:@"share2-icon"] forState:UIControlStateNormal];
-            cell.shareButton.tag = indexPath.row;
+            
             [cell.shareButton addTarget:self action:@selector(shareButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             
             return cell;
@@ -296,7 +308,36 @@
 
 -(void)likeButtonPressed:(UIButton *)sender
 {
-    
+    YNCardTableViewCell *cell = (YNCardTableViewCell *)[[[sender superview] superview] superview];
+    NSIndexPath *indexPath = [self.contentTableView indexPathForCell:cell];
+    AVObject *post = self.posts[indexPath.row];
+
+    int likecount = [[post.dictionaryForObject objectForKey:@"likecount"] intValue];
+    NSMutableArray *likeUsersId = [post.dictionaryForObject objectForKey:@"likeusersid"];
+    if (likeUsersId) {
+        if ([likeUsersId containsObject:self.currentUser.objectId]) {
+            likecount = likecount - 1;
+            [post removeObject:self.currentUser.objectId forKey:@"likeusersid"];
+            [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
+            
+        } else {
+            likecount = likecount + 1;
+            [post addObject:self.currentUser.objectId forKey:@"likeusersid"];
+            [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
+        }
+    } else {
+        likecount = likecount + 1;
+        [post addObject:self.currentUser.objectId forKey:@"likeusersid"];
+        [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
+    }
+    cell.likeCountLabel.text = [NSString stringWithFormat:@"%d", likecount];
+    POPSpringAnimation *scaleAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerScaleXY];
+    scaleAnimation.fromValue = [NSValue valueWithCGSize:CGSizeMake(0.6f, 0.6f)];
+    scaleAnimation.toValue = [NSValue valueWithCGSize:CGSizeMake(1.0f, 1.0f)];
+    scaleAnimation.springBounciness = 20;
+    [cell.likeButton.layer pop_addAnimation:scaleAnimation forKey:@"scaleanimation"];
+    [post setObject:[NSNumber numberWithInt:likecount] forKey:@"likecount"];
+    [post saveInBackground];
 }
 -(void)commentButtonPressed:(id)sender
 {

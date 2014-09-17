@@ -218,8 +218,8 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [AVUser logInWithUsernameInBackground:[self.usernameField.text stringByTrimmingCharactersInSet:whiteSpace] password:[self.passwordField.text stringByTrimmingCharactersInSet:whiteSpace] block:^(AVUser *user, NSError *error) {
+            [self.indicatorView stopAnimating];
             if (user != nil) {
-                [self.indicatorView stopAnimating];
                 UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[AppMainViewController new]];
                 LeftMenuViewController *leftMenuController = [[LeftMenuViewController alloc] init];
                 

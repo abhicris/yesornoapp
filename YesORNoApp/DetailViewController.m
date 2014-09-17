@@ -10,6 +10,8 @@
 #import "chameleon.h"
 #import "CommentTableViewCell.h"
 #import "DateFormatter.h"
+#import <AVOSCloud/AVOSCloud.h>
+#import <POP/POP.h>
 
 @interface DetailViewController ()
 
@@ -25,7 +27,7 @@
 @property (nonatomic, strong)UIButton *addCommentButton;
 
 @property (nonatomic, strong)NSArray *commentList;
-
+@property (nonatomic) AVUser *currentUser;
 @end
 
 @implementation DetailViewController
@@ -36,7 +38,7 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     self.type = [[_post.dictionaryForObject objectForKey:@"type"] integerValue];
-    
+    self.currentUser = [AVUser currentUser];
 //    self.commentList = [_itemInfo objectForKey:@"comments"];
     
     [self initDetailTableView];
@@ -160,7 +162,12 @@
 - (void)initBottomControls
 {
     [self.likeButton setTitle:@"" forState:UIControlStateNormal];
-    [self.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
+    NSArray *likeusersId = [_post.dictionaryForObject objectForKey:@"likeusersid"];
+    if ([likeusersId containsObject:self.currentUser.objectId]) {
+        [self.likeButton setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
+    } else {
+        [self.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
+    }
     [self.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.topView addSubview:self.likeButton];
     
@@ -233,9 +240,34 @@
 }
 
 
--(void)likeButtonPressed:(id)sender
+-(void)likeButtonPressed:(UIButton *)sender
 {
-    
+    int likecount = [[_post.dictionaryForObject objectForKey:@"likecount"] intValue];
+    NSMutableArray *likeUsersId = [_post.dictionaryForObject objectForKey:@"likeusersid"];
+    if (likeUsersId) {
+        if ([likeUsersId containsObject:self.currentUser.objectId]) {
+            likecount = likecount - 1;
+            [_post removeObject:self.currentUser.objectId forKey:@"likeusersid"];
+            [sender setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
+            
+        } else {
+            likecount = likecount + 1;
+            [_post addObject:self.currentUser.objectId forKey:@"likeusersid"];
+            [sender setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
+        }
+    } else {
+        likecount = likecount + 1;
+        [_post addObject:self.currentUser.objectId forKey:@"likeusersid"];
+        [sender setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
+    }
+    self.likeCount.text = [NSString stringWithFormat:@"%d", likecount];
+    POPSpringAnimation *scaleAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerScaleXY];
+    scaleAnimation.fromValue = [NSValue valueWithCGSize:CGSizeMake(0.6f, 0.6f)];
+    scaleAnimation.toValue = [NSValue valueWithCGSize:CGSizeMake(1.0f, 1.0f)];
+    scaleAnimation.springBounciness = 20;
+    [sender.layer pop_addAnimation:scaleAnimation forKey:@"scaleanimation"];
+    [_post setObject:[NSNumber numberWithInt:likecount] forKey:@"likecount"];
+    [_post saveInBackground];
 }
 
 - (void)shareButtonPressed:(id)sender

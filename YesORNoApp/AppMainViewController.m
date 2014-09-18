@@ -17,6 +17,8 @@
 #import "RESideMenu/RESideMenu.h"
 #import <AVOSCloud/AVOSCloud.h>
 #import <POP/POP.h>
+#import <SDWebImage/UIImageView+WebCache.h>
+
 
 @interface AppMainViewController ()
 @property (nonatomic, retain) NSMutableArray *posts;
@@ -120,16 +122,17 @@
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     #define TEXT_HEIGHT 166.0f
-    #define PHOTO_HEIGHT 300.0f
-    #define VEDIO_HEIGHT 340.0f
+    #define PHOTO_HEIGHT 320.0f
+    #define VEDIO_HEIGHT 320.0f
     #define AUDIO_HEIGHT 260.0f
     CGFloat height = 0.0;
-    NSDictionary *itemDict = self.posts[indexPath.row];
-    NSInteger type = [[itemDict objectForKey:@"type"] integerValue];
+    AVObject *itemDict = self.posts[indexPath.row];
+    NSInteger type = [[itemDict.dictionaryForObject objectForKey:@"type"] integerValue];
     switch (type) {
         case 1:
         {
-            height =  PHOTO_HEIGHT;
+            return PHOTO_HEIGHT;
+            
             break;
         }
         case 2:
@@ -162,19 +165,21 @@
     
     NSArray *likeusersId = [postObject.dictionaryForObject objectForKey:@"likeusersid"];
     //TODO figure out what's the cellitemtype according to data
+    
+    cell.post = postObject;
     switch (type) {
         case 0:
         {
             if (cell == nil) {
                 cell = [[YNCardTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:TextType];
             }
-            cell.avatarImageView.image = [UIImage imageNamed:[master objectForKey:@"avatar"]];
-            cell.usernameLabel.text = [master objectForKey:@"username"];
+            cell.avatarView.image = [UIImage imageNamed:[master objectForKey:@"avatar"]];
+            cell.authorNameLabel.text = [master objectForKey:@"username"];
             
-            cell.timeLabel.text = [DateFormatter friendlyDate:postObject.createdAt];
-            cell.itemTypeIconView.image = [UIImage imageNamed:@"text-icon"];
-            cell.itemContentLabel.text = [postObject.dictionaryForObject objectForKey:@"content"];
-            if ([likeusersId containsObject:[master objectForKey:@"objectId"]]) {
+            cell.postTimeLabel.text = [DateFormatter friendlyDate:postObject.createdAt];
+
+            cell.contentLabel.text = [postObject.dictionaryForObject objectForKey:@"content"];
+            if ([likeusersId containsObject:self.currentUser.objectId]) {
                 [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
             } else
             {
@@ -202,23 +207,19 @@
                 cell = [[YNCardTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:PictureType];
             }
 
-            cell.avatarImageView.image = [UIImage imageNamed:[master objectForKey:@"avatar"]];
+            cell.avatarView.image = [UIImage imageNamed:[master objectForKey:@"avatar"]];
             
-            cell.usernameLabel.text = [master objectForKey:@"username"];
-            cell.timeLabel.text = [DateFormatter friendlyDate:postObject.createdAt];
+            cell.authorNameLabel.text = [master objectForKey:@"username"];
+            cell.postTimeLabel.text = [DateFormatter friendlyDate:postObject.createdAt];
             
-
+            cell.contentLabel.text = [postObject.dictionaryForObject objectForKey:@"content"];
             
-            cell.itemTypeIconView.image = [UIImage imageNamed:@"photo-icon"];
-            cell.itemContentLabel.text = [postObject.dictionaryForObject objectForKey:@"content"];
-            
-            NSDictionary *imageFileInfo = [postObject.dictionaryForObject objectForKey:@"attachphoto"];
-            NSURL *imageUrl = [NSURL URLWithString:[imageFileInfo objectForKey:@"url"]];
-            NSData *imageData = [NSData dataWithContentsOfURL:imageUrl];
-            cell.attachPhotoContainerView.image = [UIImage imageWithData:imageData];
+            NSDictionary *imageInfo = [postObject.dictionaryForObject objectForKey:@"attachphoto"];
+            NSURL *imageUrl = [NSURL URLWithString:[imageInfo objectForKey:@"url"]];
+            [cell.photoView sd_setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"test"]];
             
             
-            if ([likeusersId containsObject:[master objectForKey:@"objectId"]]) {
+            if ([likeusersId containsObject:self.currentUser.objectId]) {
                 [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
             } else
             {
@@ -244,11 +245,11 @@
             if (cell == nil) {
                 cell = [[YNCardTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:AudioType];
             }
-            cell.avatarImageView.image = [UIImage imageNamed:@"default"];
-            cell.usernameLabel.text = @"Nicholas Xue";
-            cell.timeLabel.text = [DateFormatter friendlyDate:postObject.createdAt];
-            cell.itemTypeIconView.image = [UIImage imageNamed:@"photo-icon"];
-            cell.itemContentLabel.text = [postObject.dictionaryForObject objectForKey:@"content"];
+            cell.avatarView.image = [UIImage imageNamed:@"default"];
+            cell.authorNameLabel.text = @"Nicholas Xue";
+            cell.postTimeLabel.text = [DateFormatter friendlyDate:postObject.createdAt];
+
+            cell.contentLabel.text = [postObject.dictionaryForObject objectForKey:@"content"];
             [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
             
             [cell.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];

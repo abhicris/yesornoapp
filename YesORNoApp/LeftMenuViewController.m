@@ -21,11 +21,6 @@
 @property (nonatomic, strong) UITableView *leftMenuTable;
 @property (nonatomic, strong) AVUser *currentUser;
 
-//
-@property (nonatomic, strong)NSDictionary *allData;
-
-@property (nonatomic, strong)NSArray *postList;
-//
 
 
 @end
@@ -35,17 +30,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    ///////
-    NSBundle *bundle = [NSBundle mainBundle];
-    NSString *file = [bundle pathForResource:@"testdata" ofType:@"plist"];
-    self.allData = [NSDictionary dictionaryWithContentsOfFile:file];
-    
-    self.postList = [self.allData objectForKey:@"posts"];
-
-    //////
     self.currentUser = [AVUser currentUser];
-    
+
     [self initTableView];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -54,6 +42,7 @@
     
     [self.leftMenuTable reloadData];
 }
+
 
 - (void)initTableView
 {
@@ -165,8 +154,6 @@
         {
             NSLog(@"go to user page.....");
             UserPageViewController *userPageController = [[UserPageViewController alloc] init];
-            userPageController.userInfo = self.currentUser.dictionaryForObject;
-            userPageController.userPosts = self.postList;
             UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:userPageController];
             [self.sideMenuViewController setContentViewController:navigationController animated:YES];
             [self.sideMenuViewController hideMenuViewController];

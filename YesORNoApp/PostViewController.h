@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MONActivityIndicatorView.h"
 
-@interface PostViewController : UIViewController <UITextViewDelegate>
+@interface PostViewController : UIViewController <UITextViewDelegate, MONActivityIndicatorViewDelegate>
 
 
 

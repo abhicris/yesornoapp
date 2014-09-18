@@ -214,7 +214,7 @@
             [user setObject:@"secret" forKey:@"gender"];
             [user setObject:@"other" forKey:@"location"];
             [user setObject:@"Not set profile yet!" forKey:@"profile"];
-            
+            [user setObject:[NSArray array] forKey:@"friends"];
             [user signUpInBackgroundWithBlock:^(BOOL succeeed, NSError *error) {
 
                 if (succeeed) {

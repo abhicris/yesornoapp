@@ -15,14 +15,17 @@
 #import "UserSettingViewController.h"
 #import "DateFormatter.h"
 #import <AVOSCloud/AVOSCloud.h>
+#import "DateFormatter.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface UserPageViewController ()
 
 @property (nonatomic, strong)UITableView *postsTableView;
-
-
+@property (nonatomic, strong)AVUser *userInfo;
+@property (nonatomic, strong)NSMutableArray *userPosts;
 @property (nonatomic)BOOL hasFriended;
-
+@property (nonatomic, strong) UILabel *postCount;
+@property (nonatomic, strong) UILabel *friendsCount;
 @end
 
 @implementation UserPageViewController
@@ -32,12 +35,63 @@
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
     [self.navigationController.navigationBar setBarTintColor:[UIColor flatRedColor]];
-    [self initLeftMenuButton];
-    [self initRightMenuButton];
+    self.userPosts = [NSMutableArray array];
+    if (_master == nil) {
+        self.userInfo = [AVUser currentUser];
+        [self initLeftMenuButton];
+        [self initRightMenuButton];
+        [self initpostsTableView];
+        [self initTopUserInfoView];
+        
+        [self loadUserPosts];
+    } else {
+        AVQuery *query = [AVUser query];
+        [query whereKey:@"objectId" equalTo:[_master objectForKey:@"objectId"]];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *users, NSError *error) {
+            if (error == nil) {
+                if (users.count) {
+                    self.userInfo = [users firstObject];
+                    [self initLeftMenuButton];
+                    [self initRightMenuButton];
+                    [self initpostsTableView];
+                    [self initTopUserInfoView];
+                    
+                    [self loadUserPosts];
+                }
+            } else {
+                NSLog(@"Error: %@", error);
+            }
+        }];
+    }
+}
+
+
+- (void)loadUserPosts
+{
+    AVQuery *postQuery = [AVQuery queryWithClassName:@"Question"];
+    [postQuery whereKey:@"author" equalTo:self.userInfo];
+    [postQuery findObjectsInBackgroundWithBlock:^(NSArray *posts, NSError *error) {
+        self.postCount.text = [NSString stringWithFormat:@"%@", [NSNumber numberWithInteger:posts.count]];
+        NSMutableArray *newPosts = [NSMutableArray array];
+        NSArray *postIds = [self.userPosts valueForKeyPath:@"objectId"];
+        if (error == nil) {
+            for (AVObject *post in posts) {
+                if (![postIds containsObject:post.objectId]) {
+                    [newPosts addObject:post];
+                }
+            }
+            posts = [newPosts sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO]]];
+            long offset = 0;
+            if (self.userPosts.count) {
+                offset = self.userPosts.count;
+            }
+            NSIndexSet *set = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(offset, posts.count)];
+            [self.userPosts insertObjects:posts atIndexes:set];
+            [self.postsTableView reloadData];
+        }
     
-    self.hasFriended = YES;
-    [self initpostsTableView];
-    [self initTopUserInfoView];
+    }];
+    
 }
 
 - (void)initLeftMenuButton
@@ -78,14 +132,14 @@
     avatarView.layer.borderColor = [UIColor whiteColor].CGColor;
     avatarView.layer.borderWidth = 2;
     avatarView.layer.masksToBounds = YES;
-    avatarView.image = [UIImage imageNamed:[_userInfo objectForKey:@"avatar"]];
+    avatarView.image = [UIImage imageNamed:[self.userInfo.dictionaryForObject objectForKey:@"avatar"]];
     
     [topBackgroundImageView addSubview:avatarView];
     
     UILabel *nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(70, 90, 181, 21)];
     nameLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:16];
     nameLabel.textAlignment = NSTextAlignmentCenter;
-    nameLabel.text = [_userInfo objectForKey:@"username"];
+    nameLabel.text = [self.userInfo.dictionaryForObject objectForKey:@"username"];
     nameLabel.textColor = [UIColor whiteColor];
     nameLabel.backgroundColor = [UIColor clearColor];
     
@@ -94,7 +148,7 @@
     UILabel *profileLabel = [[UILabel alloc] initWithFrame:CGRectMake(70, 111, 181, 40)];
     profileLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
     profileLabel.textAlignment = NSTextAlignmentCenter;
-    profileLabel.text = [_userInfo objectForKey:@"profile"];
+    profileLabel.text = [self.userInfo.dictionaryForObject objectForKey:@"profile"];
     profileLabel.numberOfLines = 0;
     profileLabel.textColor = [UIColor whiteColor];
     profileLabel.backgroundColor = [UIColor clearColor];
@@ -116,7 +170,7 @@
     [topBackgroundImageView addSubview:locationImageView];
     UILabel *genderLabel = [[UILabel alloc] initWithFrame:CGRectMake(122, 160, 46, 15)];
     genderLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    genderLabel.text = [_userInfo objectForKey:@"gender"];
+    genderLabel.text = [self.userInfo.dictionaryForObject objectForKey:@"gender"];
     genderLabel.textColor = [UIColor whiteColor];
     genderLabel.backgroundColor = [UIColor clearColor];
     
@@ -124,7 +178,7 @@
     
     UILabel *locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(198, 160, 90, 15)];
     locationLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    locationLabel.text = [_userInfo objectForKey:@"location"];
+    locationLabel.text = [self.userInfo.dictionaryForObject objectForKey:@"location"];
     locationLabel.textColor = [UIColor whiteColor];
     locationLabel.backgroundColor = [UIColor clearColor];
     
@@ -140,14 +194,14 @@
     
     [topUserInfoView addSubview:postTitle];
     
-    UILabel *postCount = [[UILabel alloc] initWithFrame:CGRectMake(17, 236, 75, 21)];
-    postCount.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
-    postCount.textColor = [UIColor flatNavyBlueColorDark];
-    postCount.text = @"200k";
-    postCount.textAlignment = NSTextAlignmentCenter;
-    postCount.backgroundColor = [UIColor clearColor];
+    self.postCount = [[UILabel alloc] initWithFrame:CGRectMake(17, 236, 75, 21)];
+    self.postCount.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
+    self.postCount.textColor = [UIColor flatNavyBlueColorDark];
+
+    self.postCount.textAlignment = NSTextAlignmentCenter;
+    self.postCount.backgroundColor = [UIColor clearColor];
     
-    [topUserInfoView addSubview:postCount];
+    [topUserInfoView addSubview:self.postCount];
     
     UILabel *friendsTitle = [[UILabel alloc] initWithFrame:CGRectMake(138, 213, 44, 21)];
     friendsTitle.text = @"Friends";
@@ -156,14 +210,15 @@
     friendsTitle.backgroundColor = [UIColor clearColor];
     
     [topUserInfoView addSubview:friendsTitle];
-    UILabel *friendsCount = [[UILabel alloc] initWithFrame:CGRectMake(123, 236, 75, 21)];
-    friendsCount.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
-    friendsCount.textColor = [UIColor flatNavyBlueColorDark];
-    friendsCount.text = @"200";
-    friendsCount.textAlignment = NSTextAlignmentCenter;
-    friendsCount.backgroundColor = [UIColor clearColor];
+    self.friendsCount = [[UILabel alloc] initWithFrame:CGRectMake(123, 236, 75, 21)];
+    self.friendsCount.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
+    self.friendsCount.textColor = [UIColor flatNavyBlueColorDark];
+    NSArray *friends = [self.userInfo.dictionaryForObject objectForKey:@"friends"];
+    self.friendsCount.text = [NSString stringWithFormat:@"%@", [NSNumber numberWithInteger:friends.count]];
+    self.friendsCount.textAlignment = NSTextAlignmentCenter;
+    self.friendsCount.backgroundColor = [UIColor clearColor];
     
-    [topUserInfoView addSubview:friendsCount];
+    [topUserInfoView addSubview:self.friendsCount];
     
     
     UIButton *addFriendButton = [[UIButton alloc] initWithFrame:CGRectMake(212, 218, 94, 32)];
@@ -219,7 +274,7 @@
 #pragma mark - UITableView datasource delegate
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [_userPosts count];
+    return [self.userPosts count];
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -258,7 +313,7 @@
 }
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSDictionary *itemDict = self.userPosts[indexPath.row];
+    AVObject *itemDict = self.userPosts[indexPath.row];
     NSInteger type = [[itemDict objectForKey:@"type"] integerValue];
     static NSString *cellIdentifier = @"postcell";
     UserPageTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
@@ -268,13 +323,16 @@
             if (cell == nil) {
                 cell = [[UserPageTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:PictureType];
             }
-            cell.avatarImageView.image = [UIImage imageNamed:[_userInfo objectForKey:@"avatar"]];
-            cell.nameLabel.text = [NSString stringWithFormat:@"%@", [_userInfo objectForKey:@"username"]];
-            cell.contentLabel.text = [NSString stringWithFormat:@"%@", [itemDict objectForKey:@"content"]];
+            cell.avatarImageView.image = [UIImage imageNamed:[self.userInfo.dictionaryForObject objectForKey:@"avatar"]];
+            cell.nameLabel.text = [NSString stringWithFormat:@"%@", self.userInfo.username];
+            cell.contentLabel.text = [NSString stringWithFormat:@"%@", [itemDict.dictionaryForObject objectForKey:@"content"]];
             
-            cell.photoView.image = [UIImage imageNamed:[itemDict objectForKey:@"attachurl"]];
+            NSDictionary *imageFileInfo = [itemDict.dictionaryForObject objectForKey:@"attachphoto"];
+            NSURL *imageUrl = [NSURL URLWithString:[imageFileInfo objectForKey:@"url"]];
+
+            [cell.photoView sd_setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"test"]];
             
-            cell.timeLabel.text = @"2014-06-03 11:30";
+            cell.timeLabel.text = [DateFormatter friendlyDate:itemDict.createdAt];
             [self addLineView:cell];
             return cell;
             break;
@@ -307,10 +365,10 @@
             if (cell == nil) {
                 cell = [[UserPageTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:TextType];
             }
-            cell.avatarImageView.image = [UIImage imageNamed:[_userInfo objectForKey:@"avatar"]];
-            cell.nameLabel.text = [NSString stringWithFormat:@"%@", [_userInfo objectForKey:@"username"]];
-            cell.contentLabel.text = [NSString stringWithFormat:@"%@", [itemDict objectForKey:@"content"]];
-            cell.timeLabel.text = @"2014-06-03 11:30";
+            cell.avatarImageView.image = [UIImage imageNamed:[self.userInfo.dictionaryForObject objectForKey:@"avatar"]];
+            cell.nameLabel.text = [NSString stringWithFormat:@"%@", self.userInfo.username];
+            cell.contentLabel.text = [NSString stringWithFormat:@"%@", [itemDict.dictionaryForObject objectForKey:@"content"]];
+            cell.timeLabel.text = [DateFormatter friendlyDate:itemDict.createdAt];
             
             [self addLineView:cell];
             return cell;
@@ -324,7 +382,7 @@
 -(void)addLineView:(UserPageTableViewCell *)cell
 {
     UIImageView *line = [[UIImageView alloc] initWithFrame:CGRectMake(18, 29, 1, cell.timeIconView.frame.origin.y + cell.timeIconView.frame.size.height + 13 - 29 + 7)];
-    NSLog(@"%f", cell.frame.size.height);
+//    NSLog(@"%f", cell.frame.size.height);
     line.backgroundColor = [UIColor flatWhiteColor];
     [cell addSubview:line];
 }

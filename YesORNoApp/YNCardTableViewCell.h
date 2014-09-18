@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <KIChameleonView/KIChameleonView.h>
+#import <AVOSCloud/AVOSCloud.h>
 
 @interface YNCardTableViewCell : UITableViewCell
 
@@ -19,22 +21,20 @@ typedef NS_ENUM(NSInteger, SharedItemType)
 };
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier CellItemType:(SharedItemType)cellItemType;
-@property (nonatomic, strong) UIView *cardContainerView;
-@property (nonatomic, strong) UIImageView *avatarImageView;
-@property (nonatomic, strong) UILabel *usernameLabel;
-@property (nonatomic, strong) UILabel *timeLabel;
-@property (nonatomic, strong) UIImageView *itemTypeIconView;
-@property (nonatomic, strong) UILabel *itemContentLabel;
 
-@property (nonatomic, strong) UIImageView *attachPhotoContainerView;
-@property (nonatomic, strong) UIView *attachAudioContainerView;
-@property (nonatomic, strong) UIView *attachVideoContainerView;
 
+@property (nonatomic, strong) UIImageView *avatarView;
+@property (nonatomic, strong) UILabel *authorNameLabel;
+@property (nonatomic, strong) UILabel *postTimeLabel;
+@property (nonatomic, strong) UILabel *contentLabel;
+@property (nonatomic, strong) UIImageView *photoView;
+@property (nonatomic, strong) KIChameleonView *attachView;
 @property (nonatomic, strong) UIButton *likeButton;
-@property (nonatomic, strong) UIButton *commentButton;
-@property (nonatomic, strong) UIButton *shareButton;
 @property (nonatomic, strong) UILabel *likeCountLabel;
+@property (nonatomic, strong) UIButton *commentButton;
 @property (nonatomic, strong) UILabel *commentCountLabel;
+@property (nonatomic, strong) UIButton *shareButton;
 
+@property (nonatomic, strong) AVObject *post;
 
 @end

@@ -14,6 +14,8 @@ pod 'ChameleonFramework'
 pod "AFNetworking", '~> 2.0'
 pod "AVOSCloud"
 pod "MONActivityIndicatorView"
+pod "SDWebImage", "~>3.6"
+pod "KIChameleonView"
 end
 
 target "YesORNoAppTests" do

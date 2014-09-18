@@ -11,11 +11,19 @@
 #import "AtListViewController.h"
 #import <AVOSCloud/AVOSCloud.h>
 #import <POP/POP.h>
+#import "KLCPopup.h"
+#import <AFNetworking/AFNetworking.h>
 
 @interface PostViewController ()
 @property (nonatomic, strong) AVUser *currentUser;
 @property (nonatomic, strong)UITextView *contentTextView;
-@property (nonatomic) UILabel *placeHolderLabel;
+@property (nonatomic, strong) UILabel *placeHolderLabel;
+@property (nonatomic, weak) KLCPopup *popUp;
+@property (nonatomic, strong) MONActivityIndicatorView *indicatorView;
+@property (nonatomic, strong) UIView *contentView;
+@property (nonatomic, strong) UILabel *sendingLabel;
+@property (nonatomic, strong) UIView *bottomView;
+@property (nonatomic, strong) UIView *dimmView;
 @end
 
 @implementation PostViewController
@@ -41,13 +49,47 @@
     [self initTextView];
     [self initBottomView];
     [self addSecureButton];
+    [self registerForKeyboardNotifications];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [self.contentTextView becomeFirstResponder];
+//    [self.contentTextView becomeFirstResponder];
 }
+
+
+- (void)registerForKeyboardNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)keyboardWillShow:(NSNotification *)noti
+{
+    NSDictionary *userInfo = noti.userInfo;
+    NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    UIViewAnimationCurve curve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    CGRect keyboardFrameEnd = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    keyboardFrameEnd = [self.view convertRect:keyboardFrameEnd fromView:nil];
+    [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | curve animations:^{
+        self.bottomView.frame = CGRectMake(self.bottomView.frame.origin.x, keyboardFrameEnd.origin.y-self.bottomView.frame.size.height, self.bottomView.frame.size.width, self.bottomView.frame.size.height);
+        self.contentTextView.frame = CGRectMake(self.contentTextView.frame.origin.x, self.contentTextView.frame.origin.y, self.contentTextView.frame.size.width, keyboardFrameEnd.origin.y-self.bottomView.frame.size.height-self.contentTextView.frame.origin.y);
+    } completion:nil];
+}
+
+- (void)keyboardWillHide:(NSNotification *)noti
+{
+    NSDictionary *userInfo = noti.userInfo;
+    NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    UIViewAnimationCurve curve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | curve animations:^{
+        self.bottomView.frame = CGRectMake(self.bottomView.frame.origin.x, 518, self.bottomView.frame.size.width, self.bottomView.frame.size.height);
+        self.contentTextView.frame = CGRectMake(self.contentTextView.frame.origin.x, self.contentTextView.frame.origin.y, self.contentTextView.frame.size.width, 395);
+    } completion:nil];
+}
+
+
 
 -(void)initAvatarImageView
 {
@@ -95,18 +137,16 @@
 - (void)initTextView
 {
 
-    self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(0, 124, 320, 135)];
+    self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(0, 124, 320, 395)];
     self.contentTextView.backgroundColor = [UIColor clearColor];
     self.contentTextView.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
     self.contentTextView.dataDetectorTypes = UIDataDetectorTypeAll;
     [self.contentTextView setLinkTextAttributes:@{NSForegroundColorAttributeName:[UIColor flatBlueColor]}];
-    self.contentTextView.scrollEnabled = NO;
+    self.contentTextView.scrollEnabled = YES;
     self.contentTextView.backgroundColor = [UIColor flatWhiteColor];
     self.contentTextView.textContainerInset = UIEdgeInsetsMake(8, 8, 8, 8);
-    self.contentTextView.textContainer.maximumNumberOfLines = 6;
     self.contentTextView.textContainer.lineBreakMode = NSLineBreakByTruncatingTail;
     self.contentTextView.textColor = [UIColor flatNavyBlueColorDark];
-//    self.contentTextView.text = @"share what's new...";
     self.contentTextView.delegate = self;
     
     
@@ -121,41 +161,41 @@
 
 - (void)initBottomView
 {
-    UIView *bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, 260, 320, 50)];
-    bottomView.backgroundColor = [UIColor flatWhiteColorDark];
+    self.bottomView = [[UIView alloc] initWithFrame:CGRectMake(0, 518, 320, 50)];
+    self.bottomView.backgroundColor = [UIColor flatWhiteColorDark];
     
     UIButton *addPhotoButton = [[UIButton alloc] initWithFrame:CGRectMake(24, 18, 20, 18)];
     [addPhotoButton setTitle:@"" forState:UIControlStateNormal];
     [addPhotoButton setBackgroundImage:[UIImage imageNamed:@"post-photo"] forState:UIControlStateNormal];
     [addPhotoButton addTarget:self action:@selector(addPhotoButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [bottomView addSubview:addPhotoButton];
+    [self.bottomView addSubview:addPhotoButton];
     
     UIButton *addAtButton = [[UIButton alloc] initWithFrame:CGRectMake(84, 14, 23, 23)];
     [addAtButton setTitle:@"@" forState:UIControlStateNormal];
     [addAtButton setTitleColor:[UIColor flatNavyBlueColorDark] forState:UIControlStateNormal];
     [addAtButton.titleLabel setFont:[UIFont fontWithName:@"Roboto-Regular" size:23]];
     [addAtButton addTarget:self action:@selector(addAtButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [bottomView addSubview:addAtButton];
+    [self.bottomView addSubview:addAtButton];
     
     UIButton *addAudioButton = [[UIButton alloc] initWithFrame:CGRectMake(153, 18, 14, 20)];
     [addAudioButton setTitle:@"" forState:UIControlStateNormal];
     [addAudioButton setBackgroundImage:[UIImage imageNamed:@"post-audio"] forState:UIControlStateNormal];
     [addAudioButton addTarget:self action:@selector(addAudioButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [bottomView addSubview:addAudioButton];
+    [self.bottomView addSubview:addAudioButton];
     
     UIButton *addVideoButton = [[UIButton alloc] initWithFrame:CGRectMake(213, 18, 20, 18)];
     [addVideoButton setTitle:@"" forState:UIControlStateNormal];
     [addVideoButton setBackgroundImage:[UIImage imageNamed:@"post-video"] forState:UIControlStateNormal];
     [addVideoButton addTarget:self action:@selector(addVideoButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [bottomView addSubview:addVideoButton];
+    [self.bottomView addSubview:addVideoButton];
     
     UIButton *addLocationButton = [[UIButton alloc] initWithFrame:CGRectMake(281, 18, 15, 20)];
     [addLocationButton setTitle:@"" forState:UIControlStateNormal];
     [addLocationButton setBackgroundImage:[UIImage imageNamed:@"post-location"] forState:UIControlStateNormal];
     [addLocationButton addTarget:self action:@selector(addLocationButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [bottomView addSubview:addLocationButton];
+    [self.bottomView addSubview:addLocationButton];
     
-    [self.view addSubview:bottomView];
+    [self.view addSubview:self.bottomView];
 }
 
 
@@ -170,14 +210,43 @@
     }
 }
 
+
+- (void)popUpSendProcess
+{
+    self.dimmView = [[UIView alloc] initWithFrame:self.view.frame];
+    self.dimmView.backgroundColor = [UIColor flatGrayColor];
+    self.dimmView.layer.opacity = 0.0;
+    [self.view addSubview:self.dimmView];
+    self.contentView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 140, 80)];
+    self.contentView.backgroundColor = [UIColor whiteColor];
+    self.contentView.layer.cornerRadius = 2;
+    self.contentView.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.contentView.layer.shadowOffset = CGSizeMake(1, 1);
+    self.contentView.layer.shadowOpacity = 0.7f;
+    self.sendingLabel = [[UILabel alloc] initWithFrame:CGRectMake(43, 49, 55, 15)];
+    self.sendingLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+    self.sendingLabel.text = [NSString stringWithFormat:@"sending %@", [NSNumber numberWithInteger:0]];
+    self.sendingLabel.textColor = [UIColor flatBlueColor];
+    [self.contentView addSubview:self.sendingLabel];
+    
+    self.indicatorView = [[MONActivityIndicatorView alloc] init];
+    self.indicatorView.center = CGPointMake(70, 30);
+    self.indicatorView.delegate = self;
+    [self.contentView addSubview:self.indicatorView];
+    [self.dimmView addSubview:self.contentView];
+    [self.indicatorView startAnimating];
+}
+
+
 - (void)sendButtonPressed:(UIButton *)sender
 {
-    POPSpringAnimation *scaleAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerScaleXY];
-    scaleAnimation.springBounciness = 20;
-    scaleAnimation.fromValue = [NSValue valueWithCGSize:CGSizeMake(0.5f, 0.5f)];
-    scaleAnimation.toValue = [NSValue valueWithCGSize:CGSizeMake(1.0f, 1.0f)];
-    [sender.layer pop_addAnimation:scaleAnimation forKey:@"scaleAnimate"];
-    
+    [self.contentTextView resignFirstResponder];
+    [self popUpSendProcess];
+//    POPSpringAnimation *scaleAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerScaleXY];
+//    scaleAnimation.springBounciness = 18;
+//    scaleAnimation.fromValue = [NSValue valueWithCGSize:CGSizeMake(0.5f, 0.5f)];
+//    scaleAnimation.toValue = [NSValue valueWithCGSize:CGSizeMake(1.0f, 1.0f)];
+//    [sender.layer pop_addAnimation:scaleAnimation forKey:@"scaleAnimate"];
     NSMutableDictionary *master = [NSMutableDictionary dictionary];
     [master setObject:self.currentUser.objectId forKey:@"objectId"];
     [master setObject:self.currentUser.username forKey:@"username"];
@@ -186,44 +255,42 @@
     NSMutableArray *atUsers = [[NSMutableArray alloc] init];
     [atUsers addObject:[NSDictionary dictionaryWithDictionary:master]];
     AVObject *postObject = [AVObject objectWithClassName:@"Question"];
-    [postObject setObject:_contentTextView.text forKey:@"content"];
+    [postObject setObject:self.contentTextView.text forKey:@"content"];
     [postObject setObject:[NSNumber numberWithInt:0] forKey:@"secure"];//0 : public 1:private 2: group   default -- 0
     [postObject setObject:[NSArray array] forKey:@"likeusersid"];
-    
-
-    
-    
     [postObject setObject:[NSDictionary dictionaryWithDictionary:master] forKey:@"master"];
+    [postObject setObject:self.currentUser forKey:@"author"];
     [postObject setObject:[NSDictionary dictionaryWithDictionary:master] forKey:@"touser"];
     [postObject setObject:[NSArray arrayWithArray:atUsers] forKey:@"atusers"];
     [postObject setObject:[NSNumber numberWithInt:1] forKey:@"type"];// text  picture  audio  video
     [postObject setObject:[NSNumber numberWithInt:0] forKey:@"likecount"];
     [postObject setObject:[NSNumber numberWithInt:0] forKey:@"commentcount"];
-    NSString *imageUrl = @"http://sdk.img.ly/img/img-1.jpg";
-    NSData *imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageUrl]];
-    AVFile *imageFile = [AVFile fileWithName:@"image.png" data:imageData];
-    [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            [postObject setObject:imageFile forKey:@"attachphoto"];
-            
-            [postObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                if (succeeded) {
-                    [self.navigationController popViewControllerAnimated:YES];
-                } else {
-                    
-                }
-            }];
-        }
-    } progressBlock:^(NSInteger percentDone) {
-        NSLog(@"%ld", (long)percentDone);
+    NSString *imageUrlString = @"http://sdk.img.ly/img/img-123.jpg";
+    
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
+    NSURLSessionDataTask *dataTask = [session dataTaskWithURL:[NSURL URLWithString:imageUrlString] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        AVFile *imageFile = [AVFile fileWithName:@"image.png" data:data];
+        [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                [postObject setObject:imageFile forKey:@"attachphoto"];
+                [postObject saveInBackground];
+                [self.indicatorView stopAnimating];
+                [self.dimmView removeFromSuperview];
+                [self.navigationController popViewControllerAnimated:YES];
+            }
+        } progressBlock:^(NSInteger percentDone) {
+            NSLog(@"%@", [NSNumber numberWithInteger:percentDone]);
+            self.sendingLabel.text = [NSString stringWithFormat:@"sending %@", [NSNumber numberWithInteger:percentDone]];
+        }];
     }];
+    [dataTask resume];
 }
 
-- (void)selectSecureButtonPressed:(UIButton *)sender
+- (void)selectSecureButtonPressed:(id)sender
 {
     
 }
-
 
 - (void)addPhotoButtonPressed:(id)sender
 {
@@ -248,5 +315,11 @@
 -(void)addLocationButtonPressed:(id)sender
 {
     
+}
+
+#pragma mark - MONActivityIndicatorViewDelegate
+- (UIColor *)activityIndicatorView:(MONActivityIndicatorView *)activityIndicatorView circleBackgroundColorAtIndex:(NSUInteger)index
+{
+    return [UIColor flatPurpleColor];
 }
 @end

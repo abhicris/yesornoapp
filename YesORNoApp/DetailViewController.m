@@ -12,6 +12,7 @@
 #import "DateFormatter.h"
 #import <AVOSCloud/AVOSCloud.h>
 #import <POP/POP.h>
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface DetailViewController ()
 
@@ -129,15 +130,26 @@
         }
         case 1:
         {
-            UIImageView *photoView = [[UIImageView alloc] initWithFrame:CGRectMake(8, contentLabel.frame.origin.y + contentLabel.frame.size.height + 15, 304, 160)];
-            photoView.contentMode = UIViewContentModeScaleAspectFill;
-            photoView.clipsToBounds = YES;
-            photoView.backgroundColor = [UIColor clearColor];
-            
             NSDictionary *imageFileInfo = [_post.dictionaryForObject objectForKey:@"attachphoto"];
             NSURL *imageUrl = [NSURL URLWithString:[imageFileInfo objectForKey:@"url"]];
-            NSData *imageData = [NSData dataWithContentsOfURL:imageUrl];
-            photoView.image = [UIImage imageWithData:imageData];
+            
+
+            
+            __block UIImageView *photoView = [[UIImageView alloc] initWithFrame:CGRectMake(8, contentLabel.frame.origin.y + contentLabel.frame.size.height + 15, 304, 100)];
+            photoView.contentMode = UIViewContentModeScaleAspectFill;
+            photoView.backgroundColor = [UIColor clearColor];
+            
+            
+            [photoView sd_setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"test"] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                CGImageRef imageRef = [image CGImage];
+                CGFloat imageHeight = CGImageGetHeight(imageRef);
+                CGFloat imageWith = CGImageGetWidth(imageRef);
+                CGFloat ratio = imageWith / 304;
+                CGFloat realHeight = imageHeight / ratio;
+                CGRect frame = photoView.frame;
+                frame.size = CGSizeMake(304, realHeight);
+                photoView.frame = frame;
+            }];
             
             [self.topView addSubview:photoView];
             

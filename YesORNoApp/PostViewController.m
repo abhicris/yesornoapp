@@ -213,40 +213,51 @@
 
 - (void)popUpSendProcess
 {
+    [self.contentTextView resignFirstResponder];
     self.dimmView = [[UIView alloc] initWithFrame:self.view.frame];
-    self.dimmView.backgroundColor = [UIColor flatGrayColor];
+    self.dimmView.backgroundColor = [UIColor flatBlackColorDark];
     self.dimmView.layer.opacity = 0.0;
-    [self.view addSubview:self.dimmView];
-    self.contentView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 140, 80)];
+
+    
+    self.contentView = [[UIView alloc] initWithFrame:CGRectMake(90, 145, 140, 80)];
     self.contentView.backgroundColor = [UIColor whiteColor];
     self.contentView.layer.cornerRadius = 2;
     self.contentView.layer.shadowColor = [UIColor blackColor].CGColor;
     self.contentView.layer.shadowOffset = CGSizeMake(1, 1);
     self.contentView.layer.shadowOpacity = 0.7f;
-    self.sendingLabel = [[UILabel alloc] initWithFrame:CGRectMake(43, 49, 55, 15)];
+    self.sendingLabel = [[UILabel alloc] initWithFrame:CGRectMake(43, 49, 80, 15)];
     self.sendingLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    self.sendingLabel.text = [NSString stringWithFormat:@"sending %@", [NSNumber numberWithInteger:0]];
+    self.sendingLabel.text = [NSString stringWithFormat:@"sending..."];
     self.sendingLabel.textColor = [UIColor flatBlueColor];
     [self.contentView addSubview:self.sendingLabel];
     
     self.indicatorView = [[MONActivityIndicatorView alloc] init];
     self.indicatorView.center = CGPointMake(70, 30);
     self.indicatorView.delegate = self;
+    
+    
     [self.contentView addSubview:self.indicatorView];
     [self.dimmView addSubview:self.contentView];
+    
+    [self.view addSubview:self.dimmView];
     [self.indicatorView startAnimating];
+    POPBasicAnimation *opacityAnimate = [POPBasicAnimation animationWithPropertyNamed:kPOPLayerOpacity];
+    opacityAnimate.toValue = @(0.7);
+    [self.dimmView.layer pop_addAnimation:opacityAnimate forKey:@"opacityAnimate"];
+    
+    POPSpringAnimation *scaleAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerScaleXY];
+    scaleAnimation.springBounciness = 18;
+    scaleAnimation.fromValue = [NSValue valueWithCGSize:CGSizeMake(0.5f, 0.5f)];
+    scaleAnimation.toValue = [NSValue valueWithCGSize:CGSizeMake(1.0f, 1.0f)];
+    [self.contentView.layer pop_addAnimation:scaleAnimation forKey:@"scaleAnimate"];
+
 }
 
 
 - (void)sendButtonPressed:(UIButton *)sender
 {
-    [self.contentTextView resignFirstResponder];
+    
     [self popUpSendProcess];
-//    POPSpringAnimation *scaleAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerScaleXY];
-//    scaleAnimation.springBounciness = 18;
-//    scaleAnimation.fromValue = [NSValue valueWithCGSize:CGSizeMake(0.5f, 0.5f)];
-//    scaleAnimation.toValue = [NSValue valueWithCGSize:CGSizeMake(1.0f, 1.0f)];
-//    [sender.layer pop_addAnimation:scaleAnimation forKey:@"scaleAnimate"];
     NSMutableDictionary *master = [NSMutableDictionary dictionary];
     [master setObject:self.currentUser.objectId forKey:@"objectId"];
     [master setObject:self.currentUser.username forKey:@"username"];
@@ -269,22 +280,27 @@
     
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
-    NSURLSessionDataTask *dataTask = [session dataTaskWithURL:[NSURL URLWithString:imageUrlString] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        AVFile *imageFile = [AVFile fileWithName:@"image.png" data:data];
+    NSURLSessionDownloadTask *dataTask = [session downloadTaskWithURL:[NSURL URLWithString:imageUrlString] completionHandler:^(NSURL *url, NSURLResponse *response, NSError *error) {
+        NSData *imageData = [NSData dataWithContentsOfURL:url];
+        AVFile *imageFile = [AVFile fileWithName:@"image.png" data:imageData];
         [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
                 [postObject setObject:imageFile forKey:@"attachphoto"];
                 [postObject saveInBackground];
-                [self.indicatorView stopAnimating];
-                [self.dimmView removeFromSuperview];
-                [self.navigationController popViewControllerAnimated:YES];
+                dispatch_async(dispatch_get_main_queue(), ^(){
+                    [self.indicatorView stopAnimating];
+                    [self.dimmView removeFromSuperview];
+                    [self.navigationController popViewControllerAnimated:YES];
+                });
             }
         } progressBlock:^(NSInteger percentDone) {
             NSLog(@"%@", [NSNumber numberWithInteger:percentDone]);
-            self.sendingLabel.text = [NSString stringWithFormat:@"sending %@", [NSNumber numberWithInteger:percentDone]];
+            self.sendingLabel.text = [NSString stringWithFormat:@"sending %@%%", [NSNumber numberWithInteger:percentDone]];
         }];
     }];
     [dataTask resume];
+    
+    
 }
 
 - (void)selectSecureButtonPressed:(id)sender

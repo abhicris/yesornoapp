@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <KIChameleonView/KIChameleonView.h>
 #import <AVOSCloud/AVOSCloud.h>
 
 @interface YNCardTableViewCell : UITableViewCell
@@ -28,7 +27,7 @@ typedef NS_ENUM(NSInteger, SharedItemType)
 @property (nonatomic, strong) UILabel *postTimeLabel;
 @property (nonatomic, strong) UILabel *contentLabel;
 @property (nonatomic, strong) UIImageView *photoView;
-@property (nonatomic, strong) KIChameleonView *attachView;
+@property (nonatomic, strong) UIView *attachView;
 @property (nonatomic, strong) UIButton *likeButton;
 @property (nonatomic, strong) UILabel *likeCountLabel;
 @property (nonatomic, strong) UIButton *commentButton;

@@ -26,9 +26,12 @@
 @property (nonatomic, strong)UILabel *likeCount;
 @property (nonatomic, strong)UIButton *shareButton;
 @property (nonatomic, strong)UIButton *addCommentButton;
-
-@property (nonatomic, strong)NSArray *commentList;
+@property (nonatomic, strong)NSMutableArray *commentList;
 @property (nonatomic) AVUser *currentUser;
+
+@property (nonatomic, strong) UIView *commentView;
+@property (nonatomic, strong) UITextField *commentTextField;
+@property (nonatomic, strong) UIButton *postCommentButton;
 @end
 
 @implementation DetailViewController
@@ -40,7 +43,7 @@
     
     self.type = [[_post.dictionaryForObject objectForKey:@"type"] integerValue];
     self.currentUser = [AVUser currentUser];
-//    self.commentList = [_itemInfo objectForKey:@"comments"];
+    self.commentList = [NSMutableArray array];
     
     [self initDetailTableView];
     [self initAvatarImageView];
@@ -49,19 +52,155 @@
     [self initContentLabel];
     
     self.topView.frame = CGRectMake(0, 0, 320, self.likeButton.frame.origin.y + self.likeButton.frame.size.height+30);
-    self.topView.backgroundColor = [UIColor flatWhiteColor];
+    self.topView.backgroundColor = [UIColor whiteColor];
     self.detailTableView.tableHeaderView = self.topView;
     [self.view addSubview:self.detailTableView];
+    
+    [self addCommentView];
+    [self registerForKeyboardNotifications];
+    
+    [self loadNewComments];
 }
 
 - (void)initDetailTableView
 {
-    self.detailTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame)) style:UITableViewStylePlain];
+    self.detailTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), self.view.frame.size.height - 40) style:UITableViewStylePlain];
     self.detailTableView.delegate = self;
     self.detailTableView.dataSource = self;
     
     self.detailTableView.separatorColor = [UIColor flatWhiteColor];
     self.topView = [[UIView alloc] initWithFrame:CGRectZero];
+}
+
+
+- (void)registerForKeyboardNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)keyboardWillShow:(NSNotification *)noti
+{
+    NSDictionary *userInfo = noti.userInfo;
+    NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    UIViewAnimationCurve curve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    CGRect keyboardFrameEnd = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    keyboardFrameEnd = [self.view convertRect:keyboardFrameEnd fromView:nil];
+    [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | curve animations:^{
+        self.commentView.frame = CGRectMake(self.commentView.frame.origin.x, keyboardFrameEnd.origin.y-self.commentView.frame.size.height, self.commentView.frame.size.width, self.commentView.frame.size.height);
+    } completion:nil];
+}
+
+- (void)keyboardWillHide:(NSNotification *)noti
+{
+    NSDictionary *userInfo = noti.userInfo;
+    NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    UIViewAnimationCurve curve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+    [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | curve animations:^{
+        self.commentView.frame = CGRectMake(self.commentView.frame.origin.x, 528, self.commentView.frame.size.width, self.commentView.frame.size.height);
+    } completion:nil];
+}
+
+
+-(void)loadNewComments
+{
+    NSArray *comments = [_post.dictionaryForObject objectForKey:@"comments"];
+    for (NSDictionary *comment in comments) {
+        NSMutableDictionary *commentDict = [NSMutableDictionary dictionary];
+        NSMutableArray *relatedUsers = [NSMutableArray array];
+        NSDictionary *authorInfo = [comment objectForKey:@"author"];
+        NSDictionary *touserInfo = [comment objectForKey:@"touser"];
+        
+        [relatedUsers addObject:[authorInfo objectForKey:@"objectId"]];
+        [relatedUsers addObject:[touserInfo objectForKey:@"objectId"]];
+        
+        NSDate *createdAt = [comment objectForKey:@"createdAt"];
+        NSString *content = [comment objectForKey:@"content"];
+        AVQuery *authorQuery = [AVUser query];
+        [authorQuery whereKey:@"objectId" containedIn:[NSArray arrayWithArray:relatedUsers]];
+        [authorQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if (error == nil) {
+                if (objects.count >= 2) {
+                    [commentDict setObject:objects[0] forKey:@"author"];
+                    [commentDict setObject:objects[1] forKey:@"touser"];
+                } else if(objects.count > 0) {
+                    [commentDict setObject:objects[0] forKey:@"author"];
+                    [commentDict setObject:objects[0] forKey:@"touser"];
+                }
+                [commentDict setObject:content forKey:@"content"];
+                [commentDict setObject:createdAt forKey:@"createdAt"];
+                
+                [self.commentList addObject:commentDict];
+                
+                [self.detailTableView reloadData];
+                
+            } else {
+                NSLog(@"Error: %@", error);
+            }
+        }];
+    }
+}
+
+
+#pragma mark - UITextField delegate
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    [textField becomeFirstResponder];
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    textField.text = @"";
+    [textField resignFirstResponder];
+    return YES;
+}
+
+- (void)addCommentView
+{
+    self.commentView = [[UIView alloc] initWithFrame:CGRectMake(0, 528, 320, 40)];
+    self.commentView.backgroundColor = [UIColor flatWhiteColor];
+    [self.view addSubview:self.commentView];
+    
+    self.commentTextField = [[UITextField alloc] initWithFrame:CGRectMake(8, 5, 264, 30)];
+    self.commentTextField.delegate = self;
+    [self.commentTextField setPlaceholder:@"Add comment"];
+    self.commentTextField.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+    self.commentTextField.textColor = [UIColor flatNavyBlueColorDark];
+    self.commentTextField.borderStyle = UITextBorderStyleRoundedRect;
+    self.commentTextField.backgroundColor = [UIColor whiteColor];
+    [self.commentView addSubview:self.commentTextField];
+    
+    self.postCommentButton = [[UIButton alloc] initWithFrame:CGRectMake(290, 11, 16, 16)];
+    [self.postCommentButton setTitle:@"" forState:UIControlStateNormal];
+    [self.postCommentButton setBackgroundImage:[UIImage imageNamed:@"send-icon"] forState:UIControlStateNormal];
+    [self.postCommentButton addTarget:self action:@selector(postCommentButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [self.commentView addSubview:self.postCommentButton];
+}
+
+- (void)postCommentButtonPressed:(UIButton *)sender
+{
+    NSMutableDictionary *comment = [NSMutableDictionary dictionary];
+    [comment setObject:self.commentTextField.text forKey:@"content"];
+    [comment setObject:self.currentUser forKey:@"author"];
+    [comment setObject:[NSDate date] forKey:@"createdAt"];
+    AVQuery *query = [AVUser query];
+    [query whereKey:@"objectId" equalTo:[_author objectForKey:@"objectId"]];
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (error == nil) {
+            if (objects.count) {
+                AVUser *postAuthor = [objects firstObject];
+                [comment setObject:postAuthor forKey:@"touser"];
+                
+                [_post addObject:[NSDictionary dictionaryWithDictionary:comment] forKey:@"comments"];
+                [_post saveInBackground];
+                
+            } else {
+                NSLog(@"Error: %@", error);
+            }
+        }
+    }];
+
+    
 }
 
 
@@ -219,15 +358,15 @@
 {
     static NSString *cellIdentifier = @"commentcell";
     NSDictionary *commentInfo = self.commentList[indexPath.row];
-    NSDictionary *author = [commentInfo objectForKey:@"author"];
-//    NSDictionary *touser = [commentInfo objectForKey:@"touser"];
+    AVUser *author = [commentInfo objectForKey:@"author"];
+//    AVUser *touser = [commentInfo objectForKey:@"touser"];
     
     CommentTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (cell == nil) {
         cell = [[CommentTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
-    cell.avatarImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"%@", [author objectForKey:@"avatar"]]];
-    cell.nameLabel.text = [NSString stringWithFormat:@"%@", [author objectForKey:@"name"]];
+    cell.avatarImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"%@", [author.dictionaryForObject objectForKey:@"avatar"]]];
+    cell.nameLabel.text = [NSString stringWithFormat:@"%@", author.username];
     cell.contentLabel.frame = CGRectMake(56, 37, 250, 1000);
     cell.contentLabel.text = [NSString stringWithFormat:@"%@", [commentInfo objectForKey:@"content"]];
     [cell.contentLabel sizeToFit];
@@ -236,7 +375,7 @@
     cell.timeLabel.frame = CGRectMake(78, cell.contentLabel.frame.origin.y + cell.contentLabel.frame.size.height+2, 64, 21);
     cell.replyButton.frame = CGRectMake(150, cell.contentLabel.frame.origin.y + cell.contentLabel.frame.size.height + 4, 14, 12);
     cell.replyLabel.frame = CGRectMake(172, cell.contentLabel.frame.origin.y + cell.contentLabel.frame.size.height+2, 64, 21);
-    cell.timeLabel.text = @"4分钟前";
+//    cell.timeLabel.text = [DateFormatter friendlyDate:[commentInfo objectForKey:@"createdAt"]];
     [cell.replyButton addTarget:self action:@selector(replyButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     //TODO now fake data
     return  cell;

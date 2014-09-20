@@ -45,7 +45,7 @@
             {
                 [self initCellTop];
                 [self initBottomControls];
-                _attachView = [[KIChameleonView alloc] initWithFrame:CGRectMake(8, 108, 286, 100)];
+                _attachView = [[UIView alloc] initWithFrame:CGRectMake(8, 108, 286, 100)];
                 _attachView.contentMode = UIViewContentModeScaleAspectFill;
                 [self addSubview:_attachView];
                 _likeButton.frame = CGRectMake(10, _attachView.frame.origin.y + _attachView.frame.size.height + 15, 14, 13);
@@ -60,7 +60,7 @@
             {
                 [self initCellTop];
                 [self initBottomControls];
-                _attachView = [[KIChameleonView alloc] initWithFrame:CGRectMake(8, 108, 286, 150)];
+                _attachView = [[UIView alloc] initWithFrame:CGRectMake(8, 108, 286, 150)];
                 _attachView.contentMode = UIViewContentModeScaleAspectFill;
                 [self addSubview:_attachView];
                 _likeButton.frame = CGRectMake(10, _attachView.frame.origin.y + _attachView.frame.size.height + 15, 14, 13);

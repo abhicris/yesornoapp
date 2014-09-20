@@ -18,14 +18,16 @@
 #import <AVOSCloud/AVOSCloud.h>
 #import <POP/POP.h>
 #import <SDWebImage/UIImageView+WebCache.h>
-
+#import "PullToReact.h"
 
 @interface AppMainViewController ()
 @property (nonatomic, retain) NSMutableArray *posts;
 @property (nonatomic, retain) NSMutableArray *authors;
 @property (nonatomic, strong) UITableView *contentTableView;
 @property (nonatomic, retain) AVUser *currentUser;
-
+@property (nonatomic, strong) MNTPullToReactControl *reactControl;
+@property (nonatomic, strong) UIActivityIndicatorView *refreshIndicator;
+@property (nonatomic, strong) UILabel *refreshTip;
 @end
 
 @implementation AppMainViewController
@@ -44,8 +46,8 @@
     [self initRightMenuButton];
     [self initTableView];
     [self initPostButton];
-
-//    [self loadNewPosts];
+    [self addPulltoRefesh];
+    [self loadNewPosts];
     
 }
 
@@ -53,11 +55,31 @@
 {
     [super viewWillAppear:animated];
     
-    [self loadNewPosts];
+//    [self loadNewPosts];
 }
+
+- (void)addPulltoRefesh
+{
+    self.reactControl = [[MNTPullToReactControl alloc] initWithNumberOfActions:1];
+    MNTPullToReactView *contentView = [[MNTPullToReactView alloc] initWithFrame:CGRectMake(0, 0, 320, 50)];
+    self.refreshIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    self.refreshIndicator.center = CGPointMake(120, 25);
+    self.refreshTip = [[UILabel alloc] initWithFrame:CGRectMake(140, 20, 90, 15)];
+    self.refreshTip.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+    self.refreshTip.text = @"Pull to refresh";
+    self.refreshTip.textColor = [UIColor flatWhiteColorDark];
+    [contentView addSubview:self.refreshTip];
+    [contentView addSubview:self.refreshIndicator];
+    self.reactControl.contentView = contentView;
+    [self.reactControl addTarget:self action:@selector(loadNewPosts) forControlEvents:UIControlEventValueChanged];
+    self.contentTableView.reactControl = self.reactControl;
+}
+
 
 - (void)loadNewPosts
 {
+    [self.refreshIndicator startAnimating];
+    self.refreshTip.text = @"loading...";
     AVQuery *query = [AVQuery queryWithClassName:@"Question"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *posts, NSError *error) {
         NSMutableArray *newPosts = [NSMutableArray array];
@@ -77,6 +99,9 @@
             [self.posts insertObjects:posts atIndexes:set];
             
             [self.contentTableView reloadData];
+            [self.refreshIndicator stopAnimating];
+            [self.reactControl endAction:1];
+            self.refreshTip.text = @"Pull to refresh";
         }
     }];
 }
@@ -288,7 +313,7 @@
 
 -(void)initTableView
 {
-    self.contentTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame)) style:UITableViewStylePlain];
+    self.contentTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame)-64) style:UITableViewStylePlain];
     self.contentTableView.backgroundColor= [UIColor clearColor];
     self.contentTableView.dataSource = self;
     self.contentTableView.delegate = self;
@@ -309,7 +334,7 @@
 
 -(void)likeButtonPressed:(UIButton *)sender
 {
-    YNCardTableViewCell *cell = (YNCardTableViewCell *)[[[sender superview] superview] superview];
+    YNCardTableViewCell *cell = (YNCardTableViewCell *)[sender superview];
     NSIndexPath *indexPath = [self.contentTableView indexPathForCell:cell];
     AVObject *post = self.posts[indexPath.row];
 

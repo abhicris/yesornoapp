@@ -15,7 +15,7 @@ pod "AFNetworking", '~> 2.0'
 pod "AVOSCloud"
 pod "MONActivityIndicatorView"
 pod "SDWebImage", "~>3.6"
-pod "KIChameleonView"
+pod "MNTPullToReact", "~>1.0"
 end
 
 target "YesORNoAppTests" do

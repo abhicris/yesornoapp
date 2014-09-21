@@ -20,6 +20,10 @@
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "PullToReact.h"
 
+
+
+
+
 @interface AppMainViewController ()
 @property (nonatomic, retain) NSMutableArray *posts;
 @property (nonatomic, retain) NSMutableArray *authors;
@@ -54,8 +58,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-//    [self loadNewPosts];
 }
 
 - (void)addPulltoRefesh
@@ -80,14 +82,48 @@
 {
     [self.refreshIndicator startAnimating];
     self.refreshTip.text = @"loading...";
-    AVQuery *query = [AVQuery queryWithClassName:@"Question"];
+    AVQuery *query = [AVQuery queryWithClassName:@"Post"];
+    query.limit = 30;
     [query findObjectsInBackgroundWithBlock:^(NSArray *posts, NSError *error) {
         NSMutableArray *newPosts = [NSMutableArray array];
         NSArray *postIds = [self.posts valueForKeyPath:@"objectId"];
         if (error == nil) {
             for (AVObject *post in posts) {
                 if (![postIds containsObject:post.objectId]) {
-                    [newPosts addObject:post];
+                    //query author and comment likeusers for the post
+                    AVQuery *authorQuery = [AVUser query];
+                    [authorQuery whereKey:@"author" equalTo:[post.dictionaryForObject objectForKey:@"author"]];
+                    [authorQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                        if (error == nil) {
+                            if (objects.count) {
+                                AVUser *author = [objects firstObject];
+                                [post.dictionaryForObject setObject:author forKey:@"authorInfo"];
+                            } else {
+                                NSLog(@"Query Author Error: %@", error);
+                            }
+                        }
+                    }];
+                    AVQuery *commentsQuery = [AVQuery queryWithClassName:@"Comment"];
+                    [commentsQuery whereKey:@"post" equalTo:post];
+                    [commentsQuery countObjectsInBackgroundWithBlock:^(NSInteger number, NSError *error) {
+                        if (error == nil) {
+                            [post.dictionaryForObject setObject:[NSNumber numberWithInteger:number] forKey:@"commentcount"];
+                        } else {
+                            NSLog(@"Query Comments Count Error: %@", error);
+                        }
+                    }];
+                    AVQuery *likesQuery = [AVQuery queryWithClassName:@"PostLike"];
+                    [likesQuery whereKey:@"post" equalTo:post];
+                    [likesQuery countObjectsInBackgroundWithBlock:^(NSInteger number, NSError *error) {
+                        if (error == nil) {
+                            [post.dictionaryForObject setObject:[NSNumber numberWithInteger:number] forKey:@"likecount"];
+                        } else {
+                            NSLog(@"Query Likes Count Error: %@", error);
+                        }
+                    }];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [newPosts addObject:post];
+                    });
                 }
             }
             posts = [newPosts sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO]]];
@@ -184,9 +220,13 @@
     YNCardTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
 
     AVObject *postObject = self.posts[indexPath.row];
+    
+    NSLog(@"Info: %@", postObject.dictionaryForObject);
+    
+    
     NSInteger type = [[postObject.dictionaryForObject objectForKey:@"type"] integerValue];
 
-    NSDictionary *master = [postObject.dictionaryForObject objectForKey:@"master"];
+    AVUser *master = [postObject.dictionaryForObject objectForKey:@"authorInfo"];
     
     NSArray *likeusersId = [postObject.dictionaryForObject objectForKey:@"likeusersid"];
     //TODO figure out what's the cellitemtype according to data
@@ -198,8 +238,8 @@
             if (cell == nil) {
                 cell = [[YNCardTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:TextType];
             }
-            cell.avatarView.image = [UIImage imageNamed:[master objectForKey:@"avatar"]];
-            cell.authorNameLabel.text = [master objectForKey:@"username"];
+            cell.avatarView.image = [UIImage imageNamed:[master.dictionaryForObject objectForKey:@"avatar"]];
+            cell.authorNameLabel.text = [master.dictionaryForObject objectForKey:@"username"];
             
             cell.postTimeLabel.text = [DateFormatter friendlyDate:postObject.createdAt];
 
@@ -232,14 +272,14 @@
                 cell = [[YNCardTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier CellItemType:PictureType];
             }
 
-            cell.avatarView.image = [UIImage imageNamed:[master objectForKey:@"avatar"]];
+            cell.avatarView.image = [UIImage imageNamed:[master.dictionaryForObject objectForKey:@"avatar"]];
             
-            cell.authorNameLabel.text = [master objectForKey:@"username"];
+            cell.authorNameLabel.text = [master.dictionaryForObject objectForKey:@"username"];
             cell.postTimeLabel.text = [DateFormatter friendlyDate:postObject.createdAt];
             
             cell.contentLabel.text = [postObject.dictionaryForObject objectForKey:@"content"];
             
-            NSDictionary *imageInfo = [postObject.dictionaryForObject objectForKey:@"attachphoto"];
+            NSDictionary *imageInfo = [postObject.dictionaryForObject objectForKey:@"attachinfo"];
             NSURL *imageUrl = [NSURL URLWithString:[imageInfo objectForKey:@"url"]];
             [cell.photoView sd_setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"test"]];
             

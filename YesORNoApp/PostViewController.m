@@ -258,47 +258,48 @@
 {
     
     [self popUpSendProcess];
-    NSMutableDictionary *master = [NSMutableDictionary dictionary];
-    [master setObject:self.currentUser.objectId forKey:@"objectId"];
-    [master setObject:self.currentUser.username forKey:@"username"];
-    [master setObject:[self.currentUser.dictionaryForObject objectForKey:@"avatar"] forKey:@"avatar"];
     
-    NSMutableArray *atUsers = [[NSMutableArray alloc] init];
-    [atUsers addObject:[NSDictionary dictionaryWithDictionary:master]];
-    AVObject *postObject = [AVObject objectWithClassName:@"Question"];
+    AVObject *postObject = [AVObject objectWithClassName:@"Post"];
     [postObject setObject:self.contentTextView.text forKey:@"content"];
     [postObject setObject:[NSNumber numberWithInt:0] forKey:@"secure"];//0 : public 1:private 2: group   default -- 0
-    [postObject setObject:[NSArray array] forKey:@"likeusersid"];
-    [postObject setObject:[NSDictionary dictionaryWithDictionary:master] forKey:@"master"];
     [postObject setObject:self.currentUser forKey:@"author"];
-    [postObject setObject:[NSDictionary dictionaryWithDictionary:master] forKey:@"touser"];
-    [postObject setObject:[NSArray arrayWithArray:atUsers] forKey:@"atusers"];
-    [postObject setObject:[NSNumber numberWithInt:1] forKey:@"type"];// text  picture  audio  video
-    [postObject setObject:[NSNumber numberWithInt:0] forKey:@"likecount"];
-    [postObject setObject:[NSNumber numberWithInt:0] forKey:@"commentcount"];
-    NSString *imageUrlString = @"http://sdk.img.ly/img/img-123.jpg";
     
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
-    NSURLSessionDownloadTask *dataTask = [session downloadTaskWithURL:[NSURL URLWithString:imageUrlString] completionHandler:^(NSURL *url, NSURLResponse *response, NSError *error) {
-        NSData *imageData = [NSData dataWithContentsOfURL:url];
-        AVFile *imageFile = [AVFile fileWithName:@"image.png" data:imageData];
-        [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            if (succeeded) {
-                [postObject setObject:imageFile forKey:@"attachphoto"];
-                [postObject saveInBackground];
-                dispatch_async(dispatch_get_main_queue(), ^(){
-                    [self.indicatorView stopAnimating];
-                    [self.dimmView removeFromSuperview];
-                    [self.navigationController popViewControllerAnimated:YES];
-                });
-            }
-        } progressBlock:^(NSInteger percentDone) {
-            NSLog(@"%@", [NSNumber numberWithInteger:percentDone]);
-            self.sendingLabel.text = [NSString stringWithFormat:@"sending %@%%", [NSNumber numberWithInteger:percentDone]];
-        }];
+    [postObject setObject:[NSNumber numberWithInt:0] forKey:@"type"];// text  picture  audio  video
+
+    
+    
+//    NSString *imageUrlString = @"http://sdk.img.ly/img/img-123.jpg";
+//    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+//    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
+//    NSURLSessionDownloadTask *dataTask = [session downloadTaskWithURL:[NSURL URLWithString:imageUrlString] completionHandler:^(NSURL *url, NSURLResponse *response, NSError *error) {
+//        NSData *imageData = [NSData dataWithContentsOfURL:url];
+//        AVFile *imageFile = [AVFile fileWithName:@"image.png" data:imageData];
+//        [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+//            if (succeeded) {
+//                [postObject setObject:imageFile forKey:@"attachinfo"];
+//                [postObject saveInBackground];
+//                dispatch_async(dispatch_get_main_queue(), ^(){
+//                    [self.indicatorView stopAnimating];
+//                    [self.dimmView removeFromSuperview];
+//                    [self.navigationController popViewControllerAnimated:YES];
+//                });
+//            }
+//        } progressBlock:^(NSInteger percentDone) {
+//            NSLog(@"%@", [NSNumber numberWithInteger:percentDone]);
+//            self.sendingLabel.text = [NSString stringWithFormat:@"sending %@%%", [NSNumber numberWithInteger:percentDone]];
+//        }];
+//    }];
+//    [dataTask resume];
+    
+    [postObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            [self.indicatorView stopAnimating];
+            [self.dimmView removeFromSuperview];
+            [self.navigationController popViewControllerAnimated:YES];
+        } else {
+            NSLog(@"Error: %@", error);
+        }
     }];
-    [dataTask resume];
     
     
 }

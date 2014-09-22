@@ -263,43 +263,44 @@
     [postObject setObject:self.contentTextView.text forKey:@"content"];
     [postObject setObject:[NSNumber numberWithInt:0] forKey:@"secure"];//0 : public 1:private 2: group   default -- 0
     [postObject setObject:self.currentUser forKey:@"author"];
-    
-    [postObject setObject:[NSNumber numberWithInt:0] forKey:@"type"];// text  picture  audio  video
+    [postObject setObject:[NSNumber numberWithInteger:0] forKey:@"commentcount"];
+    [postObject setObject:[NSNumber numberWithInteger:0] forKey:@"likecount"];
+    [postObject setObject:[NSNumber numberWithInt:1] forKey:@"type"];// text  picture  audio  video
 
     
     
-//    NSString *imageUrlString = @"http://sdk.img.ly/img/img-123.jpg";
-//    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-//    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
-//    NSURLSessionDownloadTask *dataTask = [session downloadTaskWithURL:[NSURL URLWithString:imageUrlString] completionHandler:^(NSURL *url, NSURLResponse *response, NSError *error) {
-//        NSData *imageData = [NSData dataWithContentsOfURL:url];
-//        AVFile *imageFile = [AVFile fileWithName:@"image.png" data:imageData];
-//        [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-//            if (succeeded) {
-//                [postObject setObject:imageFile forKey:@"attachinfo"];
-//                [postObject saveInBackground];
-//                dispatch_async(dispatch_get_main_queue(), ^(){
-//                    [self.indicatorView stopAnimating];
-//                    [self.dimmView removeFromSuperview];
-//                    [self.navigationController popViewControllerAnimated:YES];
-//                });
-//            }
-//        } progressBlock:^(NSInteger percentDone) {
-//            NSLog(@"%@", [NSNumber numberWithInteger:percentDone]);
-//            self.sendingLabel.text = [NSString stringWithFormat:@"sending %@%%", [NSNumber numberWithInteger:percentDone]];
-//        }];
-//    }];
-//    [dataTask resume];
-    
-    [postObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            [self.indicatorView stopAnimating];
-            [self.dimmView removeFromSuperview];
-            [self.navigationController popViewControllerAnimated:YES];
-        } else {
-            NSLog(@"Error: %@", error);
-        }
+    NSString *imageUrlString = @"http://sdk.img.ly/img/img-123.jpg";
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
+    NSURLSessionDownloadTask *dataTask = [session downloadTaskWithURL:[NSURL URLWithString:imageUrlString] completionHandler:^(NSURL *url, NSURLResponse *response, NSError *error) {
+        NSData *imageData = [NSData dataWithContentsOfURL:url];
+        AVFile *imageFile = [AVFile fileWithName:@"image.png" data:imageData];
+        [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                [postObject setObject:imageFile forKey:@"attachinfo"];
+                [postObject saveInBackground];
+                dispatch_async(dispatch_get_main_queue(), ^(){
+                    [self.indicatorView stopAnimating];
+                    [self.dimmView removeFromSuperview];
+                    [self.navigationController popViewControllerAnimated:YES];
+                });
+            }
+        } progressBlock:^(NSInteger percentDone) {
+            NSLog(@"%@", [NSNumber numberWithInteger:percentDone]);
+            self.sendingLabel.text = [NSString stringWithFormat:@"sending %@%%", [NSNumber numberWithInteger:percentDone]];
+        }];
     }];
+    [dataTask resume];
+    
+//    [postObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+//        if (succeeded) {
+//            [self.indicatorView stopAnimating];
+//            [self.dimmView removeFromSuperview];
+//            [self.navigationController popViewControllerAnimated:YES];
+//        } else {
+//            NSLog(@"Error: %@", error);
+//        }
+//    }];
     
     
 }

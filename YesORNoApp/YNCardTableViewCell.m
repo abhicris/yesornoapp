@@ -22,6 +22,11 @@
             case TextType:
                 [self initCellTop];
                 [self initBottomControls];
+                _likeButton.frame = CGRectMake(10, _contentLabel.frame.origin.y + _contentLabel.frame.size.height + 15, 14, 13);
+                _likeCountLabel.frame = CGRectMake(32, _contentLabel.frame.origin.y + _contentLabel.frame.size.height + 15, 40, 15);
+                _commentButton.frame = CGRectMake(90, _contentLabel.frame.origin.y + _contentLabel.frame.size.height + 15, 14, 14);
+                _commentCountLabel.frame = CGRectMake(112, _contentLabel.frame.origin.y + _contentLabel.frame.size.height + 15, 38, 15);
+                _shareButton.frame = CGRectMake(170, _contentLabel.frame.origin.y + _contentLabel.frame.size.height + 15, 14, 12);
                 [self addBottomControls];
                 break;
             case PictureType:

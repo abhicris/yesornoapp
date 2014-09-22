@@ -21,17 +21,15 @@
 #import "PullToReact.h"
 
 
-
+#define QUERY_LIMIT 30
+#define ORDER_BY @"createdAt"
 
 
 @interface AppMainViewController ()
 @property (nonatomic, retain) NSMutableArray *posts;
-@property (nonatomic, retain) NSMutableArray *authors;
 @property (nonatomic, strong) UITableView *contentTableView;
 @property (nonatomic, retain) AVUser *currentUser;
-@property (nonatomic, strong) MNTPullToReactControl *reactControl;
-@property (nonatomic, strong) UIActivityIndicatorView *refreshIndicator;
-@property (nonatomic, strong) UILabel *refreshTip;
+
 @end
 
 @implementation AppMainViewController
@@ -43,15 +41,14 @@
     self.view.backgroundColor = [UIColor flatWhiteColor];
     self.currentUser = [AVUser currentUser];
     self.posts = [NSMutableArray array];
-    self.authors = [NSMutableArray array];
     
     [self.navigationController.navigationBar setBarTintColor:[UIColor flatRedColor]];
     [self initLeftMenuButton];
     [self initRightMenuButton];
     [self initTableView];
     [self initPostButton];
-    [self addPulltoRefesh];
-    [self loadNewPosts];
+
+    [self findNewPosts:NO];
     
 }
 
@@ -60,86 +57,53 @@
     [super viewWillAppear:animated];
 }
 
-- (void)addPulltoRefesh
+-(AVQuery *)getQuery
 {
-    self.reactControl = [[MNTPullToReactControl alloc] initWithNumberOfActions:1];
-    MNTPullToReactView *contentView = [[MNTPullToReactView alloc] initWithFrame:CGRectMake(0, 0, 320, 50)];
-    self.refreshIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    self.refreshIndicator.center = CGPointMake(120, 25);
-    self.refreshTip = [[UILabel alloc] initWithFrame:CGRectMake(140, 20, 90, 15)];
-    self.refreshTip.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    self.refreshTip.text = @"Pull to refresh";
-    self.refreshTip.textColor = [UIColor flatWhiteColorDark];
-    [contentView addSubview:self.refreshTip];
-    [contentView addSubview:self.refreshIndicator];
-    self.reactControl.contentView = contentView;
-    [self.reactControl addTarget:self action:@selector(loadNewPosts) forControlEvents:UIControlEventValueChanged];
-    self.contentTableView.reactControl = self.reactControl;
-}
-
-
-- (void)loadNewPosts
-{
-    [self.refreshIndicator startAnimating];
-    self.refreshTip.text = @"loading...";
     AVQuery *query = [AVQuery queryWithClassName:@"Post"];
-    query.limit = 30;
-    [query findObjectsInBackgroundWithBlock:^(NSArray *posts, NSError *error) {
-        NSMutableArray *newPosts = [NSMutableArray array];
-        NSArray *postIds = [self.posts valueForKeyPath:@"objectId"];
+    [query setLimit:QUERY_LIMIT];
+//    query.cachePolicy = kPFCachePolicyCacheElseNetwork;
+//    query.maxCacheAge = 60*60*24;
+    [query orderByAscending:ORDER_BY];
+    [query includeKey:@"author"];
+    return query;
+}
+-(void)findNewPosts:(BOOL)isMore
+{
+    AVQuery *query = [self getQuery];
+    if (self.posts.count) {
+        if (!isMore) {
+            NSDate *date = [[self.posts firstObject] objectForKey:@"createdAt"];
+            [query whereKey:ORDER_BY greaterThan:date];
+        } else {
+            NSDate *date = [[self.posts lastObject] objectForKey:@"createdAt"];
+            [query whereKey:ORDER_BY lessThan:date];
+        }
+    }
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (error == nil) {
-            for (AVObject *post in posts) {
-                if (![postIds containsObject:post.objectId]) {
-                    //query author and comment likeusers for the post
-                    AVQuery *authorQuery = [AVUser query];
-                    [authorQuery whereKey:@"author" equalTo:[post.dictionaryForObject objectForKey:@"author"]];
-                    [authorQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-                        if (error == nil) {
-                            if (objects.count) {
-                                AVUser *author = [objects firstObject];
-                                [post.dictionaryForObject setObject:author forKey:@"authorInfo"];
-                            } else {
-                                NSLog(@"Query Author Error: %@", error);
-                            }
-                        }
-                    }];
-                    AVQuery *commentsQuery = [AVQuery queryWithClassName:@"Comment"];
-                    [commentsQuery whereKey:@"post" equalTo:post];
-                    [commentsQuery countObjectsInBackgroundWithBlock:^(NSInteger number, NSError *error) {
-                        if (error == nil) {
-                            [post.dictionaryForObject setObject:[NSNumber numberWithInteger:number] forKey:@"commentcount"];
-                        } else {
-                            NSLog(@"Query Comments Count Error: %@", error);
-                        }
-                    }];
-                    AVQuery *likesQuery = [AVQuery queryWithClassName:@"PostLike"];
-                    [likesQuery whereKey:@"post" equalTo:post];
-                    [likesQuery countObjectsInBackgroundWithBlock:^(NSInteger number, NSError *error) {
-                        if (error == nil) {
-                            [post.dictionaryForObject setObject:[NSNumber numberWithInteger:number] forKey:@"likecount"];
-                        } else {
-                            NSLog(@"Query Likes Count Error: %@", error);
-                        }
-                    }];
-                    dispatch_async(dispatch_get_main_queue(), ^{
+            if (objects.count) {
+                NSMutableArray *newPosts = [NSMutableArray array];
+                NSArray *postsIds = [self.posts valueForKeyPath:@"objectId"];
+                for (AVObject *post in objects) {
+                    if (![postsIds containsObject:post.objectId]) {
                         [newPosts addObject:post];
-                    });
+                    }
                 }
+                long offset = 0;
+                if (isMore) {
+                    offset = self.posts.count;
+                }
+                
+                
+                NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(offset, newPosts.count)];
+                [self.posts insertObjects:newPosts atIndexes:indexSet];
+                
+                [self.posts sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:ORDER_BY ascending:NO]]];
+                [self.contentTableView reloadData];
             }
-            posts = [newPosts sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO]]];
-            long offset = 0;
-            if (self.posts.count) {
-                offset = self.posts.count;
-            }
-            NSIndexSet *set = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(offset, posts.count)];
-            [self.posts insertObjects:posts atIndexes:set];
-            
-            [self.contentTableView reloadData];
-            [self.refreshIndicator stopAnimating];
-            [self.reactControl endAction:1];
-            self.refreshTip.text = @"Pull to refresh";
         }
     }];
+    
 }
 
 
@@ -221,17 +185,10 @@
 
     AVObject *postObject = self.posts[indexPath.row];
     
-    NSLog(@"Info: %@", postObject.dictionaryForObject);
-    
-    
     NSInteger type = [[postObject.dictionaryForObject objectForKey:@"type"] integerValue];
 
-    AVUser *master = [postObject.dictionaryForObject objectForKey:@"authorInfo"];
+    AVUser *master = [postObject objectForKey:@"author"];
     
-    NSArray *likeusersId = [postObject.dictionaryForObject objectForKey:@"likeusersid"];
-    //TODO figure out what's the cellitemtype according to data
-    
-    cell.post = postObject;
     switch (type) {
         case 0:
         {
@@ -244,14 +201,8 @@
             cell.postTimeLabel.text = [DateFormatter friendlyDate:postObject.createdAt];
 
             cell.contentLabel.text = [postObject.dictionaryForObject objectForKey:@"content"];
-            if ([likeusersId containsObject:self.currentUser.objectId]) {
-                [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
-            } else
-            {
-                [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
-            }
-            
-           
+ 
+            [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
             [cell.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             cell.likeCountLabel.text = [NSString stringWithFormat:@"%@", [postObject.dictionaryForObject objectForKey:@"likecount"]];
             
@@ -283,13 +234,7 @@
             NSURL *imageUrl = [NSURL URLWithString:[imageInfo objectForKey:@"url"]];
             [cell.photoView sd_setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"test"]];
             
-            
-            if ([likeusersId containsObject:self.currentUser.objectId]) {
-                [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
-            } else
-            {
-                [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
-            }
+            [cell.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
             
             [cell.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
             cell.likeCountLabel.text = [NSString stringWithFormat:@"%@", [postObject.dictionaryForObject objectForKey:@"likecount"]];
@@ -339,14 +284,9 @@
 #pragma mark - UITableView delegate methods
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //Now go to the static page
-    //TODO the real data page
-    
     DetailViewController *detailViewController = [DetailViewController new];
     
     detailViewController.post = self.posts[indexPath.row];
-    NSDictionary *author = [[self.posts[indexPath.row] dictionaryForObject] objectForKey:@"master"];
-    detailViewController.author = author;
     
     [self.navigationController pushViewController:detailViewController animated:YES];
 }

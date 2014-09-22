@@ -14,6 +14,11 @@
 #import <POP/POP.h>
 #import <SDWebImage/UIImageView+WebCache.h>
 
+
+
+#define ORDER_BY @"createdAt"
+
+
 @interface DetailViewController ()
 
 @property (nonatomic, strong)UITableView *detailTableView;
@@ -28,7 +33,9 @@
 @property (nonatomic, strong)UIButton *addCommentButton;
 @property (nonatomic, strong)NSMutableArray *commentList;
 @property (nonatomic) AVUser *currentUser;
+@property (nonatomic) AVUser *author;
 
+@property (nonatomic) AVUser *commentToUser;
 @property (nonatomic, strong) UIView *commentView;
 @property (nonatomic, strong) UITextField *commentTextField;
 @property (nonatomic, strong) UIButton *postCommentButton;
@@ -44,6 +51,7 @@
     self.type = [[_post.dictionaryForObject objectForKey:@"type"] integerValue];
     self.currentUser = [AVUser currentUser];
     self.commentList = [NSMutableArray array];
+    self.author = [_post objectForKey:@"author"];
     
     [self initDetailTableView];
     [self initAvatarImageView];
@@ -104,41 +112,31 @@
 
 -(void)loadNewComments
 {
-    NSArray *comments = [_post.dictionaryForObject objectForKey:@"comments"];
-    for (NSDictionary *comment in comments) {
-        NSMutableDictionary *commentDict = [NSMutableDictionary dictionary];
-        NSMutableArray *relatedUsers = [NSMutableArray array];
-        NSDictionary *authorInfo = [comment objectForKey:@"author"];
-        NSDictionary *touserInfo = [comment objectForKey:@"touser"];
-        
-        [relatedUsers addObject:[authorInfo objectForKey:@"objectId"]];
-        [relatedUsers addObject:[touserInfo objectForKey:@"objectId"]];
-        
-        NSDate *createdAt = [comment objectForKey:@"createdAt"];
-        NSString *content = [comment objectForKey:@"content"];
-        AVQuery *authorQuery = [AVUser query];
-        [authorQuery whereKey:@"objectId" containedIn:[NSArray arrayWithArray:relatedUsers]];
-        [authorQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-            if (error == nil) {
-                if (objects.count >= 2) {
-                    [commentDict setObject:objects[0] forKey:@"author"];
-                    [commentDict setObject:objects[1] forKey:@"touser"];
-                } else if(objects.count > 0) {
-                    [commentDict setObject:objects[0] forKey:@"author"];
-                    [commentDict setObject:objects[0] forKey:@"touser"];
+    AVQuery *commentsQuery = [AVQuery queryWithClassName:@"Comment"];
+    [commentsQuery includeKey:@"author"];
+    [commentsQuery includeKey:@"touser"];
+    [commentsQuery whereKey:@"post" equalTo:_post];
+    [commentsQuery findObjectsInBackgroundWithBlock:^(NSArray *comments, NSError *error) {
+        if (error == nil) {
+            NSMutableArray *newComments = [NSMutableArray array];
+            NSArray *commentIds = [self.commentList valueForKeyPath:@"objectId"];
+            if (comments.count) {
+                for (AVObject *comment in comments) {
+                    if (![commentIds containsObject:comment.objectId]) {
+                        [newComments addObject:comment];
+                    }
                 }
-                [commentDict setObject:content forKey:@"content"];
-                [commentDict setObject:createdAt forKey:@"createdAt"];
-                
-                [self.commentList addObject:commentDict];
+                long offset = self.commentList.count;
+                NSIndexSet *indexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(offset, newComments.count)];
+                [self.commentList insertObjects:newComments atIndexes:indexSet];
+                [self.commentList sortUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:ORDER_BY ascending:NO]]];
                 
                 [self.detailTableView reloadData];
-                
-            } else {
-                NSLog(@"Error: %@", error);
             }
-        }];
-    }
+        } else {
+            NSLog(@"Comment Query Error: %@", error);
+        }
+    }];
 }
 
 
@@ -151,6 +149,7 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     textField.text = @"";
+    self.commentToUser = nil;
     [textField resignFirstResponder];
     return YES;
 }
@@ -179,27 +178,24 @@
 
 - (void)postCommentButtonPressed:(UIButton *)sender
 {
-    NSMutableDictionary *comment = [NSMutableDictionary dictionary];
-    [comment setObject:self.commentTextField.text forKey:@"content"];
+    AVObject *comment = [AVObject objectWithClassName:@"Comment"];
+    [comment setObject:_post forKey:@"post"];
     [comment setObject:self.currentUser forKey:@"author"];
-    [comment setObject:[NSDate date] forKey:@"createdAt"];
-    AVQuery *query = [AVUser query];
-    [query whereKey:@"objectId" equalTo:[_author objectForKey:@"objectId"]];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        if (error == nil) {
-            if (objects.count) {
-                AVUser *postAuthor = [objects firstObject];
-                [comment setObject:postAuthor forKey:@"touser"];
-                
-                [_post addObject:[NSDictionary dictionaryWithDictionary:comment] forKey:@"comments"];
-                [_post saveInBackground];
-                
-            } else {
-                NSLog(@"Error: %@", error);
-            }
+    if (!self.commentToUser) {
+        self.commentToUser = self.author;
+    }
+    [comment setObject:self.commentToUser forKey:@"touser"];
+    [comment setObject:self.commentTextField.text forKey:@"content"];
+    
+    [comment saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            self.commentTextField.text = @"";
+            [self.commentTextField resignFirstResponder];
+            [self loadNewComments];
+        } else {
+            NSLog(@"Post Comment Error: %@", error);
         }
     }];
-
     
 }
 
@@ -212,7 +208,7 @@
     avatarImageView.layer.masksToBounds = YES;
     avatarImageView.layer.borderWidth = 2;
     avatarImageView.layer.borderColor = [UIColor whiteColor].CGColor;
-    avatarImageView.image = [UIImage imageNamed:[_author objectForKey:@"avatar"]];
+    avatarImageView.image = [UIImage imageNamed:[self.author.dictionaryForObject objectForKey:@"avatar"]];
     [self.topView addSubview:avatarImageView];
     
 }
@@ -223,7 +219,7 @@
     nameLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
     nameLabel.textColor = [UIColor flatNavyBlueColorDark];
     nameLabel.backgroundColor = [UIColor clearColor];
-    nameLabel.text = [_author objectForKey:@"username"];
+    nameLabel.text = [self.author objectForKey:@"username"];
     
     [self.topView addSubview:nameLabel];
     
@@ -269,7 +265,7 @@
         }
         case 1:
         {
-            NSDictionary *imageFileInfo = [_post.dictionaryForObject objectForKey:@"attachphoto"];
+            NSDictionary *imageFileInfo = [_post.dictionaryForObject objectForKey:@"attachinfo"];
             NSURL *imageUrl = [NSURL URLWithString:[imageFileInfo objectForKey:@"url"]];
             
 
@@ -357,9 +353,9 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *cellIdentifier = @"commentcell";
-    NSDictionary *commentInfo = self.commentList[indexPath.row];
+    AVObject *commentInfo = self.commentList[indexPath.row];
     AVUser *author = [commentInfo objectForKey:@"author"];
-//    AVUser *touser = [commentInfo objectForKey:@"touser"];
+    AVUser *touser = [commentInfo objectForKey:@"touser"];
     
     CommentTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (cell == nil) {
@@ -368,14 +364,14 @@
     cell.avatarImageView.image = [UIImage imageNamed:[NSString stringWithFormat:@"%@", [author.dictionaryForObject objectForKey:@"avatar"]]];
     cell.nameLabel.text = [NSString stringWithFormat:@"%@", author.username];
     cell.contentLabel.frame = CGRectMake(56, 37, 250, 1000);
-    cell.contentLabel.text = [NSString stringWithFormat:@"%@", [commentInfo objectForKey:@"content"]];
+    cell.contentLabel.text = [NSString stringWithFormat:@"reply to: %@ %@", touser.username, [commentInfo.dictionaryForObject objectForKey:@"content"]];
     [cell.contentLabel sizeToFit];
     
     cell.timeIconview.frame = CGRectMake(56, cell.contentLabel.frame.origin.y + cell.contentLabel.frame.size.height + 4, 14, 14);
     cell.timeLabel.frame = CGRectMake(78, cell.contentLabel.frame.origin.y + cell.contentLabel.frame.size.height+2, 64, 21);
     cell.replyButton.frame = CGRectMake(150, cell.contentLabel.frame.origin.y + cell.contentLabel.frame.size.height + 4, 14, 12);
     cell.replyLabel.frame = CGRectMake(172, cell.contentLabel.frame.origin.y + cell.contentLabel.frame.size.height+2, 64, 21);
-//    cell.timeLabel.text = [DateFormatter friendlyDate:[commentInfo objectForKey:@"createdAt"]];
+    cell.timeLabel.text = [DateFormatter friendlyDate:[commentInfo objectForKey:@"createdAt"]];
     [cell.replyButton addTarget:self action:@selector(replyButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     //TODO now fake data
     return  cell;
@@ -431,8 +427,14 @@
     
 }
 
- - (void)replyButtonPressed:(id)sender
+ - (void)replyButtonPressed:(UIButton *)sender
 {
-                                      
+    CommentTableViewCell *cell = (CommentTableViewCell *)[sender superview];
+    NSIndexPath *indexPath = [self.detailTableView indexPathForCell:cell];
+    AVObject *comment = self.commentList[indexPath.row];
+    AVUser *author = [comment objectForKey:@"author"];
+    self.commentToUser = author;
+//    self.commentTextField.text = author.username;
+    [self.commentTextField becomeFirstResponder];
 }
 @end

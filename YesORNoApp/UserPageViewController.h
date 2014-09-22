@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AVOSCloud/AVOSCloud.h>
 
 @interface UserPageViewController : UIViewController<UITableViewDelegate, UITableViewDataSource>
-@property (nonatomic, strong) NSDictionary *master;
+@property (nonatomic, strong) AVUser *user;
 @end

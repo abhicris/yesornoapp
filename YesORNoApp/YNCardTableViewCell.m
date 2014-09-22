@@ -8,6 +8,7 @@
 
 #import "YNCardTableViewCell.h"
 #import "chameleon.h"
+#import "UserPageViewController.h"
 
 @implementation YNCardTableViewCell
 
@@ -89,6 +90,12 @@
     _avatarView.layer.cornerRadius = _avatarView.layer.frame.size.height / 2;
     _avatarView.clipsToBounds = YES;
     _avatarView.contentMode = UIViewContentModeScaleAspectFill;
+    
+    _avatarView.userInteractionEnabled = YES;
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAvatar:)];
+    tapGesture.numberOfTapsRequired = 1;
+    tapGesture.numberOfTouchesRequired = 1;
+    [_avatarView addGestureRecognizer:tapGesture];
     [self addSubview:_avatarView];
     
     _authorNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(56, 8, 256, 21)];
@@ -111,6 +118,15 @@
     _contentLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:12];
     _contentLabel.textColor = [UIColor flatNavyBlueColorDark];
     [self addSubview:_contentLabel];
+}
+
+
+- (void)tapAvatar:(UIGestureRecognizer *)gestureRecognizer
+{
+    AVUser *master = [_post objectForKey:@"author"];
+    UserPageViewController *userPageViewController = [UserPageViewController new];
+    userPageViewController.user = master;
+    [_viewController.navigationController pushViewController:userPageViewController animated:YES];
 }
 
 - (void)initBottomControls

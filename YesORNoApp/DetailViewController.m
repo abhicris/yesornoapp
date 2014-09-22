@@ -70,6 +70,7 @@
     [self loadNewComments];
 }
 
+
 - (void)initDetailTableView
 {
     self.detailTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.frame), self.view.frame.size.height - 40) style:UITableViewStylePlain];
@@ -96,6 +97,9 @@
     keyboardFrameEnd = [self.view convertRect:keyboardFrameEnd fromView:nil];
     [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | curve animations:^{
         self.commentView.frame = CGRectMake(self.commentView.frame.origin.x, keyboardFrameEnd.origin.y-self.commentView.frame.size.height, self.commentView.frame.size.width, self.commentView.frame.size.height);
+        
+        self.detailTableView.frame = CGRectMake(self.detailTableView.frame.origin.x, self.detailTableView.frame.origin.y, self.detailTableView.frame.size.width, self.commentView.frame.origin.y);
+        
     } completion:nil];
 }
 
@@ -106,6 +110,8 @@
     UIViewAnimationCurve curve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
     [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | curve animations:^{
         self.commentView.frame = CGRectMake(self.commentView.frame.origin.x, 528, self.commentView.frame.size.width, self.commentView.frame.size.height);
+        
+        self.detailTableView.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.frame), self.view.frame.size.height - 40);
     } completion:nil];
 }
 
@@ -309,12 +315,26 @@
 - (void)initBottomControls
 {
     [self.likeButton setTitle:@"" forState:UIControlStateNormal];
-    NSArray *likeusersId = [_post.dictionaryForObject objectForKey:@"likeusersid"];
-    if ([likeusersId containsObject:self.currentUser.objectId]) {
-        [self.likeButton setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
-    } else {
-        [self.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
-    }
+    AVQuery *likesQuery = [AVQuery queryWithClassName:@"PostLike"];
+    [likesQuery whereKey:@"post" equalTo:_post];
+    [likesQuery includeKey:@"author"];
+    [likesQuery findObjectsInBackgroundWithBlock:^(NSArray *likes, NSError *error) {
+        if (error == nil) {
+            if (likes.count) {
+                NSArray *likeUsers = [likes valueForKeyPath:@"author"];
+                if ([likeUsers containsObject:self.currentUser]) {
+                    [self.likeButton setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
+                } else {
+                    [self.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
+                }
+            } else {
+                [self.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
+            }
+        } else {
+            NSLog(@"Error: %@", error);
+        }
+    }];
+    
     [self.likeButton addTarget:self action:@selector(likeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.topView addSubview:self.likeButton];
     
@@ -373,7 +393,6 @@
     cell.replyLabel.frame = CGRectMake(172, cell.contentLabel.frame.origin.y + cell.contentLabel.frame.size.height+2, 64, 21);
     cell.timeLabel.text = [DateFormatter friendlyDate:[commentInfo objectForKey:@"createdAt"]];
     [cell.replyButton addTarget:self action:@selector(replyButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    //TODO now fake data
     return  cell;
 }
 
@@ -389,32 +408,78 @@
 
 -(void)likeButtonPressed:(UIButton *)sender
 {
-    int likecount = [[_post.dictionaryForObject objectForKey:@"likecount"] intValue];
-    NSMutableArray *likeUsersId = [_post.dictionaryForObject objectForKey:@"likeusersid"];
-    if (likeUsersId) {
-        if ([likeUsersId containsObject:self.currentUser.objectId]) {
-            likecount = likecount - 1;
-            [_post removeObject:self.currentUser.objectId forKey:@"likeusersid"];
-            [sender setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
-            
+    __block int likecount = [[_post.dictionaryForObject objectForKey:@"likecount"] intValue];
+    AVQuery *likeQuery = [AVQuery queryWithClassName:@"PostLike"];
+    [likeQuery whereKey:@"post" equalTo:_post];
+    [likeQuery includeKey:@"author"];
+    
+    [likeQuery findObjectsInBackgroundWithBlock:^(NSArray *likes, NSError *error) {
+        if (error == nil) {
+            if (likes.count) {
+                BOOL hasLiked = NO;
+                for (AVObject *like in likes) {
+                    AVUser *author = [like objectForKey:@"author"];
+                    if (author.objectId != self.currentUser.objectId) {
+                        continue;
+                    } else {
+                        likecount = likecount - 1;
+                        [like deleteInBackground];
+                        self.likeCount.text = [NSString stringWithFormat:@"%d", likecount];
+                        [self.likeButton setBackgroundImage:[UIImage imageNamed:@"like2-icon"] forState:UIControlStateNormal];
+                        POPSpringAnimation *scaleAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerScaleXY];
+                        scaleAnimation.fromValue = [NSValue valueWithCGSize:CGSizeMake(0.6f, 0.6f)];
+                        scaleAnimation.toValue = [NSValue valueWithCGSize:CGSizeMake(1.0f, 1.0f)];
+                        scaleAnimation.springBounciness = 20;
+                        [self.likeButton.layer pop_addAnimation:scaleAnimation forKey:@"scaleanimation"];
+                        [_post setObject:[NSNumber numberWithInt:likecount] forKey:@"likecount"];
+                        [_post saveInBackground];
+                    }
+                }
+                if (!hasLiked) {
+                    likecount = likecount + 1;
+                    AVObject *like = [AVObject objectWithClassName:@"PostLike"];
+                    [like setObject:_post forKey:@"post"];
+                    [like setObject:self.currentUser forKey:@"author"];
+                    [like saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                        if (succeeded) {
+                            self.likeCount.text = [NSString stringWithFormat:@"%d", likecount];
+                            [self.likeButton setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
+                            POPSpringAnimation *scaleAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerScaleXY];
+                            scaleAnimation.fromValue = [NSValue valueWithCGSize:CGSizeMake(0.6f, 0.6f)];
+                            scaleAnimation.toValue = [NSValue valueWithCGSize:CGSizeMake(1.0f, 1.0f)];
+                            scaleAnimation.springBounciness = 20;
+                            [self.likeButton.layer pop_addAnimation:scaleAnimation forKey:@"scaleanimation"];
+                            [_post setObject:[NSNumber numberWithInt:likecount] forKey:@"likecount"];
+                            [_post saveInBackground];
+                        }
+                    }];
+                    
+                }
+            } else {
+                likecount = likecount + 1;
+                AVObject *like = [AVObject objectWithClassName:@"PostLike"];
+                [like setObject:_post forKey:@"post"];
+                [like setObject:self.currentUser forKey:@"author"];
+                [like saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    if (succeeded) {
+                        self.likeCount.text = [NSString stringWithFormat:@"%d", likecount];
+                        [self.likeButton setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
+                        POPSpringAnimation *scaleAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerScaleXY];
+                        scaleAnimation.fromValue = [NSValue valueWithCGSize:CGSizeMake(0.6f, 0.6f)];
+                        scaleAnimation.toValue = [NSValue valueWithCGSize:CGSizeMake(1.0f, 1.0f)];
+                        scaleAnimation.springBounciness = 20;
+                        [self.likeButton.layer pop_addAnimation:scaleAnimation forKey:@"scaleanimation"];
+                        [_post setObject:[NSNumber numberWithInt:likecount] forKey:@"likecount"];
+                        [_post saveInBackground];
+                    }
+                }];
+            }
         } else {
-            likecount = likecount + 1;
-            [_post addObject:self.currentUser.objectId forKey:@"likeusersid"];
-            [sender setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
+            NSLog(@"Like Query Error: %@", error);
         }
-    } else {
-        likecount = likecount + 1;
-        [_post addObject:self.currentUser.objectId forKey:@"likeusersid"];
-        [sender setBackgroundImage:[UIImage imageNamed:@"like-active-icon"] forState:UIControlStateNormal];
-    }
-    self.likeCount.text = [NSString stringWithFormat:@"%d", likecount];
-    POPSpringAnimation *scaleAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerScaleXY];
-    scaleAnimation.fromValue = [NSValue valueWithCGSize:CGSizeMake(0.6f, 0.6f)];
-    scaleAnimation.toValue = [NSValue valueWithCGSize:CGSizeMake(1.0f, 1.0f)];
-    scaleAnimation.springBounciness = 20;
-    [sender.layer pop_addAnimation:scaleAnimation forKey:@"scaleanimation"];
-    [_post setObject:[NSNumber numberWithInt:likecount] forKey:@"likecount"];
-    [_post saveInBackground];
+    }];
+
+    
 }
 
 - (void)shareButtonPressed:(id)sender

@@ -34,4 +34,6 @@ typedef NS_ENUM(NSInteger, SharedItemType)
 @property (nonatomic, strong) UILabel *commentCountLabel;
 @property (nonatomic, strong) UIButton *shareButton;
 
+@property (nonatomic, strong) AVObject *post;
+@property (nonatomic, strong) UIViewController *viewController;
 @end

@@ -24,8 +24,11 @@
 @property (nonatomic, strong)AVUser *userInfo;
 @property (nonatomic, strong)NSMutableArray *userPosts;
 @property (nonatomic)BOOL hasFriended;
-@property (nonatomic, strong) UILabel *postCount;
-@property (nonatomic, strong) UILabel *friendsCount;
+
+
+@property (nonatomic, strong) UIButton *postTipButton;
+@property (nonatomic, strong) UIButton *followerButton;
+@property (nonatomic, strong) UIButton *followeeButton;
 @end
 
 @implementation UserPageViewController
@@ -36,7 +39,7 @@
     self.view.backgroundColor = [UIColor whiteColor];
     [self.navigationController.navigationBar setBarTintColor:[UIColor flatRedColor]];
     self.userPosts = [NSMutableArray array];
-    if (_master == nil) {
+    if (_user == nil) {
         self.userInfo = [AVUser currentUser];
         [self initLeftMenuButton];
         [self initRightMenuButton];
@@ -46,7 +49,7 @@
         [self loadUserPosts];
     } else {
         AVQuery *query = [AVUser query];
-        [query whereKey:@"objectId" equalTo:[_master objectForKey:@"objectId"]];
+        [query whereKey:@"objectId" equalTo:[_user objectForKey:@"objectId"]];
         [query findObjectsInBackgroundWithBlock:^(NSArray *users, NSError *error) {
             if (error == nil) {
                 if (users.count) {
@@ -68,10 +71,10 @@
 
 - (void)loadUserPosts
 {
-    AVQuery *postQuery = [AVQuery queryWithClassName:@"Question"];
+    AVQuery *postQuery = [AVQuery queryWithClassName:@"Post"];
     [postQuery whereKey:@"author" equalTo:self.userInfo];
     [postQuery findObjectsInBackgroundWithBlock:^(NSArray *posts, NSError *error) {
-        self.postCount.text = [NSString stringWithFormat:@"%@", [NSNumber numberWithInteger:posts.count]];
+        
         NSMutableArray *newPosts = [NSMutableArray array];
         NSArray *postIds = [self.userPosts valueForKeyPath:@"objectId"];
         if (error == nil) {
@@ -116,10 +119,10 @@
 
 - (void)initTopUserInfoView
 {
-    UIView *topUserInfoView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 265)];
+    UIView *topUserInfoView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 305)];
     topUserInfoView.backgroundColor = [UIColor flatWhiteColor];
     
-    UIImageView *topBackgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 210)];
+    UIImageView *topBackgroundImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 250)];
     topBackgroundImageView.backgroundColor = [UIColor clearColor];
     topBackgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
     topBackgroundImageView.clipsToBounds = YES;
@@ -186,67 +189,116 @@
     
     [topUserInfoView addSubview:topBackgroundImageView];
 
-    UILabel *postTitle = [[UILabel alloc] initWithFrame:CGRectMake(32, 213, 44, 21)];
-    postTitle.text = @"Posts";
-    postTitle.textColor = [UIColor flatNavyBlueColorDark];
-    postTitle.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    postTitle.backgroundColor = [UIColor clearColor];
     
-    [topUserInfoView addSubview:postTitle];
+    self.postTipButton = [[UIButton alloc] initWithFrame:CGRectMake(20, 255, 80, 50)];
+    self.postTipButton.backgroundColor = [UIColor clearColor];
+    self.postTipButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+    self.postTipButton.titleLabel.numberOfLines = 0;
+    self.postTipButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    [self.postTipButton setTitleColor:[UIColor flatNavyBlueColorDark] forState:UIControlStateNormal];
+    AVQuery *postCountQuery = [AVQuery queryWithClassName:@"Post"];
+    [postCountQuery whereKey:@"author" equalTo:self.userInfo];
+    [postCountQuery countObjectsInBackgroundWithBlock:^(NSInteger number, NSError *error) {
+        if (error == nil) {
+            [self.postTipButton setTitle:[NSString stringWithFormat:@"Posts\r%@", [NSNumber numberWithInteger:number]] forState:UIControlStateNormal];
+        } else {
+            NSLog(@"Error: %@", error);
+        }
+    }];
     
-    self.postCount = [[UILabel alloc] initWithFrame:CGRectMake(17, 236, 75, 21)];
-    self.postCount.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
-    self.postCount.textColor = [UIColor flatNavyBlueColorDark];
+    [self.postTipButton addTarget:self action:@selector(postTipButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [topUserInfoView addSubview:self.postTipButton];
+    
+    self.followerButton = [[UIButton alloc] initWithFrame:CGRectMake(120, 255, 80, 50)];
+    self.followerButton.backgroundColor = [UIColor clearColor];
+    self.followerButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+    self.followerButton.titleLabel.numberOfLines = 0;
+    self.followerButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    [self.followerButton setTitleColor:[UIColor flatNavyBlueColorDark] forState:UIControlStateNormal];
+    AVQuery *followerCount = [AVQuery queryWithClassName:@"_Follower"];
+    [followerCount whereKey:@"follower" equalTo:self.userInfo];
+    [followerCount countObjectsInBackgroundWithBlock:^(NSInteger number, NSError *error) {
+        if (error == nil) {
+            [self.followerButton setTitle:[NSString stringWithFormat:@"Followers\r%@", [NSNumber numberWithInteger:number]] forState:UIControlStateNormal];
+        } else {
+            NSLog(@"Error: %@", error);
+        }
+    }];
+    [self.followerButton addTarget:self action:@selector(followerButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [topUserInfoView addSubview:self.followerButton];
+    
+    self.followeeButton = [[UIButton alloc] initWithFrame:CGRectMake(220, 255, 80, 50)];
+    self.followeeButton.backgroundColor = [UIColor clearColor];
+    self.followeeButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
+    self.followeeButton.titleLabel.numberOfLines = 0;
+    self.followeeButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    [self.followeeButton setTitleColor:[UIColor flatNavyBlueColorDark] forState:UIControlStateNormal];
+    AVQuery *followeeCount = [AVQuery queryWithClassName:@"_Followee"];
+    [followeeCount whereKey:@"master" equalTo:self.userInfo];
+    [followeeCount countObjectsInBackgroundWithBlock:^(NSInteger number, NSError *error) {
+        if (error == nil) {
+            [self.followeeButton setTitle:[NSString stringWithFormat:@"Followees\r%@", [NSNumber numberWithInteger:number]] forState:UIControlStateNormal];
+        } else {
+            NSLog(@"Error: %@", error);
+        }
 
-    self.postCount.textAlignment = NSTextAlignmentCenter;
-    self.postCount.backgroundColor = [UIColor clearColor];
-    
-    [topUserInfoView addSubview:self.postCount];
-    
-    UILabel *friendsTitle = [[UILabel alloc] initWithFrame:CGRectMake(138, 213, 44, 21)];
-    friendsTitle.text = @"Friends";
-    friendsTitle.textColor = [UIColor flatNavyBlueColorDark];
-    friendsTitle.font = [UIFont fontWithName:@"Roboto-Medium" size:12];
-    friendsTitle.backgroundColor = [UIColor clearColor];
-    
-    [topUserInfoView addSubview:friendsTitle];
-    self.friendsCount = [[UILabel alloc] initWithFrame:CGRectMake(123, 236, 75, 21)];
-    self.friendsCount.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
-    self.friendsCount.textColor = [UIColor flatNavyBlueColorDark];
-    NSArray *friends = [self.userInfo.dictionaryForObject objectForKey:@"friends"];
-    self.friendsCount.text = [NSString stringWithFormat:@"%@", [NSNumber numberWithInteger:friends.count]];
-    self.friendsCount.textAlignment = NSTextAlignmentCenter;
-    self.friendsCount.backgroundColor = [UIColor clearColor];
-    
-    [topUserInfoView addSubview:self.friendsCount];
+    }];
+    [self.followeeButton addTarget:self action:@selector(followeeButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [topUserInfoView addSubview:self.followeeButton];
     
     
-    UIButton *addFriendButton = [[UIButton alloc] initWithFrame:CGRectMake(212, 218, 94, 32)];
-    UIButton *cancelFriendButton = [[UIButton alloc] initWithFrame:CGRectMake(212, 218, 94, 32)];
     
-    addFriendButton.backgroundColor = [UIColor flatMintColor];
-    cancelFriendButton.backgroundColor = [UIColor flatRedColor];
-    
-    [addFriendButton setTitle:@"Add" forState:UIControlStateNormal];
-    [cancelFriendButton setTitle:@"Cancel" forState:UIControlStateNormal];
-    [addFriendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [cancelFriendButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    addFriendButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
-    cancelFriendButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Medium" size:14];
-    addFriendButton.layer.cornerRadius = 5;
-    cancelFriendButton.layer.cornerRadius = 5;
-    
-    [addFriendButton addTarget:self action:@selector(addFriendButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [cancelFriendButton addTarget:self action:@selector(cancelFriendButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    if (self.hasFriended) {
-        [topUserInfoView addSubview:cancelFriendButton];
-    } else {
-        [topUserInfoView addSubview:addFriendButton];
+    if (self.userInfo != [AVUser currentUser]) {
+        UIButton *addFriendButton = [[UIButton alloc] initWithFrame:CGRectMake(115, 195, 84, 36)];
+        UIButton *cancelFriendButton = [[UIButton alloc] initWithFrame:CGRectMake(115, 195, 84, 36)];
+        
+        addFriendButton.backgroundColor = [UIColor clearColor];
+        cancelFriendButton.backgroundColor = [UIColor clearColor];
+        addFriendButton.layer.borderColor = [UIColor flatMintColor].CGColor;
+        cancelFriendButton.layer.borderColor = [UIColor flatRedColor].CGColor;
+        addFriendButton.layer.borderWidth = 1;
+        cancelFriendButton.layer.borderWidth = 1;
+        addFriendButton.layer.cornerRadius = 18;
+        cancelFriendButton.layer.cornerRadius = 18;
+        
+        addFriendButton.clipsToBounds = YES;
+        cancelFriendButton.clipsToBounds = YES;
+        
+        
+        [addFriendButton setTitle:@"Follow" forState:UIControlStateNormal];
+        [cancelFriendButton setTitle:@"Cancel" forState:UIControlStateNormal];
+        [addFriendButton setTitleColor:[UIColor flatMintColor] forState:UIControlStateNormal];
+        [cancelFriendButton setTitleColor:[UIColor flatRedColor] forState:UIControlStateNormal];
+        addFriendButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
+        cancelFriendButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
+        
+        
+        [addFriendButton addTarget:self action:@selector(addFriendButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+        [cancelFriendButton addTarget:self action:@selector(cancelFriendButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+        if (self.hasFriended) {
+            [topUserInfoView addSubview:cancelFriendButton];
+        } else {
+            [topUserInfoView addSubview:addFriendButton];
+        }
     }
-    
     self.postsTableView.tableHeaderView = topUserInfoView;
 }
 
+
+- (void)postTipButtonPressed:(UIButton *)sender
+{
+    
+}
+
+- (void)followerButtonPressed:(UIButton *)sender
+{
+    
+}
+
+- (void)followeeButtonPressed:(UIButton *)sender
+{
+    
+}
 
 -(void)initpostsTableView
 {
@@ -327,7 +379,7 @@
             cell.nameLabel.text = [NSString stringWithFormat:@"%@", self.userInfo.username];
             cell.contentLabel.text = [NSString stringWithFormat:@"%@", [itemDict.dictionaryForObject objectForKey:@"content"]];
             
-            NSDictionary *imageFileInfo = [itemDict.dictionaryForObject objectForKey:@"attachphoto"];
+            NSDictionary *imageFileInfo = [itemDict.dictionaryForObject objectForKey:@"attachinfo"];
             NSURL *imageUrl = [NSURL URLWithString:[imageFileInfo objectForKey:@"url"]];
 
             [cell.photoView sd_setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"test"]];

@@ -198,6 +198,10 @@
             self.commentTextField.text = @"";
             [self.commentTextField resignFirstResponder];
             [self loadNewComments];
+            NSInteger commentCount = [[_post.dictionaryForObject objectForKey:@"commentcount"] integerValue];
+            commentCount = commentCount + 1;
+            [_post setObject:[NSNumber numberWithInteger:commentCount] forKey:@"commentcount"];
+            [_post saveInBackground];
         } else {
             NSLog(@"Post Comment Error: %@", error);
         }

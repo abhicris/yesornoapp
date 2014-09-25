@@ -17,6 +17,7 @@
 #import <AVOSCloud/AVOSCloud.h>
 #import "DateFormatter.h"
 #import <SDWebImage/UIImageView+WebCache.h>
+#import "POP/POP.h"
 
 @interface UserPageViewController ()
 
@@ -25,7 +26,7 @@
 @property (nonatomic, strong)NSMutableArray *userPosts;
 @property (nonatomic)BOOL hasFriended;
 
-
+@property (nonatomic, strong) AVUser *currentUser;
 @property (nonatomic, strong) UIButton *postTipButton;
 @property (nonatomic, strong) UIButton *followerButton;
 @property (nonatomic, strong) UIButton *followeeButton;
@@ -39,6 +40,7 @@
     self.view.backgroundColor = [UIColor whiteColor];
     [self.navigationController.navigationBar setBarTintColor:[UIColor flatRedColor]];
     self.userPosts = [NSMutableArray array];
+    self.currentUser = [AVUser currentUser];
     if (_user == nil) {
         self.userInfo = [AVUser currentUser];
         [self initLeftMenuButton];
@@ -216,7 +218,7 @@
     self.followerButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     [self.followerButton setTitleColor:[UIColor flatNavyBlueColorDark] forState:UIControlStateNormal];
     AVQuery *followerCount = [AVQuery queryWithClassName:@"_Follower"];
-    [followerCount whereKey:@"follower" equalTo:self.userInfo];
+    [followerCount whereKey:@"master" equalTo:self.userInfo];
     [followerCount countObjectsInBackgroundWithBlock:^(NSInteger number, NSError *error) {
         if (error == nil) {
             [self.followerButton setTitle:[NSString stringWithFormat:@"Followers\r%@", [NSNumber numberWithInteger:number]] forState:UIControlStateNormal];
@@ -233,8 +235,8 @@
     self.followeeButton.titleLabel.numberOfLines = 0;
     self.followeeButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     [self.followeeButton setTitleColor:[UIColor flatNavyBlueColorDark] forState:UIControlStateNormal];
-    AVQuery *followeeCount = [AVQuery queryWithClassName:@"_Followee"];
-    [followeeCount whereKey:@"master" equalTo:self.userInfo];
+    AVQuery *followeeCount = [AVQuery queryWithClassName:@"_Follower"];
+    [followeeCount whereKey:@"follower" equalTo:self.userInfo];
     [followeeCount countObjectsInBackgroundWithBlock:^(NSInteger number, NSError *error) {
         if (error == nil) {
             [self.followeeButton setTitle:[NSString stringWithFormat:@"Followees\r%@", [NSNumber numberWithInteger:number]] forState:UIControlStateNormal];
@@ -249,6 +251,7 @@
     
     
     if (self.userInfo != [AVUser currentUser]) {
+        
         UIButton *addFriendButton = [[UIButton alloc] initWithFrame:CGRectMake(115, 195, 84, 36)];
         UIButton *cancelFriendButton = [[UIButton alloc] initWithFrame:CGRectMake(115, 195, 84, 36)];
         
@@ -273,13 +276,22 @@
         cancelFriendButton.titleLabel.font = [UIFont fontWithName:@"Roboto-Regular" size:14];
         
         
-        [addFriendButton addTarget:self action:@selector(addFriendButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+        [addFriendButton addTarget:self action:@selector(addFollowButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
         [cancelFriendButton addTarget:self action:@selector(cancelFriendButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-        if (self.hasFriended) {
-            [topUserInfoView addSubview:cancelFriendButton];
-        } else {
-            [topUserInfoView addSubview:addFriendButton];
-        }
+        AVQuery *follow = [AVQuery queryWithClassName:@"_Follower"];
+        [follow whereKey:@"master" equalTo:self.currentUser];
+        [follow whereKey:@"follower" equalTo:self.userInfo];
+        [follow findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if (error == nil) {
+                if (objects.count == 1) {
+                   [topUserInfoView addSubview:cancelFriendButton];
+                } else {
+                   [topUserInfoView addSubview:addFriendButton];
+                }
+            } else {
+                NSLog(@"Error: %@", error);
+            }
+        }];
     }
     self.postsTableView.tableHeaderView = topUserInfoView;
 }
@@ -315,12 +327,41 @@
     [self.navigationController pushViewController:[UserSettingViewController new] animated:YES];
 }
 
--(void)addFriendButtonPressed:(id)sender
+-(void)addFollowButtonPressed:(UIButton *)sender
 {
-    
+    AVObject *follower = [AVObject objectWithClassName:@"_Follower"];
+    [follower setObject:self.currentUser forKey:@"master"];
+    [follower setObject:self.userInfo forKey:@"follower"];
+    [follower saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            POPSpringAnimation *scaleAnimation = [POPSpringAnimation animationWithPropertyNamed:kPOPLayerScaleXY];
+            scaleAnimation.fromValue = [NSValue valueWithCGSize:CGSizeMake(0.5f, 0.5f)];
+            scaleAnimation.toValue = [NSValue valueWithCGSize:CGSizeMake(1.0f, 1.0f)];
+            scaleAnimation.springBounciness = 20;
+            [sender.layer pop_addAnimation:scaleAnimation forKey:@"Scale it"];
+            
+            AVQuery *followeeCount = [AVQuery queryWithClassName:@"_Follower"];
+            [followeeCount whereKey:@"follower" equalTo:self.userInfo];
+            [followeeCount countObjectsInBackgroundWithBlock:^(NSInteger number, NSError *error) {
+                if (error == nil) {
+                    [self.followeeButton setTitle:[NSString stringWithFormat:@"Followees\r%@", [NSNumber numberWithInteger:number]] forState:UIControlStateNormal];
+                } else {
+                    NSLog(@"Error: %@", error);
+                }
+                
+            }];
+            
+            
+        } else {
+            NSLog(@"Error: %@", error);
+        }
+    }];
 }
--(void)cancelFriendButtonPressed:(id)sender
+-(void)cancelFriendButtonPressed:(UIButton *)sender
 {
+    AVQuery *cancelFollow = [AVQuery queryWithClassName:@"_Follower"];
+    [cancelFollow whereKey:@"master" equalTo:self.currentUser];
+    [cancelFollow whereKey:@"follower" equalTo:self.userInfo];
     
 }
 #pragma mark - UITableView datasource delegate
